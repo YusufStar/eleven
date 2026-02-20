@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
-import { swagger } from "@elysiajs/swagger";
 import { auth } from "./auth/auth";
+import { authPlugin } from "./plugins/auth.plugin";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 
@@ -25,19 +25,11 @@ const app = new Elysia()
       credentials: true,
     })
   )
-  .use(
-    swagger({
-      documentation: {
-        info: { title: "Eleven API", version: "1.0.0" },
-      },
-    })
-  )
   // Better Auth tüm /api/auth/* route'larını handle eder
   .mount(auth.handler)
-  // Health check
-  .get("/health", () => ({ status: "ok" }))
-  // Upload image: multipart form "file", optional "folder". Returns public URL.
-  .post("/upload-image", async ({ request }) => {
+  .use(authPlugin)
+  // Upload image: multipart form "file", optional "folder". Auth required. Saves under images/{userId}/.
+  .post("/upload-image", async ({ request, user }) => {
     const formData = await request.formData();
     const file = formData.get("file");
     if (!file || typeof file === "string") {
@@ -47,7 +39,7 @@ const app = new Elysia()
       });
     }
 
-    const folder = (formData.get("folder") as string) || "images";
+    const folder = `images/${user!.id}`;
     let name = file.name || `img-${Date.now()}`;
     let body: ArrayBuffer | Buffer = await file.arrayBuffer();
     let contentType = file.type || "image/*";
@@ -77,10 +69,12 @@ const app = new Elysia()
     );
     const url = R2_PUBLIC_BASE_URL ? `${R2_PUBLIC_BASE_URL.replace(/\/$/, "")}/${key}` : key;
     return { url };
-  })
+  }, { requireAuth: true })
   .listen(3001);
 
 console.log(`🚀 Backend running at http://localhost:3001`);
+console.log(`🚀 Swagger running at http://localhost:3001/swagger`);
+console.log(`🚀 R2_PUBLIC_BASE_URL: ${R2_PUBLIC_BASE_URL}`);
 
 // Eden Treaty için type export — frontend bunu kullanacak
 export type App = typeof app;
