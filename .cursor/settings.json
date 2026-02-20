@@ -1,0 +1,16 @@
+{
+  "plugins": {
+    "prisma": {
+      "enabled": true
+    },
+    "context7-plugin": {
+      "enabled": true
+    },
+    "parallel": {
+      "enabled": true
+    },
+    "continual-learning": {
+      "enabled": true
+    }
+  }
+}

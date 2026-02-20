@@ -1,0 +1,23 @@
+Backend:     NestJS (TypeScript)
+Database:    PostgreSQL 16+
+ORM:         Prisma
+Cache/Queue: Redis + BullMQ
+Auth:        Passport.js + JWT + Refresh Token
+Email:       Resend + React Email
+Storage:     Cloudflare R2 (S3 uyumlu, daha ucuz)
+Search:      PostgreSQL FTS (başlangıç) → Meilisearch (büyüyünce)
+Real-time:   Socket.io (NestJS Gateway)
+API:         REST + Swagger
+
+Frontend:    Next.js (App Router)
+UI:          Shadcn UI + Tailwind
+State:       Zustand (global) + TanStack Query (server state)
+Form:        React Hook Form + Zod
+Table:       TanStack Table (CRM'de tablo çok kritik)
+Charts:      Recharts veya Tremor
+PDF:         React PDF
+
+DevOps:      Docker + Docker Compose (local)
+             GitHub Actions (CI/CD)
+             Railway veya Render (başlangıç hosting)
+             Sentry (hata takibi)
