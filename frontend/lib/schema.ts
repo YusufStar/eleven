@@ -16,3 +16,9 @@ export const signupSchema = z.object({
     message: "Passwords do not match",
 })
 export type SignupSchema = z.infer<typeof signupSchema>
+
+export const createOrganizationSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    slug: z.string().min(1, "Slug is required"),
+})
+export type CreateOrganizationSchema = z.infer<typeof createOrganizationSchema>

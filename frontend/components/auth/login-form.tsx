@@ -50,7 +50,7 @@ export function LoginForm({
       }
       if (response.data) {
         toast.success("You are logged in")
-        router.push("/")
+        router.replace("/dashboard")
       }
     } catch (error) {
       toast.error("An error occurred")

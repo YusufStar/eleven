@@ -18,7 +18,7 @@ export async function proxy(request: NextRequest) {
     
     if (authRoutes.includes(pathname)) {
         if (session) {
-            return NextResponse.redirect(new URL("/", request.url));
+            return NextResponse.redirect(new URL("/dashboard", request.url));
         } else {
             return NextResponse.next();
         }

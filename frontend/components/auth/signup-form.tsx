@@ -61,7 +61,7 @@ export function SignupForm({
       }
       if (response.data) {
         toast.success("You are signed up")
-        router.push("/dashboard")
+        router.replace("/dashboard")
       }
     } catch (error) {
       toast.error("An error occurred")

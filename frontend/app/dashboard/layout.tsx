@@ -19,10 +19,15 @@ import {
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { FirstOrgCreate } from "@/components/auth/first-org-create";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname();
+    const { isPending: isSessionPending } = authClient.useSession();
+    const { isPending: isOrganizationsPending, data: organizations } = authClient.useListOrganizations();
+    const { isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
     const [loading, setLoading] = useState(true)
+    const pathname = usePathname();
 
     const breadcrumb = useMemo(() => {
         const paths = pathname.split("/").filter(Boolean);
@@ -41,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
         <div className="relative">
             <AnimatePresence>
-                {loading ? <Loading key="loading" /> : (
+                {(loading || isSessionPending || isOrganizationsPending || isActiveOrganizationPending) ? <Loading key="loading" /> : organizations && organizations.length > 0 ? (
                     <SidebarProvider>
                         <AppSidebar />
                         <SidebarInset>
@@ -78,7 +83,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             </div>
                         </SidebarInset>
                     </SidebarProvider>
-                )}
+                ) : <div className="h-screen w-full flex items-center justify-center">
+                    <FirstOrgCreate />
+                </div>}
             </AnimatePresence>
         </div>
     );
