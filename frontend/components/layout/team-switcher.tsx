@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useEffect, useState } from "react"
 
 import {
   DropdownMenu,
@@ -20,30 +21,38 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { UnfoldMoreIcon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { authClient } from "@/lib/auth-client"
-import { useEffect } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { initials } from "@/lib/string"
+import { CreateOrgModal } from "@/components/auth/create-org-modal"
 
 export function TeamSwitcher() {
   const { isMobile } = useSidebar()
-  const { data: organizations } = authClient.useListOrganizations();
-  const { data: activeOrganization } = authClient.useActiveOrganization();
+  const [createOrgOpen, setCreateOrgOpen] = useState(false)
+  const { data: organizations, isPending: isOrganizationsPending } = authClient.useListOrganizations()
+  const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization()
 
   const setActiveOrganization = async (organizationId: string) => {
     await authClient.organization.setActive({
       organizationId,
-    });
+    })
   }
 
   useEffect(() => {
-    if (organizations && organizations.length > 0) {
-      setActiveOrganization(organizations[0].id);
+    if (!isOrganizationsPending && !isActiveOrganizationPending && organizations && organizations.length > 0 && !activeOrganization) {
+      setActiveOrganization(organizations[0].id)
     }
-  }, [organizations])
+  }, [organizations, activeOrganization, isOrganizationsPending, isActiveOrganizationPending])
 
   if (!organizations || !activeOrganization) {
     return null
   }
 
   return (
+    <>
+      <CreateOrgModal
+        open={createOrgOpen}
+        onOpenChange={setCreateOrgOpen}
+      />
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
@@ -52,9 +61,12 @@ export function TeamSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                {activeOrganization.logo}
-              </div>
+              <Avatar className="size-8 rounded-lg">
+                <AvatarImage className="rounded-lg" src={activeOrganization.logo ?? undefined} />
+                <AvatarFallback className="rounded-lg">
+                  {initials(activeOrganization.name)}
+                </AvatarFallback>
+              </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{activeOrganization.name}</span>
                 <span className="truncate text-xs">Free</span>
@@ -77,15 +89,21 @@ export function TeamSwitcher() {
                 onClick={() => setActiveOrganization(organization.id)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-md border">
-                  {organization.logo}
-                </div>
+                <Avatar className="size-6 rounded-md">
+                  <AvatarImage className="rounded-lg" src={organization.logo ?? undefined} />
+                  <AvatarFallback className="rounded-md">
+                    {initials(organization.name)}
+                  </AvatarFallback>
+                </Avatar>
                 {organization.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
+            <DropdownMenuItem
+              className="gap-2 p-2"
+              onClick={() => setCreateOrgOpen(true)}
+            >
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} className="size-4" />
               </div>
@@ -95,5 +113,6 @@ export function TeamSwitcher() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
+    </>
   )
 }
