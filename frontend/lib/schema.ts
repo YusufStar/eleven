@@ -18,6 +18,7 @@ export const signupSchema = z.object({
 export type SignupSchema = z.infer<typeof signupSchema>
 
 export const createOrganizationSchema = z.object({
+    avatar: z.string().optional(),
     name: z.string().min(1, "Name is required"),
     slug: z.string().min(1, "Slug is required"),
 })

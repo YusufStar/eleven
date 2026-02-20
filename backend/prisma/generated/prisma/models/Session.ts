@@ -280,8 +280,8 @@ export type SessionCreateInput = {
   id: string
   expiresAt: Date | string
   token: string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   ipAddress?: string | null
   userAgent?: string | null
   activeOrganizationId?: string | null
@@ -292,8 +292,8 @@ export type SessionUncheckedCreateInput = {
   id: string
   expiresAt: Date | string
   token: string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   ipAddress?: string | null
   userAgent?: string | null
   userId: string
@@ -328,8 +328,8 @@ export type SessionCreateManyInput = {
   id: string
   expiresAt: Date | string
   token: string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   ipAddress?: string | null
   userAgent?: string | null
   userId: string
@@ -451,8 +451,8 @@ export type SessionCreateWithoutUserInput = {
   id: string
   expiresAt: Date | string
   token: string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   ipAddress?: string | null
   userAgent?: string | null
   activeOrganizationId?: string | null
@@ -462,8 +462,8 @@ export type SessionUncheckedCreateWithoutUserInput = {
   id: string
   expiresAt: Date | string
   token: string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   ipAddress?: string | null
   userAgent?: string | null
   activeOrganizationId?: string | null
@@ -514,8 +514,8 @@ export type SessionCreateManyUserInput = {
   id: string
   expiresAt: Date | string
   token: string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   ipAddress?: string | null
   userAgent?: string | null
   activeOrganizationId?: string | null

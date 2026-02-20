@@ -233,7 +233,7 @@ export type MemberScalarWhereWithAggregatesInput = {
 
 export type MemberCreateInput = {
   id: string
-  role: string
+  role?: string
   createdAt: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMembersInput
@@ -243,7 +243,7 @@ export type MemberUncheckedCreateInput = {
   id: string
   organizationId: string
   userId: string
-  role: string
+  role?: string
   createdAt: Date | string
 }
 
@@ -267,7 +267,7 @@ export type MemberCreateManyInput = {
   id: string
   organizationId: string
   userId: string
-  role: string
+  role?: string
   createdAt: Date | string
 }
 
@@ -405,7 +405,7 @@ export type MemberUncheckedUpdateManyWithoutOrganizationNestedInput = {
 
 export type MemberCreateWithoutUserInput = {
   id: string
-  role: string
+  role?: string
   createdAt: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
 }
@@ -413,7 +413,7 @@ export type MemberCreateWithoutUserInput = {
 export type MemberUncheckedCreateWithoutUserInput = {
   id: string
   organizationId: string
-  role: string
+  role?: string
   createdAt: Date | string
 }
 
@@ -456,7 +456,7 @@ export type MemberScalarWhereInput = {
 
 export type MemberCreateWithoutOrganizationInput = {
   id: string
-  role: string
+  role?: string
   createdAt: Date | string
   user: Prisma.UserCreateNestedOneWithoutMembersInput
 }
@@ -464,7 +464,7 @@ export type MemberCreateWithoutOrganizationInput = {
 export type MemberUncheckedCreateWithoutOrganizationInput = {
   id: string
   userId: string
-  role: string
+  role?: string
   createdAt: Date | string
 }
 
@@ -497,7 +497,7 @@ export type MemberUpdateManyWithWhereWithoutOrganizationInput = {
 export type MemberCreateManyUserInput = {
   id: string
   organizationId: string
-  role: string
+  role?: string
   createdAt: Date | string
 }
 
@@ -525,7 +525,7 @@ export type MemberUncheckedUpdateManyWithoutUserInput = {
 export type MemberCreateManyOrganizationInput = {
   id: string
   userId: string
-  role: string
+  role?: string
   createdAt: Date | string
 }
 
