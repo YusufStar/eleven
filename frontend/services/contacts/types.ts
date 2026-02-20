@@ -41,4 +41,4 @@ export type PaginatedContacts = {
   pageSize: number;
 };
 
-export type ContactsListParams = { page?: number; pageSize?: number };
+export type ContactsListParams = { page?: number; pageSize?: number; search?: string };

@@ -59,8 +59,13 @@ const app = new Elysia()
     async ({ activeOrganizationId, query }) => {
       const page = Math.max(1, Number(query?.page) || 1);
       const pageSize = Math.min(100, Math.max(1, Number(query?.pageSize) || 10));
+      const search = typeof query?.search === "string" ? query.search.trim() : "";
       const skip = (page - 1) * pageSize;
-      const where = { ...orgScope(activeOrganizationId!), type: "COMPANY" as const };
+      const where = {
+        ...orgScope(activeOrganizationId!),
+        type: "COMPANY" as const,
+        ...(search && { companyName: { contains: search, mode: "insensitive" as const } }),
+      };
       const [data, total] = await Promise.all([
         prisma.contact.findMany({
           where,

@@ -20,11 +20,13 @@ async function request<T>(path: string, init?: RequestOptions): Promise<T> {
 }
 
 function paginatedPath(path: string, params?: ContactsListParams) {
-  if (!params?.page && params?.pageSize === undefined) return path;
   const u = new URL(path, "http://_");
-  if (params.page != null) u.searchParams.set("page", String(params.page));
-  if (params.pageSize != null) u.searchParams.set("pageSize", String(params.pageSize));
-  return `${path}${u.search}`;
+  if (params?.page != null) u.searchParams.set("page", String(params.page));
+  if (params?.pageSize != null) u.searchParams.set("pageSize", String(params.pageSize));
+  if (params?.search != null && params.search !== "") u.searchParams.set("search", params.search);
+  const search = u.search;
+  if (!search) return path;
+  return `${path}${search}`;
 }
 
 export const contactsApi = {

@@ -24,22 +24,55 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CompanySelect } from "@/components/contacts/people/company-select";
 import { Spinner } from "@/components/ui/spinner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  SparklesIcon,
+  ArrowRight01Icon,
+  CheckmarkCircle01Icon,
+  Cancel01Icon,
+  UserGroupIcon,
+} from "@hugeicons/core-free-icons";
+import { cn } from "@/lib/utils";
 
-const STATUS_OPTIONS: { value: string; label: string }[] = [
-  { value: "LEAD", label: "Lead" },
-  { value: "PROSPECT", label: "Prospect" },
-  { value: "CUSTOMER", label: "Customer" },
-  { value: "CHURNED", label: "Churned" },
-  { value: "PARTNER", label: "Partner" },
-];
+type StatusValue = NonNullable<AddContactPersonSchema["status"]>;
+
+const STATUS_BADGES: Record<
+  StatusValue,
+  { label: string; icon: typeof SparklesIcon; className: string }
+> = {
+  LEAD: {
+    label: "Lead",
+    icon: SparklesIcon,
+    className:
+      "bg-amber-500/12 text-amber-700 dark:text-amber-400 border-amber-500/20 [&_svg]:text-amber-600 dark:[&_svg]:text-amber-400",
+  },
+  PROSPECT: {
+    label: "Prospect",
+    icon: ArrowRight01Icon,
+    className:
+      "bg-blue-500/12 text-blue-700 dark:text-blue-400 border-blue-500/20 [&_svg]:text-blue-600 dark:[&_svg]:text-blue-400",
+  },
+  CUSTOMER: {
+    label: "Customer",
+    icon: CheckmarkCircle01Icon,
+    className:
+      "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 [&_svg]:text-emerald-600 dark:[&_svg]:text-emerald-400",
+  },
+  CHURNED: {
+    label: "Churned",
+    icon: Cancel01Icon,
+    className:
+      "bg-red-500/12 text-red-700 dark:text-red-400 border-red-500/20 [&_svg]:text-red-600 dark:[&_svg]:text-red-400",
+  },
+  PARTNER: {
+    label: "Partner",
+    icon: UserGroupIcon,
+    className:
+      "bg-violet-500/12 text-violet-700 dark:text-violet-400 border-violet-500/20 [&_svg]:text-violet-600 dark:[&_svg]:text-violet-400",
+  },
+};
 
 export type AddContactPeopleModalProps = {
   open: boolean;
@@ -52,6 +85,7 @@ const defaultValues: AddContactPersonSchema = {
   email: "",
   phone: "",
   title: "",
+  companyId: null,
   companyName: "",
   status: "LEAD",
 };
@@ -84,6 +118,7 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
         email: emptyStrToUndefined(data.email)?.trim() ?? undefined,
         phone: emptyStrToUndefined(data.phone)?.trim() ?? undefined,
         title: emptyStrToUndefined(data.title)?.trim() ?? undefined,
+        companyId: data.companyId ?? undefined,
         companyName: emptyStrToUndefined(data.companyName)?.trim() ?? undefined,
         status: data.status ?? "LEAD",
       });
@@ -173,14 +208,23 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="add-contact-companyName">Company</FieldLabel>
-              <Input
-                id="add-contact-companyName"
-                type="text"
-                placeholder="Acme Inc."
-                {...form.register("companyName")}
+              <FieldLabel htmlFor="add-contact-company">Company</FieldLabel>
+              <Controller
+                control={form.control}
+                name="companyId"
+                render={({ field }) => (
+                  <CompanySelect
+                    id="add-contact-company"
+                    value={field.value ?? null}
+                    onChange={(id, companyName) => {
+                      field.onChange(id);
+                      form.setValue("companyName", id ? (companyName ?? "") : "");
+                    }}
+                    placeholder="Select company..."
+                  />
+                )}
               />
-              <FieldError>{form.formState.errors.companyName?.message}</FieldError>
+              <FieldError>{form.formState.errors.companyId?.message}</FieldError>
             </Field>
 
             <Field>
@@ -189,21 +233,30 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
                 control={form.control}
                 name="status"
                 render={({ field }) => (
-                  <Select
-                    value={field.value ?? "LEAD"}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger className="w-full" id="add-contact-status">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STATUS_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex flex-wrap gap-2" role="group" aria-label="Status">
+                    {(Object.keys(STATUS_BADGES) as StatusValue[]).map((value) => {
+                      const config = STATUS_BADGES[value];
+                      const Icon = config.icon;
+                      const selected = (field.value ?? "LEAD") === value;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => field.onChange(value)}
+                          className={cn(
+                            "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors [&_svg]:size-3.5",
+                            config.className,
+                            selected
+                              ? "ring-2 ring-offset-2 ring-offset-background ring-foreground/20"
+                              : "opacity-80 hover:opacity-100"
+                          )}
+                        >
+                          <HugeiconsIcon icon={Icon} strokeWidth={2} />
+                          {config.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               />
               <FieldError>{form.formState.errors.status?.message}</FieldError>

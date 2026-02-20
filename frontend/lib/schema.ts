@@ -32,6 +32,7 @@ export const addContactPersonSchema = z.object({
     email: z.string().min(1, "Email is required").email("Invalid email"),
     phone: z.string().max(40).optional().or(z.literal("")),
     title: z.string().min(1, "Title is required").max(120, "Title is too long"),
+    companyId: z.string().nullable().optional(),
     companyName: z.string().max(200).optional().or(z.literal("")),
     status: contactStatusEnum.optional(),
 })

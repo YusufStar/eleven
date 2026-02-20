@@ -33,8 +33,16 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Settings01Icon } from "@hugeicons/core-free-icons";
+import { Settings01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 export type PeopleDataTableProps<TData, TValue> = {
@@ -81,13 +89,51 @@ export function PeopleDataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-muted-foreground text-sm">
-          <span className="font-medium text-foreground">{total}</span> contacts total
-        </p>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-[280px]">
+          <HugeiconsIcon
+            icon={Search01Icon}
+            className="text-muted-foreground pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2"
+            strokeWidth={2}
+          />
+          <Input placeholder="Search contacts..." className="pl-8 h-8" />
+        </div>
+        <Select>
+          <SelectTrigger size="sm" className="w-[130px] h-8">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All statuses</SelectItem>
+            <SelectItem value="LEAD">Lead</SelectItem>
+            <SelectItem value="PROSPECT">Prospect</SelectItem>
+            <SelectItem value="CUSTOMER">Customer</SelectItem>
+            <SelectItem value="CHURNED">Churned</SelectItem>
+            <SelectItem value="PARTNER">Partner</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select>
+          <SelectTrigger size="sm" className="w-[120px] h-8">
+            <SelectValue placeholder="Source" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All sources</SelectItem>
+            <SelectItem value="MANUAL">Manual</SelectItem>
+            <SelectItem value="IMPORT">Import</SelectItem>
+            <SelectItem value="WEBSITE">Website</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select>
+          <SelectTrigger size="sm" className="w-[140px] h-8">
+            <SelectValue placeholder="Company" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All companies</SelectItem>
+          </SelectContent>
+        </Select>
+        <div className="ml-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
               <HugeiconsIcon icon={Settings01Icon} className="size-4" strokeWidth={2} />
               Columns
             </Button>
@@ -109,7 +155,8 @@ export function PeopleDataTable<TData, TValue>({
                 </DropdownMenuCheckboxItem>
               ))}
           </DropdownMenuContent>
-        </DropdownMenu>
+          </DropdownMenu>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-lg border bg-card">
