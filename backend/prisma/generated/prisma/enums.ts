@@ -9,7 +9,61 @@
 * 🟢 You can import this file directly.
 */
 
+export const ContactType = {
+  PERSON: 'PERSON',
+  COMPANY: 'COMPANY'
+} as const
+
+export type ContactType = (typeof ContactType)[keyof typeof ContactType]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const ContactStatus = {
+  LEAD: 'LEAD',
+  PROSPECT: 'PROSPECT',
+  CUSTOMER: 'CUSTOMER',
+  CHURNED: 'CHURNED',
+  PARTNER: 'PARTNER'
+} as const
+
+export type ContactStatus = (typeof ContactStatus)[keyof typeof ContactStatus]
+
+
+export const ContactSource = {
+  MANUAL: 'MANUAL',
+  CSV_IMPORT: 'CSV_IMPORT',
+  WEB_FORM: 'WEB_FORM',
+  EMAIL: 'EMAIL',
+  API: 'API'
+} as const
+
+export type ContactSource = (typeof ContactSource)[keyof typeof ContactSource]
+
+
+export const ActivityType = {
+  CALL: 'CALL',
+  EMAIL: 'EMAIL',
+  MEETING: 'MEETING',
+  TASK: 'TASK',
+  NOTE: 'NOTE',
+  VISIT: 'VISIT'
+} as const
+
+export type ActivityType = (typeof ActivityType)[keyof typeof ActivityType]
+
+
+export const DealStatus = {
+  OPEN: 'OPEN',
+  WON: 'WON',
+  LOST: 'LOST'
+} as const
+
+export type DealStatus = (typeof DealStatus)[keyof typeof DealStatus]
+
+
+export const Plan = {
+  STARTER: 'STARTER',
+  PROFESSIONAL: 'PROFESSIONAL',
+  ENTERPRISE: 'ENTERPRISE'
+} as const
+
+export type Plan = (typeof Plan)[keyof typeof Plan]

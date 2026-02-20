@@ -43,7 +43,6 @@ const navMain = [
     url: "/dashboard/contacts",
     icon: <HugeiconsIcon icon={ContactIcon} strokeWidth={2} />,
     items: [
-      { title: "All contacts", url: "/dashboard/contacts" },
       { title: "People", url: "/dashboard/contacts/people" },
       { title: "Companies", url: "/dashboard/contacts/companies" },
     ],

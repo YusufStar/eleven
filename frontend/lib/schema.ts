@@ -23,3 +23,16 @@ export const createOrganizationSchema = z.object({
     slug: z.string().min(1, "Slug is required"),
 })
 export type CreateOrganizationSchema = z.infer<typeof createOrganizationSchema>
+
+const contactStatusEnum = z.enum(["LEAD", "PROSPECT", "CUSTOMER", "CHURNED", "PARTNER"])
+
+export const addContactPersonSchema = z.object({
+    firstName: z.string().min(1, "First name is required").max(120, "First name is too long"),
+    lastName: z.string().min(1, "Last name is required").max(120, "Last name is too long"),
+    email: z.string().min(1, "Email is required").email("Invalid email"),
+    phone: z.string().max(40).optional().or(z.literal("")),
+    title: z.string().min(1, "Title is required").max(120, "Title is too long"),
+    companyName: z.string().max(200).optional().or(z.literal("")),
+    status: contactStatusEnum.optional(),
+})
+export type AddContactPersonSchema = z.infer<typeof addContactPersonSchema>

@@ -58,22 +58,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                         className="mr-2 data-vertical:h-4 data-vertical:self-auto"
                                     />
                                     <Breadcrumb>
-                                        <BreadcrumbList>
-                                            <BreadcrumbItem className="hidden md:block">
-                                                {breadcrumb.map((item) => (
-                                                    <BreadcrumbLink key={item.href} href={item.href}>
-                                                        {item.label}
-                                                    </BreadcrumbLink>
-                                                ))}
-                                            </BreadcrumbItem>
-                                            {breadcrumb.length > 1 && (
-                                                <>
-                                                    <BreadcrumbSeparator className="hidden md:block" />
-                                                    <BreadcrumbItem>
-                                                        <BreadcrumbPage>{breadcrumb[breadcrumb.length - 1].label}</BreadcrumbPage>
-                                                    </BreadcrumbItem>
-                                                </>
-                                            )}
+                                        <BreadcrumbList className="hidden md:flex">
+                                            {breadcrumb.flatMap((item, index) => {
+                                                const isLast = index === breadcrumb.length - 1;
+                                                return [
+                                                    <BreadcrumbItem key={item.href}>
+                                                        {isLast ? (
+                                                            <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                                                        ) : (
+                                                            <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                                                        )}
+                                                    </BreadcrumbItem>,
+                                                    ...(!isLast ? [<BreadcrumbSeparator key={`sep-${item.href}`} />] : []),
+                                                ];
+                                            })}
                                         </BreadcrumbList>
                                     </Breadcrumb>
                                 </div>

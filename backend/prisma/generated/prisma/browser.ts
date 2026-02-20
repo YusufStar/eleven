@@ -52,3 +52,28 @@ export type Member = Prisma.MemberModel
  * 
  */
 export type Invitation = Prisma.InvitationModel
+/**
+ * Model Contact
+ * 
+ */
+export type Contact = Prisma.ContactModel
+/**
+ * Model Activity
+ * 
+ */
+export type Activity = Prisma.ActivityModel
+/**
+ * Model Pipeline
+ * 
+ */
+export type Pipeline = Prisma.PipelineModel
+/**
+ * Model Stage
+ * 
+ */
+export type Stage = Prisma.StageModel
+/**
+ * Model Deal
+ * 
+ */
+export type Deal = Prisma.DealModel

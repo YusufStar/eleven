@@ -1,0 +1,12 @@
+---
+description: Use English only for this project. No Turkish or other languages in UI, copy, comments, or docs.
+globs: "*.ts, *.tsx, *.js, *.jsx, *.md, *.json, *.prisma"
+alwaysApply: true
+---
+
+This project uses **English only**.
+
+- All user-facing text (labels, buttons, messages, placeholders, page titles) must be in English.
+- Comments and documentation in code must be in English.
+- Error messages and API response messages must be in English.
+- Do not use Turkish or other languages unless explicitly required by a separate localization feature.

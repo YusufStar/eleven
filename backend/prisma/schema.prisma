@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "./generated/prisma"
@@ -84,6 +83,12 @@ model Organization {
   members     Member[]
   invitations Invitation[]
 
+  plan       Plan       @default(STARTER)
+  contacts   Contact[]
+  deals      Deal[]
+  pipelines  Pipeline[]
+  activities Activity[]
+
   @@unique([slug])
   @@map("organization")
 }
@@ -96,6 +101,10 @@ model Member {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String       @default("member")
   createdAt      DateTime
+
+  ownedContacts   Contact[]
+  ownedDeals      Deal[]
+  ownedActivities Activity[]
 
   @@index([organizationId])
   @@index([userId])
@@ -117,4 +126,205 @@ model Invitation {
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+model Contact {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // Temel bilgiler
+  type   ContactType   @default(PERSON)
+  status ContactStatus @default(LEAD)
+  source ContactSource @default(MANUAL)
+
+  // Kişi bilgileri
+  firstName String
+  lastName  String?
+  email     String?
+  phone     String?
+  title     String? // "Pazarlama Müdürü" gibi unvan
+
+  // Şirket bilgileri (type = COMPANY ise bunlar dolu)
+  companyName   String?
+  website       String?
+  industry      String?
+  employeeCount Int?
+
+  // Şirket-Kişi ilişkisi
+  // Bir kişi bir şirkete bağlı olabilir
+  companyId String?
+  company   Contact?  @relation("CompanyPersons", fields: [companyId], references: [id])
+  employees Contact[] @relation("CompanyPersons")
+
+  // Adres
+  country String?
+  city    String?
+  address String?
+
+  // Sorumlu kişi (hangi ekip üyesi takip ediyor)
+  ownerId String?
+  owner   Member? @relation(fields: [ownerId], references: [id])
+
+  // Ek bilgiler
+  notes        String?
+  tags         String[] @default([])
+  customFields Json?    @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // İlişkiler
+  deals      Deal[]
+  activities Activity[]
+
+  @@index([organizationId])
+  @@index([organizationId, type])
+  @@index([organizationId, status])
+  @@index([organizationId, ownerId])
+  @@index([email])
+  @@map("contacts")
+}
+
+model Activity {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  type        ActivityType
+  title       String
+  description String?
+  dueAt       DateTime?
+  completedAt DateTime?
+  isDone      Boolean      @default(false)
+
+  // İlişkiler — bir aktivite kişiye ve/veya deal'e bağlı olabilir
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  dealId    String?
+  deal      Deal?    @relation(fields: [dealId], references: [id], onDelete: SetNull)
+
+  // Kimin yarattığı / sorumlusu
+  ownerId String?
+  owner   Member? @relation(fields: [ownerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([contactId])
+  @@index([dealId])
+  @@index([organizationId, isDone])
+  @@map("activities")
+}
+
+model Pipeline {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  isDefault      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  stages Stage[]
+  deals  Deal[]
+
+  @@index([organizationId])
+  @@map("pipelines")
+}
+
+model Stage {
+  id         String   @id @default(cuid())
+  pipelineId String
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  name       String
+  order      Int
+  color      String?
+
+  deals Deal[]
+
+  @@index([pipelineId])
+  @@map("stages")
+}
+
+model Deal {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  title         String
+  value         Decimal?   @db.Decimal(15, 2)
+  currency      String     @default("TRY")
+  probability   Int?       @default(50)
+  expectedClose DateTime?
+  status        DealStatus @default(OPEN)
+  lostReason    String? // kaybedildiyse neden
+
+  contactId  String?
+  contact    Contact? @relation(fields: [contactId], references: [id])
+  stageId    String
+  stage      Stage    @relation(fields: [stageId], references: [id])
+  pipelineId String
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
+
+  ownerId String?
+  owner   Member? @relation(fields: [ownerId], references: [id])
+
+  customFields Json? @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activities Activity[]
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, stageId])
+  @@index([organizationId, ownerId])
+  @@map("deals")
+}
+
+// ─── Enums ───────────────────────────────────────
+
+enum ContactType {
+  PERSON
+  COMPANY
+}
+
+enum ContactStatus {
+  LEAD // potansiyel, henüz görüşülmedi
+  PROSPECT // görüşme aşamasında
+  CUSTOMER // aktif müşteri
+  CHURNED // kaybedilmiş müşteri
+  PARTNER // iş ortağı
+}
+
+enum ContactSource {
+  MANUAL // elle eklendi
+  CSV_IMPORT // toplu import
+  WEB_FORM // web sitesi formu
+  EMAIL // email entegrasyonu
+  API // dış sistem
+}
+
+enum ActivityType {
+  CALL // telefon araması
+  EMAIL // email
+  MEETING // toplantı
+  TASK // görev
+  NOTE // not
+  VISIT // ziyaret
+}
+
+enum DealStatus {
+  OPEN
+  WON
+  LOST
+}
+
+enum Plan {
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
 }
