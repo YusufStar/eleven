@@ -8,6 +8,7 @@ export interface Contact {
   type: ContactType;
   status: ContactStatus;
   source: ContactSource;
+  avatar: string | null;
   firstName: string;
   lastName: string | null;
   email: string | null;

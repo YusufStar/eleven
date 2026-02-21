@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller } from "react-hook-form";
@@ -26,7 +26,10 @@ import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { CompanySelect } from "@/components/contacts/people/company-select";
 import { Spinner } from "@/components/ui/spinner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UploadModal } from "@/components/ui/upload-modal";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { UserIcon } from "@hugeicons/core-free-icons";
 import {
   SparklesIcon,
   ArrowRight01Icon,
@@ -80,6 +83,7 @@ export type AddContactPeopleModalProps = {
 };
 
 const defaultValues: AddContactPersonSchema = {
+  avatar: undefined,
   firstName: "",
   lastName: "",
   email: "",
@@ -96,6 +100,7 @@ function emptyStrToUndefined<T>(v: T): T | undefined {
 }
 
 export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleModalProps) {
+  const [openUploadModal, setOpenUploadModal] = useState(false);
   const createMutation = useCreateContactMutation();
 
   const form = useForm<AddContactPersonSchema>({
@@ -113,6 +118,7 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
     try {
       await createMutation.mutateAsync({
         type: "PERSON",
+        avatar: data.avatar ?? undefined,
         firstName: data.firstName.trim(),
         lastName: emptyStrToUndefined(data.lastName)?.trim() ?? undefined,
         email: emptyStrToUndefined(data.email)?.trim() ?? undefined,
@@ -132,15 +138,40 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
   const isSubmitting = createMutation.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md" showCloseButton>
-        <DialogHeader>
-          <DialogTitle>Add contact</DialogTitle>
-          <DialogDescription>Add a new person to your contact directory.</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} id="add-contact-form">
-          <FieldGroup className="gap-4">
-            <div className="grid grid-cols-2 gap-4">
+    <>
+      <UploadModal
+        isAvatar
+        open={openUploadModal}
+        onOpenChange={setOpenUploadModal}
+        title="Upload profile photo"
+        onDrop={(_, __, url) => {
+          if (url) form.setValue("avatar", url);
+        }}
+        accept={{ "image/*": [".jpg", ".jpeg", ".png", ".gif", ".webp"] }}
+        maxFiles={1}
+        maxSize={10 * 1024 * 1024}
+      />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md" showCloseButton>
+          <DialogHeader>
+            <DialogTitle>Add contact</DialogTitle>
+            <DialogDescription>Add a new person to your contact directory.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={form.handleSubmit(onSubmit)} id="add-contact-form">
+            <FieldGroup className="gap-4">
+              <Field>
+                <FieldLabel>Profile photo</FieldLabel>
+                <Avatar
+                  className="size-16 rounded-full cursor-pointer after:rounded-full"
+                  onClick={() => setOpenUploadModal(true)}
+                >
+                  <AvatarImage src={form.watch("avatar")} />
+                  <AvatarFallback>
+                    <HugeiconsIcon icon={UserIcon} className="size-8" strokeWidth={2} />
+                  </AvatarFallback>
+                </Avatar>
+              </Field>
+              <div className="grid grid-cols-2 gap-4">
               <Field>
                 <FieldLabel htmlFor="add-contact-firstName">First name</FieldLabel>
                 <Input
@@ -285,5 +316,6 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

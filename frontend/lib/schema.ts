@@ -27,6 +27,7 @@ export type CreateOrganizationSchema = z.infer<typeof createOrganizationSchema>
 const contactStatusEnum = z.enum(["LEAD", "PROSPECT", "CUSTOMER", "CHURNED", "PARTNER"])
 
 export const addContactPersonSchema = z.object({
+    avatar: z.string().optional(),
     firstName: z.string().min(1, "First name is required").max(120, "First name is too long"),
     lastName: z.string().min(1, "Last name is required").max(120, "Last name is too long"),
     email: z.string().min(1, "Email is required").email("Invalid email"),
@@ -37,3 +38,16 @@ export const addContactPersonSchema = z.object({
     status: contactStatusEnum.optional(),
 })
 export type AddContactPersonSchema = z.infer<typeof addContactPersonSchema>
+
+export const addContactCompanySchema = z.object({
+    avatar: z.string().optional(),
+    companyName: z.string().min(1, "Company name is required").max(200, "Company name is too long"),
+    website: z.string().max(500).optional().or(z.literal("")),
+    industry: z.string().max(120).optional().or(z.literal("")),
+    employeeCount: z.preprocess(
+      (v): number | undefined => (v === "" || v === undefined ? undefined : Number(v)),
+      z.number().int().min(0).optional()
+    ),
+    status: contactStatusEnum.optional(),
+})
+export type AddContactCompanySchema = z.infer<typeof addContactCompanySchema>

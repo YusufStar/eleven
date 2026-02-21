@@ -93,7 +93,35 @@ const app = new Elysia()
   .post(
     "/contacts/create",
     async ({ body, activeOrganizationId }) => {
-      const b = body as ContactCreateBody & { firstName?: string; lastName?: string; email?: string; title?: string };
+      const b = body as ContactCreateBody & {
+        type?: string;
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        title?: string;
+        companyName?: string;
+      };
+      const type = (b?.type === "COMPANY" ? "COMPANY" : "PERSON") as "PERSON" | "COMPANY";
+
+      if (type === "COMPANY") {
+        const companyName = typeof b?.companyName === "string" ? b.companyName.trim() : "";
+        if (!companyName) {
+          return new Response(
+            JSON.stringify({ message: "companyName is required for company" }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+          );
+        }
+        const data: Prisma.ContactUncheckedCreateInput = {
+          ...(body as ContactCreateBody),
+          type: "COMPANY",
+          organizationId: activeOrganizationId!,
+          firstName: "",
+          companyName: companyName || null,
+        };
+        const contact = await prisma.contact.create({ data });
+        return contact;
+      }
+
       const firstName = typeof b?.firstName === "string" ? b.firstName.trim() : "";
       const lastName = typeof b?.lastName === "string" ? b.lastName.trim() : "";
       const email = typeof b?.email === "string" ? b.email.trim() : "";

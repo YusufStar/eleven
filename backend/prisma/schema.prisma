@@ -137,6 +137,7 @@ model Contact {
   type   ContactType   @default(PERSON)
   status ContactStatus @default(LEAD)
   source ContactSource @default(MANUAL)
+  avatar String?       // profile picture for PERSON, logo for COMPANY
 
   // Kişi bilgileri
   firstName String

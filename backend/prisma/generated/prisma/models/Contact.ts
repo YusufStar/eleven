@@ -40,6 +40,7 @@ export type ContactMinAggregateOutputType = {
   type: $Enums.ContactType | null
   status: $Enums.ContactStatus | null
   source: $Enums.ContactSource | null
+  avatar: string | null
   firstName: string | null
   lastName: string | null
   email: string | null
@@ -65,6 +66,7 @@ export type ContactMaxAggregateOutputType = {
   type: $Enums.ContactType | null
   status: $Enums.ContactStatus | null
   source: $Enums.ContactSource | null
+  avatar: string | null
   firstName: string | null
   lastName: string | null
   email: string | null
@@ -90,6 +92,7 @@ export type ContactCountAggregateOutputType = {
   type: number
   status: number
   source: number
+  avatar: number
   firstName: number
   lastName: number
   email: number
@@ -127,6 +130,7 @@ export type ContactMinAggregateInputType = {
   type?: true
   status?: true
   source?: true
+  avatar?: true
   firstName?: true
   lastName?: true
   email?: true
@@ -152,6 +156,7 @@ export type ContactMaxAggregateInputType = {
   type?: true
   status?: true
   source?: true
+  avatar?: true
   firstName?: true
   lastName?: true
   email?: true
@@ -177,6 +182,7 @@ export type ContactCountAggregateInputType = {
   type?: true
   status?: true
   source?: true
+  avatar?: true
   firstName?: true
   lastName?: true
   email?: true
@@ -291,6 +297,7 @@ export type ContactGroupByOutputType = {
   type: $Enums.ContactType
   status: $Enums.ContactStatus
   source: $Enums.ContactSource
+  avatar: string | null
   firstName: string
   lastName: string | null
   email: string | null
@@ -341,6 +348,7 @@ export type ContactWhereInput = {
   type?: Prisma.EnumContactTypeFilter<"Contact"> | $Enums.ContactType
   status?: Prisma.EnumContactStatusFilter<"Contact"> | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFilter<"Contact"> | $Enums.ContactSource
+  avatar?: Prisma.StringNullableFilter<"Contact"> | string | null
   firstName?: Prisma.StringFilter<"Contact"> | string
   lastName?: Prisma.StringNullableFilter<"Contact"> | string | null
   email?: Prisma.StringNullableFilter<"Contact"> | string | null
@@ -374,6 +382,7 @@ export type ContactOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   source?: Prisma.SortOrder
+  avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -410,6 +419,7 @@ export type ContactWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.EnumContactTypeFilter<"Contact"> | $Enums.ContactType
   status?: Prisma.EnumContactStatusFilter<"Contact"> | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFilter<"Contact"> | $Enums.ContactSource
+  avatar?: Prisma.StringNullableFilter<"Contact"> | string | null
   firstName?: Prisma.StringFilter<"Contact"> | string
   lastName?: Prisma.StringNullableFilter<"Contact"> | string | null
   email?: Prisma.StringNullableFilter<"Contact"> | string | null
@@ -443,6 +453,7 @@ export type ContactOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   source?: Prisma.SortOrder
+  avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -478,6 +489,7 @@ export type ContactScalarWhereWithAggregatesInput = {
   type?: Prisma.EnumContactTypeWithAggregatesFilter<"Contact"> | $Enums.ContactType
   status?: Prisma.EnumContactStatusWithAggregatesFilter<"Contact"> | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceWithAggregatesFilter<"Contact"> | $Enums.ContactSource
+  avatar?: Prisma.StringNullableWithAggregatesFilter<"Contact"> | string | null
   firstName?: Prisma.StringWithAggregatesFilter<"Contact"> | string
   lastName?: Prisma.StringNullableWithAggregatesFilter<"Contact"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"Contact"> | string | null
@@ -504,6 +516,7 @@ export type ContactCreateInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -535,6 +548,7 @@ export type ContactUncheckedCreateInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -564,6 +578,7 @@ export type ContactUpdateInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -595,6 +610,7 @@ export type ContactUncheckedUpdateInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -625,6 +641,7 @@ export type ContactCreateManyInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -651,6 +668,7 @@ export type ContactUpdateManyMutationInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -676,6 +694,7 @@ export type ContactUncheckedUpdateManyInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -726,6 +745,7 @@ export type ContactCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   source?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -757,6 +777,7 @@ export type ContactMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   source?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -782,6 +803,7 @@ export type ContactMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   source?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -1013,6 +1035,7 @@ export type ContactCreateWithoutOrganizationInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1042,6 +1065,7 @@ export type ContactUncheckedCreateWithoutOrganizationInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1101,6 +1125,7 @@ export type ContactScalarWhereInput = {
   type?: Prisma.EnumContactTypeFilter<"Contact"> | $Enums.ContactType
   status?: Prisma.EnumContactStatusFilter<"Contact"> | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFilter<"Contact"> | $Enums.ContactSource
+  avatar?: Prisma.StringNullableFilter<"Contact"> | string | null
   firstName?: Prisma.StringFilter<"Contact"> | string
   lastName?: Prisma.StringNullableFilter<"Contact"> | string | null
   email?: Prisma.StringNullableFilter<"Contact"> | string | null
@@ -1127,6 +1152,7 @@ export type ContactCreateWithoutOwnerInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1157,6 +1183,7 @@ export type ContactUncheckedCreateWithoutOwnerInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1211,6 +1238,7 @@ export type ContactCreateWithoutEmployeesInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1241,6 +1269,7 @@ export type ContactUncheckedCreateWithoutEmployeesInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1274,6 +1303,7 @@ export type ContactCreateWithoutCompanyInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1304,6 +1334,7 @@ export type ContactUncheckedCreateWithoutCompanyInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1353,6 +1384,7 @@ export type ContactUpdateWithoutEmployeesInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1383,6 +1415,7 @@ export type ContactUncheckedUpdateWithoutEmployeesInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1427,6 +1460,7 @@ export type ContactCreateWithoutActivitiesInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1457,6 +1491,7 @@ export type ContactUncheckedCreateWithoutActivitiesInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1501,6 +1536,7 @@ export type ContactUpdateWithoutActivitiesInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1531,6 +1567,7 @@ export type ContactUncheckedUpdateWithoutActivitiesInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1559,6 +1596,7 @@ export type ContactCreateWithoutDealsInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1589,6 +1627,7 @@ export type ContactUncheckedCreateWithoutDealsInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1633,6 +1672,7 @@ export type ContactUpdateWithoutDealsInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1663,6 +1703,7 @@ export type ContactUncheckedUpdateWithoutDealsInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1691,6 +1732,7 @@ export type ContactCreateManyOrganizationInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1717,6 +1759,7 @@ export type ContactUpdateWithoutOrganizationInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1746,6 +1789,7 @@ export type ContactUncheckedUpdateWithoutOrganizationInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1775,6 +1819,7 @@ export type ContactUncheckedUpdateManyWithoutOrganizationInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1802,6 +1847,7 @@ export type ContactCreateManyOwnerInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1827,6 +1873,7 @@ export type ContactUpdateWithoutOwnerInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1857,6 +1904,7 @@ export type ContactUncheckedUpdateWithoutOwnerInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1886,6 +1934,7 @@ export type ContactUncheckedUpdateManyWithoutOwnerInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1912,6 +1961,7 @@ export type ContactCreateManyCompanyInput = {
   type?: $Enums.ContactType
   status?: $Enums.ContactStatus
   source?: $Enums.ContactSource
+  avatar?: string | null
   firstName: string
   lastName?: string | null
   email?: string | null
@@ -1937,6 +1987,7 @@ export type ContactUpdateWithoutCompanyInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1967,6 +2018,7 @@ export type ContactUncheckedUpdateWithoutCompanyInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1996,6 +2048,7 @@ export type ContactUncheckedUpdateManyWithoutCompanyInput = {
   type?: Prisma.EnumContactTypeFieldUpdateOperationsInput | $Enums.ContactType
   status?: Prisma.EnumContactStatusFieldUpdateOperationsInput | $Enums.ContactStatus
   source?: Prisma.EnumContactSourceFieldUpdateOperationsInput | $Enums.ContactSource
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2071,6 +2124,7 @@ export type ContactSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   type?: boolean
   status?: boolean
   source?: boolean
+  avatar?: boolean
   firstName?: boolean
   lastName?: boolean
   email?: boolean
@@ -2105,6 +2159,7 @@ export type ContactSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   type?: boolean
   status?: boolean
   source?: boolean
+  avatar?: boolean
   firstName?: boolean
   lastName?: boolean
   email?: boolean
@@ -2135,6 +2190,7 @@ export type ContactSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   type?: boolean
   status?: boolean
   source?: boolean
+  avatar?: boolean
   firstName?: boolean
   lastName?: boolean
   email?: boolean
@@ -2165,6 +2221,7 @@ export type ContactSelectScalar = {
   type?: boolean
   status?: boolean
   source?: boolean
+  avatar?: boolean
   firstName?: boolean
   lastName?: boolean
   email?: boolean
@@ -2186,7 +2243,7 @@ export type ContactSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ContactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "type" | "status" | "source" | "firstName" | "lastName" | "email" | "phone" | "title" | "companyName" | "website" | "industry" | "employeeCount" | "companyId" | "country" | "city" | "address" | "ownerId" | "notes" | "tags" | "customFields" | "createdAt" | "updatedAt", ExtArgs["result"]["contact"]>
+export type ContactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "type" | "status" | "source" | "avatar" | "firstName" | "lastName" | "email" | "phone" | "title" | "companyName" | "website" | "industry" | "employeeCount" | "companyId" | "country" | "city" | "address" | "ownerId" | "notes" | "tags" | "customFields" | "createdAt" | "updatedAt", ExtArgs["result"]["contact"]>
 export type ContactInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   company?: boolean | Prisma.Contact$companyArgs<ExtArgs>
@@ -2223,6 +2280,7 @@ export type $ContactPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     type: $Enums.ContactType
     status: $Enums.ContactStatus
     source: $Enums.ContactSource
+    avatar: string | null
     firstName: string
     lastName: string | null
     email: string | null
@@ -2676,6 +2734,7 @@ export interface ContactFieldRefs {
   readonly type: Prisma.FieldRef<"Contact", 'ContactType'>
   readonly status: Prisma.FieldRef<"Contact", 'ContactStatus'>
   readonly source: Prisma.FieldRef<"Contact", 'ContactSource'>
+  readonly avatar: Prisma.FieldRef<"Contact", 'String'>
   readonly firstName: Prisma.FieldRef<"Contact", 'String'>
   readonly lastName: Prisma.FieldRef<"Contact", 'String'>
   readonly email: Prisma.FieldRef<"Contact", 'String'>

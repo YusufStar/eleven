@@ -100,7 +100,7 @@ export function CreateOrgModal({
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <Avatar
-                className="size-16 rounded-lg cursor-pointer mx-auto"
+                className="size-16 rounded-lg cursor-pointer mx-auto after:rounded-lg"
                 onClick={() => setOpenUploadModal(true)}
               >
                 <AvatarImage src={form.watch("avatar")} className="rounded-lg" />

@@ -3,18 +3,16 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  UserIcon,
-  Mail01Icon,
-  Call02Icon,
-  Briefcase01Icon,
   Building01Icon,
-  ViewIcon,
+  LinkSquare01Icon,
+  BankIcon,
+  UserGroupIcon,
   StatusIcon,
+  ViewIcon,
   SparklesIcon,
   ArrowRight01Icon,
   CheckmarkCircle01Icon,
   Cancel01Icon,
-  UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import type { Contact, ContactStatus } from "@/services/contacts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -80,100 +78,80 @@ function ContactStatusBadge({ status }: { status: ContactStatus }) {
   );
 }
 
-function formatName(c: Contact) {
-  const first = c.firstName?.trim() ?? "";
-  const last = (c.lastName?.trim() ?? "").trim();
-  return last ? `${first} ${last}`.trim() : first || "—";
-}
-
-function initials(c: Contact) {
-  const first = (c.firstName?.trim() ?? "").charAt(0).toUpperCase();
-  const last = (c.lastName?.trim() ?? "").charAt(0).toUpperCase();
-  return last ? `${first}${last}` : first || "?";
-}
-
-export const peopleColumns: ColumnDef<Contact>[] = [
+export const companiesColumns: ColumnDef<Contact>[] = [
   {
-    id: "name",
-    accessorFn: (row) => formatName(row),
-    header: () => (
-      <span className="inline-flex items-center gap-2">
-        <HugeiconsIcon icon={UserIcon} className="size-4 text-muted-foreground" strokeWidth={2} />
-        Name
-      </span>
-    ),
-    cell: ({ row }) => {
-      const c = row.original;
-      return (
-        <span className="inline-flex items-center gap-2">
-          <Avatar size="sm" className="size-8 rounded-full after:rounded-full">
-            {c.avatar ? (
-              <AvatarImage src={c.avatar} alt="" />
-            ) : null}
-            <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-              {initials(c)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="font-medium text-foreground">{formatName(c)}</span>
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "email",
-    id: "email",
-    header: () => (
-      <span className="inline-flex items-center gap-2">
-        <HugeiconsIcon icon={Mail01Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
-        Email
-      </span>
-    ),
-    cell: ({ row }) => (
-      <a
-        href={row.original.email ? `mailto:${row.original.email}` : undefined}
-        className="text-primary hover:underline truncate max-w-[200px] block"
-      >
-        {row.original.email ?? "—"}
-      </a>
-    ),
-  },
-  {
-    accessorKey: "phone",
-    id: "phone",
-    header: () => (
-      <span className="inline-flex items-center gap-2">
-        <HugeiconsIcon icon={Call02Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
-        Phone
-      </span>
-    ),
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.original.phone ?? "—"}</span>
-    ),
-  },
-  {
-    accessorKey: "title",
-    id: "title",
-    header: () => (
-      <span className="inline-flex items-center gap-2">
-        <HugeiconsIcon icon={Briefcase01Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
-        Title
-      </span>
-    ),
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.original.title ?? "—"}</span>
-    ),
-  },
-  {
+    id: "companyName",
     accessorKey: "companyName",
-    id: "company",
     header: () => (
       <span className="inline-flex items-center gap-2">
         <HugeiconsIcon icon={Building01Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
         Company
       </span>
     ),
+    cell: ({ row }) => {
+      const c = row.original;
+      const name = c.companyName?.trim() ?? "—";
+      return (
+        <span className="inline-flex items-center gap-2">
+          <Avatar size="sm" className="size-8 rounded-lg after:rounded-lg">
+            {c.avatar ? (
+              <AvatarImage src={c.avatar} alt="" className="rounded-lg" />
+            ) : null}
+            <AvatarFallback className="rounded-lg bg-muted text-muted-foreground text-xs">
+              <HugeiconsIcon icon={Building01Icon} className="size-4" strokeWidth={2} />
+            </AvatarFallback>
+          </Avatar>
+          <span className="font-medium text-foreground">{name}</span>
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "website",
+    id: "website",
+    header: () => (
+      <span className="inline-flex items-center gap-2">
+        <HugeiconsIcon icon={LinkSquare01Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
+        Website
+      </span>
+    ),
+    cell: ({ row }) => {
+      const url = row.original.website?.trim();
+      if (!url) return <span className="text-muted-foreground">—</span>;
+      const href = url.startsWith("http") ? url : `https://${url}`;
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate max-w-[200px] block">
+          {url}
+        </a>
+      );
+    },
+  },
+  {
+    accessorKey: "industry",
+    id: "industry",
+    header: () => (
+      <span className="inline-flex items-center gap-2">
+        <HugeiconsIcon icon={BankIcon} className="size-4 text-muted-foreground" strokeWidth={2} />
+        Industry
+      </span>
+    ),
     cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.original.companyName ?? "—"}</span>
+      <span className="text-muted-foreground">{row.original.industry ?? "—"}</span>
+    ),
+  },
+  {
+    accessorKey: "employeeCount",
+    id: "employeeCount",
+    header: () => (
+      <span className="inline-flex items-center gap-2">
+        <HugeiconsIcon icon={UserGroupIcon} className="size-4 text-muted-foreground" strokeWidth={2} />
+        Employees
+      </span>
+    ),
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">
+        {row.original.employeeCount != null ? row.original.employeeCount : "—"}
+      </span>
     ),
   },
   {

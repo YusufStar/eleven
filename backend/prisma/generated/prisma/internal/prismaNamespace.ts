@@ -1445,6 +1445,7 @@ export const ContactScalarFieldEnum = {
   type: 'type',
   status: 'status',
   source: 'source',
+  avatar: 'avatar',
   firstName: 'firstName',
   lastName: 'lastName',
   email: 'email',

@@ -61,7 +61,7 @@ export function TeamSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="size-8 rounded-lg">
+              <Avatar className="size-8 rounded-lg after:rounded-lg">
                 <AvatarImage className="rounded-lg" src={activeOrganization.logo ?? undefined} />
                 <AvatarFallback className="rounded-lg">
                   {initials(activeOrganization.name)}
@@ -89,7 +89,7 @@ export function TeamSwitcher() {
                 onClick={() => setActiveOrganization(organization.id)}
                 className="gap-2 p-2"
               >
-                <Avatar className="size-6 rounded-md">
+                <Avatar className="size-6 rounded-md after:rounded-md">
                   <AvatarImage className="rounded-lg" src={organization.logo ?? undefined} />
                   <AvatarFallback className="rounded-md">
                     {initials(organization.name)}
