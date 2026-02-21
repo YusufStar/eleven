@@ -14,9 +14,6 @@ import {
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  LayoutBottomIcon,
-  AudioWave01Icon,
-  CommandIcon,
   Home02Icon,
   ContactIcon,
   PipelineIcon,
@@ -64,7 +61,6 @@ const navMain = [
     items: [
       { title: "Members", url: "/dashboard/team" },
       { title: "Invite", url: "/dashboard/team/invite" },
-      { title: "Roles", url: "/dashboard/team/roles" },
     ],
   },
   {
