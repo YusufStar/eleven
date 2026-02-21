@@ -13,7 +13,7 @@ export default function Loading() {
     }, [ref])
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} ref={ref as RefObject<HTMLDivElement> | null} className="absolute inset-0 flex items-center justify-center h-screen bg-background z-50">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} ref={ref as RefObject<HTMLDivElement> | null} className="absolute inset-0 flex items-center justify-center h-screen bg-background z-50">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="size-20">
                 <g transform="matrix(.495 0 0 .495 -118.2382 -144.218657)">
                     <path d="m294 292.36218h92c29.916 0 54 24.084 54 54v92c0 29.916-24.084 54-54 54h-92c-29.916 0-54-24.084-54-54v-92c0-29.916 24.084-54 54-54z" fill="var(--primary)" className="svg-elem-1"></path>

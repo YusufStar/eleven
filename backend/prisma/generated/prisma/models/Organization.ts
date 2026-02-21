@@ -32,6 +32,7 @@ export type OrganizationMinAggregateOutputType = {
   createdAt: Date | null
   metadata: string | null
   plan: $Enums.Plan | null
+  paidAt: Date | null
 }
 
 export type OrganizationMaxAggregateOutputType = {
@@ -42,6 +43,7 @@ export type OrganizationMaxAggregateOutputType = {
   createdAt: Date | null
   metadata: string | null
   plan: $Enums.Plan | null
+  paidAt: Date | null
 }
 
 export type OrganizationCountAggregateOutputType = {
@@ -52,6 +54,7 @@ export type OrganizationCountAggregateOutputType = {
   createdAt: number
   metadata: number
   plan: number
+  paidAt: number
   _all: number
 }
 
@@ -64,6 +67,7 @@ export type OrganizationMinAggregateInputType = {
   createdAt?: true
   metadata?: true
   plan?: true
+  paidAt?: true
 }
 
 export type OrganizationMaxAggregateInputType = {
@@ -74,6 +78,7 @@ export type OrganizationMaxAggregateInputType = {
   createdAt?: true
   metadata?: true
   plan?: true
+  paidAt?: true
 }
 
 export type OrganizationCountAggregateInputType = {
@@ -84,6 +89,7 @@ export type OrganizationCountAggregateInputType = {
   createdAt?: true
   metadata?: true
   plan?: true
+  paidAt?: true
   _all?: true
 }
 
@@ -167,6 +173,7 @@ export type OrganizationGroupByOutputType = {
   createdAt: Date
   metadata: string | null
   plan: $Enums.Plan
+  paidAt: Date | null
   _count: OrganizationCountAggregateOutputType | null
   _min: OrganizationMinAggregateOutputType | null
   _max: OrganizationMaxAggregateOutputType | null
@@ -198,6 +205,7 @@ export type OrganizationWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   metadata?: Prisma.StringNullableFilter<"Organization"> | string | null
   plan?: Prisma.EnumPlanFilter<"Organization"> | $Enums.Plan
+  paidAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
   members?: Prisma.MemberListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
   contacts?: Prisma.ContactListRelationFilter
@@ -214,6 +222,7 @@ export type OrganizationOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   plan?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   members?: Prisma.MemberOrderByRelationAggregateInput
   invitations?: Prisma.InvitationOrderByRelationAggregateInput
   contacts?: Prisma.ContactOrderByRelationAggregateInput
@@ -233,6 +242,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   metadata?: Prisma.StringNullableFilter<"Organization"> | string | null
   plan?: Prisma.EnumPlanFilter<"Organization"> | $Enums.Plan
+  paidAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
   members?: Prisma.MemberListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
   contacts?: Prisma.ContactListRelationFilter
@@ -249,6 +259,7 @@ export type OrganizationOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   plan?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
   _max?: Prisma.OrganizationMaxOrderByAggregateInput
   _min?: Prisma.OrganizationMinOrderByAggregateInput
@@ -265,6 +276,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   metadata?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   plan?: Prisma.EnumPlanWithAggregatesFilter<"Organization"> | $Enums.Plan
+  paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
 }
 
 export type OrganizationCreateInput = {
@@ -275,6 +287,7 @@ export type OrganizationCreateInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
@@ -291,6 +304,7 @@ export type OrganizationUncheckedCreateInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
@@ -307,6 +321,7 @@ export type OrganizationUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
@@ -323,6 +338,7 @@ export type OrganizationUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -339,6 +355,7 @@ export type OrganizationCreateManyInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
 }
 
 export type OrganizationUpdateManyMutationInput = {
@@ -349,6 +366,7 @@ export type OrganizationUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OrganizationUncheckedUpdateManyInput = {
@@ -359,6 +377,7 @@ export type OrganizationUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type OrganizationCountOrderByAggregateInput = {
@@ -369,6 +388,7 @@ export type OrganizationCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
   plan?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type OrganizationMaxOrderByAggregateInput = {
@@ -379,6 +399,7 @@ export type OrganizationMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
   plan?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type OrganizationMinOrderByAggregateInput = {
@@ -389,6 +410,7 @@ export type OrganizationMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
   plan?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type OrganizationScalarRelationFilter = {
@@ -492,6 +514,7 @@ export type OrganizationCreateWithoutMembersInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
@@ -507,6 +530,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
@@ -538,6 +562,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
@@ -553,6 +578,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -568,6 +594,7 @@ export type OrganizationCreateWithoutInvitationsInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
@@ -583,6 +610,7 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
@@ -614,6 +642,7 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
@@ -629,6 +658,7 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -644,6 +674,7 @@ export type OrganizationCreateWithoutContactsInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
@@ -659,6 +690,7 @@ export type OrganizationUncheckedCreateWithoutContactsInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
@@ -690,6 +722,7 @@ export type OrganizationUpdateWithoutContactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
@@ -705,6 +738,7 @@ export type OrganizationUncheckedUpdateWithoutContactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -720,6 +754,7 @@ export type OrganizationCreateWithoutActivitiesInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
@@ -735,6 +770,7 @@ export type OrganizationUncheckedCreateWithoutActivitiesInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
@@ -766,6 +802,7 @@ export type OrganizationUpdateWithoutActivitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
@@ -781,6 +818,7 @@ export type OrganizationUncheckedUpdateWithoutActivitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -796,6 +834,7 @@ export type OrganizationCreateWithoutPipelinesInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
@@ -811,6 +850,7 @@ export type OrganizationUncheckedCreateWithoutPipelinesInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
@@ -842,6 +882,7 @@ export type OrganizationUpdateWithoutPipelinesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
@@ -857,6 +898,7 @@ export type OrganizationUncheckedUpdateWithoutPipelinesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -872,6 +914,7 @@ export type OrganizationCreateWithoutDealsInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
@@ -887,6 +930,7 @@ export type OrganizationUncheckedCreateWithoutDealsInput = {
   createdAt: Date | string
   metadata?: string | null
   plan?: $Enums.Plan
+  paidAt?: Date | string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
@@ -918,6 +962,7 @@ export type OrganizationUpdateWithoutDealsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
@@ -933,6 +978,7 @@ export type OrganizationUncheckedUpdateWithoutDealsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1024,6 +1070,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   metadata?: boolean
   plan?: boolean
+  paidAt?: boolean
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
   contacts?: boolean | Prisma.Organization$contactsArgs<ExtArgs>
@@ -1041,6 +1088,7 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   metadata?: boolean
   plan?: boolean
+  paidAt?: boolean
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1051,6 +1099,7 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   metadata?: boolean
   plan?: boolean
+  paidAt?: boolean
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectScalar = {
@@ -1061,9 +1110,10 @@ export type OrganizationSelectScalar = {
   createdAt?: boolean
   metadata?: boolean
   plan?: boolean
+  paidAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo" | "createdAt" | "metadata" | "plan", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo" | "createdAt" | "metadata" | "plan" | "paidAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
@@ -1094,6 +1144,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     createdAt: Date
     metadata: string | null
     plan: $Enums.Plan
+    paidAt: Date | null
   }, ExtArgs["result"]["organization"]>
   composites: {}
 }
@@ -1530,6 +1581,7 @@ export interface OrganizationFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly metadata: Prisma.FieldRef<"Organization", 'String'>
   readonly plan: Prisma.FieldRef<"Organization", 'Plan'>
+  readonly paidAt: Prisma.FieldRef<"Organization", 'DateTime'>
 }
     
 

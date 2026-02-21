@@ -21,11 +21,14 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { FirstOrgCreate } from "@/components/auth/first-org-create";
+import { useActiveOrgPaymentStatus } from "@/services/payments";
+import { PlanDetailsCard } from "@/components/payment";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { isPending: isSessionPending } = authClient.useSession();
     const { isPending: isOrganizationsPending, data: organizations } = authClient.useListOrganizations();
-    const { isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
+    const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
+    const { data: activeOrgPaymentStatus } = useActiveOrgPaymentStatus();
     const [loading, setLoading] = useState(true)
     const pathname = usePathname();
 
@@ -77,7 +80,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 </div>
                             </header>
                             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                                {children}
+                                {activeOrgPaymentStatus?.plan === "STARTER" && !activeOrgPaymentStatus?.paidAt ? (
+                                    <div className="h-full w-full flex items-center justify-center min-h-[50vh]">
+                                        {activeOrganization && <PlanDetailsCard organizationId={activeOrganization.id} />}
+                                    </div>
+                                ) : (
+                                    children
+                                )}
                             </div>
                         </SidebarInset>
                     </SidebarProvider>

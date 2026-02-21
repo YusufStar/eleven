@@ -84,6 +84,7 @@ model Organization {
   invitations Invitation[]
 
   plan       Plan       @default(STARTER)
+  paidAt     DateTime?  // set when one-time payment succeeds
   contacts   Contact[]
   deals      Deal[]
   pipelines  Pipeline[]
