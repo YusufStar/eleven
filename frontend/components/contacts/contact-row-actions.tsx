@@ -24,6 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 function formatPersonName(c: Contact) {
   const first = (c.firstName ?? "").trim();
@@ -37,6 +38,7 @@ export type ContactRowActionsProps = {
 };
 
 export function ContactRowActions({ contact, type }: ContactRowActionsProps) {
+  const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
   const deleteMutation = useDeleteContactMutation();
 
@@ -70,7 +72,7 @@ export function ContactRowActions({ contact, type }: ContactRowActionsProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => {}}>
+          <DropdownMenuItem onClick={() => router.push(`/dashboard/contacts/${type === "PERSON" ? "people" : "companies"}/${contact.id}`)}>
             <HugeiconsIcon icon={ViewIcon} className="size-4 mr-2" strokeWidth={2} />
             View
           </DropdownMenuItem>
