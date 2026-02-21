@@ -127,7 +127,7 @@ export function AddContactCompanyModal({ open, onOpenChange }: AddContactCompany
               <Field>
                 <FieldLabel>Company logo</FieldLabel>
                 <Avatar
-                  className="size-16 rounded-lg cursor-pointer after:rounded-lg"
+                  className="size-16! rounded-lg cursor-pointer mx-auto after:rounded-lg"
                   onClick={() => setOpenUploadModal(true)}
                 >
                   <AvatarImage src={form.watch("avatar")} className="rounded-lg" />
@@ -138,66 +138,66 @@ export function AddContactCompanyModal({ open, onOpenChange }: AddContactCompany
               </Field>
               <Field>
                 <FieldLabel htmlFor="add-company-companyName">Company name</FieldLabel>
-              <Input id="add-company-companyName" type="text" placeholder="Acme Inc." {...form.register("companyName")} />
-              <FieldError>{form.formState.errors.companyName?.message}</FieldError>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="add-company-website">Website</FieldLabel>
-              <Input id="add-company-website" type="url" placeholder="https://example.com" {...form.register("website")} />
-              <FieldError>{form.formState.errors.website?.message}</FieldError>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="add-company-industry">Industry</FieldLabel>
-              <Input id="add-company-industry" type="text" placeholder="e.g. Technology" {...form.register("industry")} />
-              <FieldError>{form.formState.errors.industry?.message}</FieldError>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="add-company-employeeCount">Employee count</FieldLabel>
-              <Input id="add-company-employeeCount" type="number" min={0} placeholder="0" {...form.register("employeeCount")} />
-              <FieldError>{form.formState.errors.employeeCount?.message}</FieldError>
-            </Field>
-            <Field>
-              <FieldLabel>Status</FieldLabel>
-              <Controller
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <div className="flex flex-wrap gap-2" role="group" aria-label="Status">
-                    {(Object.keys(STATUS_BADGES) as StatusValue[]).map((value) => {
-                      const config = STATUS_BADGES[value];
-                      const Icon = config.icon;
-                      const selected = (field.value ?? "LEAD") === value;
-                      return (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => field.onChange(value)}
-                          className={cn(
-                            "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors [&_svg]:size-3.5",
-                            config.className,
-                            selected ? "ring-2 ring-offset-2 ring-offset-background ring-foreground/20" : "opacity-80 hover:opacity-100"
-                          )}
-                        >
-                          <HugeiconsIcon icon={Icon} strokeWidth={2} />
-                          {config.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              />
-              <FieldError>{form.formState.errors.status?.message}</FieldError>
-            </Field>
-          </FieldGroup>
-        </form>
-        <DialogFooter showCloseButton={false} className="gap-2 sm:gap-0">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Cancel</Button>
-          <Button type="submit" form="add-company-form" disabled={isSubmitting}>
-            {isSubmitting ? <span className="inline-flex items-center gap-2"><Spinner className="size-4" />Adding...</span> : "Add company"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+                <Input id="add-company-companyName" type="text" placeholder="Acme Inc." {...form.register("companyName")} />
+                <FieldError>{form.formState.errors.companyName?.message}</FieldError>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="add-company-website">Website</FieldLabel>
+                <Input id="add-company-website" type="url" placeholder="https://example.com" {...form.register("website")} />
+                <FieldError>{form.formState.errors.website?.message}</FieldError>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="add-company-industry">Industry</FieldLabel>
+                <Input id="add-company-industry" type="text" placeholder="e.g. Technology" {...form.register("industry")} />
+                <FieldError>{form.formState.errors.industry?.message}</FieldError>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="add-company-employeeCount">Employee count</FieldLabel>
+                <Input id="add-company-employeeCount" type="number" min={0} placeholder="0" {...form.register("employeeCount")} />
+                <FieldError>{form.formState.errors.employeeCount?.message}</FieldError>
+              </Field>
+              <Field>
+                <FieldLabel>Status</FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <div className="flex flex-wrap gap-2" role="group" aria-label="Status">
+                      {(Object.keys(STATUS_BADGES) as StatusValue[]).map((value) => {
+                        const config = STATUS_BADGES[value];
+                        const Icon = config.icon;
+                        const selected = (field.value ?? "LEAD") === value;
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => field.onChange(value)}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors [&_svg]:size-3.5",
+                              config.className,
+                              selected ? "ring-2 ring-offset-2 ring-offset-background ring-foreground/20" : "opacity-80 hover:opacity-100"
+                            )}
+                          >
+                            <HugeiconsIcon icon={Icon} strokeWidth={2} />
+                            {config.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
+                <FieldError>{form.formState.errors.status?.message}</FieldError>
+              </Field>
+            </FieldGroup>
+          </form>
+          <DialogFooter showCloseButton={false} className="gap-2 sm:gap-0">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Cancel</Button>
+            <Button type="submit" form="add-company-form" disabled={isSubmitting}>
+              {isSubmitting ? <span className="inline-flex items-center gap-2"><Spinner className="size-4" />Adding...</span> : "Add company"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

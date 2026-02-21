@@ -162,11 +162,11 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
               <Field>
                 <FieldLabel>Profile photo</FieldLabel>
                 <Avatar
-                  className="size-16 rounded-full cursor-pointer after:rounded-full"
+                  className="size-16! rounded-lg cursor-pointer mx-auto after:rounded-lg"
                   onClick={() => setOpenUploadModal(true)}
                 >
-                  <AvatarImage src={form.watch("avatar")} />
-                  <AvatarFallback>
+                  <AvatarImage src={form.watch("avatar")} className="rounded-lg" />
+                  <AvatarFallback className="rounded-lg">
                     <HugeiconsIcon icon={UserIcon} className="size-8" strokeWidth={2} />
                   </AvatarFallback>
                 </Avatar>
