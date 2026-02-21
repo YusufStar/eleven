@@ -105,6 +105,7 @@ export function AddContactCompanyModal({ open, onOpenChange }: AddContactCompany
   return (
     <>
       <UploadModal
+        isAvatar
         open={openUploadModal}
         onOpenChange={setOpenUploadModal}
         title="Upload company logo"

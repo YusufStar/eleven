@@ -140,6 +140,7 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
   return (
     <>
       <UploadModal
+        isAvatar
         open={openUploadModal}
         onOpenChange={setOpenUploadModal}
         title="Upload profile photo"
@@ -171,150 +172,150 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
                 </Avatar>
               </Field>
               <div className="grid grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel htmlFor="add-contact-firstName">First name</FieldLabel>
-                <Input
-                  id="add-contact-firstName"
-                  type="text"
-                  placeholder="Jane"
-                  autoComplete="given-name"
-                  {...form.register("firstName")}
-                />
-                <FieldError>{form.formState.errors.firstName?.message}</FieldError>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="add-contact-lastName">Last name</FieldLabel>
-                <Input
-                  id="add-contact-lastName"
-                  type="text"
-                  placeholder="Doe"
-                  autoComplete="family-name"
-                  {...form.register("lastName")}
-                />
-                <FieldError>{form.formState.errors.lastName?.message}</FieldError>
-              </Field>
-            </div>
-
-            <Field>
-              <FieldLabel htmlFor="add-contact-email">Email</FieldLabel>
-              <Input
-                id="add-contact-email"
-                type="email"
-                placeholder="jane@company.com"
-                autoComplete="email"
-                {...form.register("email")}
-              />
-              <FieldError>{form.formState.errors.email?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="add-contact-phone">Phone</FieldLabel>
-              <Controller
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <PhoneInput
-                    id="add-contact-phone"
-                    defaultCountry="US"
-                    placeholder="Enter phone number"
-                    value={field.value || undefined}
-                    onChange={(v) => field.onChange(v ?? "")}
-                    onBlur={field.onBlur}
+                <Field>
+                  <FieldLabel htmlFor="add-contact-firstName">First name</FieldLabel>
+                  <Input
+                    id="add-contact-firstName"
+                    type="text"
+                    placeholder="Jane"
+                    autoComplete="given-name"
+                    {...form.register("firstName")}
                   />
-                )}
-              />
-              <FieldError>{form.formState.errors.phone?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="add-contact-title">Title</FieldLabel>
-              <Input
-                id="add-contact-title"
-                type="text"
-                placeholder="e.g. Marketing Manager"
-                {...form.register("title")}
-              />
-              <FieldError>{form.formState.errors.title?.message}</FieldError>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="add-contact-company">Company</FieldLabel>
-              <Controller
-                control={form.control}
-                name="companyId"
-                render={({ field }) => (
-                  <CompanySelect
-                    id="add-contact-company"
-                    value={field.value ?? null}
-                    onChange={(id, companyName) => {
-                      field.onChange(id);
-                      form.setValue("companyName", id ? (companyName ?? "") : "");
-                    }}
-                    placeholder="Select company..."
+                  <FieldError>{form.formState.errors.firstName?.message}</FieldError>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="add-contact-lastName">Last name</FieldLabel>
+                  <Input
+                    id="add-contact-lastName"
+                    type="text"
+                    placeholder="Doe"
+                    autoComplete="family-name"
+                    {...form.register("lastName")}
                   />
-                )}
-              />
-              <FieldError>{form.formState.errors.companyId?.message}</FieldError>
-            </Field>
+                  <FieldError>{form.formState.errors.lastName?.message}</FieldError>
+                </Field>
+              </div>
 
-            <Field>
-              <FieldLabel>Status</FieldLabel>
-              <Controller
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <div className="flex flex-wrap gap-2" role="group" aria-label="Status">
-                    {(Object.keys(STATUS_BADGES) as StatusValue[]).map((value) => {
-                      const config = STATUS_BADGES[value];
-                      const Icon = config.icon;
-                      const selected = (field.value ?? "LEAD") === value;
-                      return (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => field.onChange(value)}
-                          className={cn(
-                            "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors [&_svg]:size-3.5",
-                            config.className,
-                            selected
-                              ? "ring-2 ring-offset-2 ring-offset-background ring-foreground/20"
-                              : "opacity-80 hover:opacity-100"
-                          )}
-                        >
-                          <HugeiconsIcon icon={Icon} strokeWidth={2} />
-                          {config.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              />
-              <FieldError>{form.formState.errors.status?.message}</FieldError>
-            </Field>
-          </FieldGroup>
-        </form>
-        <DialogFooter showCloseButton={false} className="gap-2 sm:gap-0">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" form="add-contact-form" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <span className="inline-flex items-center gap-2">
-                <Spinner className="size-4" />
-                Adding...
-              </span>
-            ) : (
-              "Add contact"
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              <Field>
+                <FieldLabel htmlFor="add-contact-email">Email</FieldLabel>
+                <Input
+                  id="add-contact-email"
+                  type="email"
+                  placeholder="jane@company.com"
+                  autoComplete="email"
+                  {...form.register("email")}
+                />
+                <FieldError>{form.formState.errors.email?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="add-contact-phone">Phone</FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <PhoneInput
+                      id="add-contact-phone"
+                      defaultCountry="US"
+                      placeholder="Enter phone number"
+                      value={field.value || undefined}
+                      onChange={(v) => field.onChange(v ?? "")}
+                      onBlur={field.onBlur}
+                    />
+                  )}
+                />
+                <FieldError>{form.formState.errors.phone?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="add-contact-title">Title</FieldLabel>
+                <Input
+                  id="add-contact-title"
+                  type="text"
+                  placeholder="e.g. Marketing Manager"
+                  {...form.register("title")}
+                />
+                <FieldError>{form.formState.errors.title?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="add-contact-company">Company</FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="companyId"
+                  render={({ field }) => (
+                    <CompanySelect
+                      id="add-contact-company"
+                      value={field.value ?? null}
+                      onChange={(id, companyName) => {
+                        field.onChange(id);
+                        form.setValue("companyName", id ? (companyName ?? "") : "");
+                      }}
+                      placeholder="Select company..."
+                    />
+                  )}
+                />
+                <FieldError>{form.formState.errors.companyId?.message}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel>Status</FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <div className="flex flex-wrap gap-2" role="group" aria-label="Status">
+                      {(Object.keys(STATUS_BADGES) as StatusValue[]).map((value) => {
+                        const config = STATUS_BADGES[value];
+                        const Icon = config.icon;
+                        const selected = (field.value ?? "LEAD") === value;
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => field.onChange(value)}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors [&_svg]:size-3.5",
+                              config.className,
+                              selected
+                                ? "ring-2 ring-offset-2 ring-offset-background ring-foreground/20"
+                                : "opacity-80 hover:opacity-100"
+                            )}
+                          >
+                            <HugeiconsIcon icon={Icon} strokeWidth={2} />
+                            {config.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
+                <FieldError>{form.formState.errors.status?.message}</FieldError>
+              </Field>
+            </FieldGroup>
+          </form>
+          <DialogFooter showCloseButton={false} className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" form="add-contact-form" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Spinner className="size-4" />
+                  Adding...
+                </span>
+              ) : (
+                "Add contact"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Building01Icon, ChevronsUpDown, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
@@ -146,8 +147,21 @@ export function CompanySelect({
                         key={company.id}
                         value={company.id}
                         onSelect={() => handleSelect(company)}
+                        className="gap-2"
                       >
-                        {company.companyName?.trim() || "Unnamed company"}
+                        {company.avatar ? (
+                          <span className="size-6 relative shrink-0 block rounded-md overflow-hidden">
+                            <Image
+                              src={company.avatar}
+                              alt=""
+                              fill
+                              className="object-contain rounded-md"
+                            />
+                          </span>
+                        ) : (
+                          <HugeiconsIcon icon={Building01Icon} className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+                        )}
+                        <span className="truncate">{company.companyName?.trim() || "Unnamed company"}</span>
                       </CommandItem>
                     ))}
                   </CommandGroup>

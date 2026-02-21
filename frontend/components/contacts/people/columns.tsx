@@ -93,12 +93,12 @@ export const peopleColumns: ColumnDef<Contact>[] = [
       return (
         <span className="inline-flex items-center gap-2">
           {c.avatar ? (
-            <span className="h-8 w-8 relative shrink-0 block rounded-full overflow-hidden">
+            <span className="h-8 w-8 relative shrink-0 block rounded-lg overflow-hidden">
               <Image
                 src={c.avatar}
                 alt=""
                 fill
-                className="object-contain rounded-full"
+                className="object-contain rounded-lg"
               />
             </span>
           ) : null}
