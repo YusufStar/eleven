@@ -140,7 +140,6 @@ export function AddContactPeopleModal({ open, onOpenChange }: AddContactPeopleMo
   return (
     <>
       <UploadModal
-        isAvatar
         open={openUploadModal}
         onOpenChange={setOpenUploadModal}
         title="Upload profile photo"

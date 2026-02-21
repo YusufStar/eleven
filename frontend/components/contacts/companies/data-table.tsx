@@ -41,20 +41,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Settings01Icon, Search01Icon } from "@hugeicons/core-free-icons";
+import { Settings01Icon, Search01Icon, Building01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
+import type { ContactStatus } from "@/services/contacts";
+
+const STATUS_OPTIONS: { value: ContactStatus | "all"; label: string }[] = [
+  { value: "all", label: "All statuses" },
+  { value: "LEAD", label: "Lead" },
+  { value: "PROSPECT", label: "Prospect" },
+  { value: "CUSTOMER", label: "Customer" },
+  { value: "CHURNED", label: "Churned" },
+  { value: "PARTNER", label: "Partner" },
+];
 
 export type CompaniesDataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
+  fetching?: boolean;
   page: number;
   pageSize: number;
   total: number;
   onPageChange: (page: number) => void;
   search?: string;
   onSearchChange?: (value: string) => void;
+  status?: ContactStatus | "all";
+  onStatusChange?: (value: ContactStatus | "all") => void;
 };
 
 const columnLabels: Record<string, string> = {
@@ -69,12 +83,15 @@ export function CompaniesDataTable<TData, TValue>({
   columns,
   data,
   loading = false,
+  fetching = false,
   page,
   pageSize,
   total,
   onPageChange,
   search = "",
   onSearchChange,
+  status = "all",
+  onStatusChange,
 }: CompaniesDataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 
@@ -106,17 +123,14 @@ export function CompaniesDataTable<TData, TValue>({
             onChange={(e) => onSearchChange?.(e.target.value)}
           />
         </div>
-        <Select>
+        <Select value={status} onValueChange={(v) => onStatusChange?.(v as ContactStatus | "all")}>
           <SelectTrigger size="sm" className="w-[130px] h-8">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="LEAD">Lead</SelectItem>
-            <SelectItem value="PROSPECT">Prospect</SelectItem>
-            <SelectItem value="CUSTOMER">Customer</SelectItem>
-            <SelectItem value="CHURNED">Churned</SelectItem>
-            <SelectItem value="PARTNER">Partner</SelectItem>
+            {STATUS_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className="ml-auto">
@@ -148,7 +162,7 @@ export function CompaniesDataTable<TData, TValue>({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border bg-card">
+      <div className={cn("overflow-hidden rounded-lg border bg-card relative", fetching && "opacity-60 pointer-events-none")}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -186,8 +200,20 @@ export function CompaniesDataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  No results.
+                <TableCell colSpan={columns.length} className="p-0">
+                  <Empty className="min-h-[280px] border-0">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <HugeiconsIcon icon={Building01Icon} className="size-5" strokeWidth={2} />
+                      </EmptyMedia>
+                      <EmptyTitle>No companies found</EmptyTitle>
+                      <EmptyDescription>
+                        {search || status !== "all"
+                          ? "Try adjusting your search or status filter."
+                          : "Get started by adding your first company."}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
                 </TableCell>
               </TableRow>
             )}

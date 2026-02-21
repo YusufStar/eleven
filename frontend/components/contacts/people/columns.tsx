@@ -8,7 +8,6 @@ import {
   Call02Icon,
   Briefcase01Icon,
   Building01Icon,
-  ViewIcon,
   StatusIcon,
   SparklesIcon,
   ArrowRight01Icon,
@@ -16,16 +15,9 @@ import {
   Cancel01Icon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
+import Image from "next/image";
 import type { Contact, ContactStatus } from "@/services/contacts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ContactRowActions } from "@/components/contacts/contact-row-actions";
 import { cn } from "@/lib/utils";
 
 const statusConfig: Record<
@@ -86,12 +78,6 @@ function formatName(c: Contact) {
   return last ? `${first} ${last}`.trim() : first || "—";
 }
 
-function initials(c: Contact) {
-  const first = (c.firstName?.trim() ?? "").charAt(0).toUpperCase();
-  const last = (c.lastName?.trim() ?? "").charAt(0).toUpperCase();
-  return last ? `${first}${last}` : first || "?";
-}
-
 export const peopleColumns: ColumnDef<Contact>[] = [
   {
     id: "name",
@@ -106,14 +92,16 @@ export const peopleColumns: ColumnDef<Contact>[] = [
       const c = row.original;
       return (
         <span className="inline-flex items-center gap-2">
-          <Avatar size="sm" className="size-8 rounded-full after:rounded-full">
-            {c.avatar ? (
-              <AvatarImage src={c.avatar} alt="" />
-            ) : null}
-            <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-              {initials(c)}
-            </AvatarFallback>
-          </Avatar>
+          {c.avatar ? (
+            <span className="h-8 w-8 relative shrink-0 block rounded-full overflow-hidden">
+              <Image
+                src={c.avatar}
+                alt=""
+                fill
+                className="object-contain rounded-full"
+              />
+            </span>
+          ) : null}
           <span className="font-medium text-foreground">{formatName(c)}</span>
         </span>
       );
@@ -195,23 +183,7 @@ export const peopleColumns: ColumnDef<Contact>[] = [
   {
     id: "actions",
     header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => {
-      const contact = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="h-8 w-8">
-              <span className="sr-only">Menu</span>
-              <HugeiconsIcon icon={ViewIcon} className="size-4" strokeWidth={2} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => {}}>View</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ContactRowActions contact={row.original} type="PERSON" />,
     enableSorting: false,
     enableHiding: false,
   },

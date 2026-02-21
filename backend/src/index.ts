@@ -39,8 +39,23 @@ const app = new Elysia()
     async ({ activeOrganizationId, query }) => {
       const page = Math.max(1, Number(query?.page) || 1);
       const pageSize = Math.min(100, Math.max(1, Number(query?.pageSize) || 10));
+      const search = typeof query?.search === "string" ? query.search.trim() : "";
+      const status = typeof query?.status === "string" && query.status !== "" && query.status !== "all"
+        ? (query.status as "LEAD" | "PROSPECT" | "CUSTOMER" | "CHURNED" | "PARTNER")
+        : undefined;
       const skip = (page - 1) * pageSize;
-      const where = { ...orgScope(activeOrganizationId!), type: "PERSON" as const };
+      const where = {
+        ...orgScope(activeOrganizationId!),
+        type: "PERSON" as const,
+        ...(status && { status }),
+        ...(search && {
+          OR: [
+            { firstName: { contains: search, mode: "insensitive" as const } },
+            { lastName: { contains: search, mode: "insensitive" as const } },
+            { email: { contains: search, mode: "insensitive" as const } },
+          ],
+        }),
+      };
       const [data, total] = await Promise.all([
         prisma.contact.findMany({
           where,
@@ -60,11 +75,15 @@ const app = new Elysia()
       const page = Math.max(1, Number(query?.page) || 1);
       const pageSize = Math.min(100, Math.max(1, Number(query?.pageSize) || 10));
       const search = typeof query?.search === "string" ? query.search.trim() : "";
+      const status = typeof query?.status === "string" && query.status !== "" && query.status !== "all"
+        ? (query.status as "LEAD" | "PROSPECT" | "CUSTOMER" | "CHURNED" | "PARTNER")
+        : undefined;
       const skip = (page - 1) * pageSize;
       const where = {
         ...orgScope(activeOrganizationId!),
         type: "COMPANY" as const,
         ...(search && { companyName: { contains: search, mode: "insensitive" as const } }),
+        ...(status && { status }),
       };
       const [data, total] = await Promise.all([
         prisma.contact.findMany({
@@ -193,15 +212,27 @@ const app = new Elysia()
     const isAvatar = formData.get("avatar") === "true";
     if (isAvatar) {
       const img = sharp(new Uint8Array(body));
-      const { width = 0, height = 0 } = await img.metadata();
+      const meta = await img.metadata();
+      const { width = 0, height = 0, format, channels } = meta;
       const size = Math.min(width, height, 1000) || 1000;
-      body = await img
-        .resize(size, size, { fit: "cover", position: "center" })
-        .jpeg({ quality: 90 })
-        .toBuffer();
-      contentType = "image/jpeg";
+      const isPng = format === "png" || (channels !== undefined && channels === 4);
       const base = name.replace(/\.[^.]+$/, "") || name;
-      name = `${base}.jpg`;
+
+      if (isPng) {
+        body = await img
+          .resize(size, size, { fit: "cover", position: "center" })
+          .png()
+          .toBuffer();
+        contentType = "image/png";
+        name = `${base}.png`;
+      } else {
+        body = await img
+          .resize(size, size, { fit: "cover", position: "center" })
+          .jpeg({ quality: 90 })
+          .toBuffer();
+        contentType = "image/jpeg";
+        name = `${base}.jpg`;
+      }
     }
 
     const key = `${folder}/${name}`;

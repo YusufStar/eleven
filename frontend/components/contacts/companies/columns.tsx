@@ -8,22 +8,14 @@ import {
   BankIcon,
   UserGroupIcon,
   StatusIcon,
-  ViewIcon,
   SparklesIcon,
   ArrowRight01Icon,
   CheckmarkCircle01Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
+import Image from "next/image";
 import type { Contact, ContactStatus } from "@/services/contacts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ContactRowActions } from "@/components/contacts/contact-row-actions";
 import { cn } from "@/lib/utils";
 
 const statusConfig: Record<
@@ -93,14 +85,16 @@ export const companiesColumns: ColumnDef<Contact>[] = [
       const name = c.companyName?.trim() ?? "—";
       return (
         <span className="inline-flex items-center gap-2">
-          <Avatar size="sm" className="size-8 rounded-lg after:rounded-lg">
-            {c.avatar ? (
-              <AvatarImage src={c.avatar} alt="" className="rounded-lg" />
-            ) : null}
-            <AvatarFallback className="rounded-lg bg-muted text-muted-foreground text-xs">
-              <HugeiconsIcon icon={Building01Icon} className="size-4" strokeWidth={2} />
-            </AvatarFallback>
-          </Avatar>
+          {c.avatar ? (
+            <span className="h-8 w-8 relative shrink-0 block rounded-lg overflow-hidden">
+              <Image
+                src={c.avatar}
+                alt=""
+                fill
+                className="object-contain rounded-lg"
+              />
+            </span>
+          ) : null}
           <span className="font-medium text-foreground">{name}</span>
         </span>
       );
@@ -173,23 +167,7 @@ export const companiesColumns: ColumnDef<Contact>[] = [
   {
     id: "actions",
     header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => {
-      const contact = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="h-8 w-8">
-              <span className="sr-only">Menu</span>
-              <HugeiconsIcon icon={ViewIcon} className="size-4" strokeWidth={2} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => {}}>View</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ContactRowActions contact={row.original} type="COMPANY" />,
     enableSorting: false,
     enableHiding: false,
   },

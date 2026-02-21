@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useContactsPeopleList } from "@/services/contacts";
+import type { ContactStatus } from "@/services/contacts";
 import { PeopleDataTable } from "@/components/contacts/people/data-table";
 import { peopleColumns } from "@/components/contacts/people/columns";
 import { AddContactPeopleModal } from "@/components/contacts/people/add-contac-people-modal";
@@ -12,10 +13,16 @@ import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
 export default function PeoplePage() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<ContactStatus | "all">("all");
   const pageSize = 10;
-  const { data, isPending } = useContactsPeopleList({ page, pageSize });
+  const params = { page, pageSize, search: search || undefined, status: status === "all" ? undefined : status };
+  const { data, isPending, isFetching } = useContactsPeopleList(params);
   const contacts = data?.data ?? [];
   const total = data?.total ?? 0;
+  const onPageChange = useCallback((p: number) => setPage(p), []);
+  const onSearchChange = useCallback((v: string) => { setSearch(v); setPage(1); }, []);
+  const onStatusChange = useCallback((v: ContactStatus | "all") => { setStatus(v); setPage(1); }, []);
 
   return (
     <div className="container mx-auto py-6">
@@ -44,10 +51,15 @@ export default function PeoplePage() {
         columns={peopleColumns}
         data={contacts}
         loading={isPending}
+        fetching={isFetching && !isPending}
         page={page}
         pageSize={pageSize}
         total={total}
-        onPageChange={setPage}
+        onPageChange={onPageChange}
+        search={search}
+        onSearchChange={onSearchChange}
+        status={status}
+        onStatusChange={onStatusChange}
       />
     </div>
   );

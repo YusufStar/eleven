@@ -24,6 +24,7 @@ function paginatedPath(path: string, params?: ContactsListParams) {
   if (params?.page != null) u.searchParams.set("page", String(params.page));
   if (params?.pageSize != null) u.searchParams.set("pageSize", String(params.pageSize));
   if (params?.search != null && params.search !== "") u.searchParams.set("search", params.search);
+  if (params?.status != null && params.status !== "" && params.status !== "all") u.searchParams.set("status", params.status);
   const search = u.search;
   if (!search) return path;
   return `${path}${search}`;
