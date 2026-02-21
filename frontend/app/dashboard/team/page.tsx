@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useTeamMembersList } from "@/services/team";
 import { MembersDataTable } from "@/components/team/members/data-table";
 import { membersColumns } from "@/components/team/members/columns";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
@@ -50,9 +51,11 @@ export default function TeamMembersPage() {
             <HugeiconsIcon icon={Csv01Icon} className="size-4" strokeWidth={2} />
             Import CSV
           </Button>
-          <Button className="gap-2" disabled title="Coming soon">
-            <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2} />
-            Add employee
+          <Button asChild className="gap-2">
+            <Link href="/dashboard/team/invite">
+              <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2} />
+              Invite employee
+            </Link>
           </Button>
         </div>
       </div>
