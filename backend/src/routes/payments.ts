@@ -39,7 +39,7 @@ export const stripeWebhookApp = new Elysia({ prefix: "/webhooks" })
         try {
           await prisma.organization.update({
             where: { id: organizationId },
-            data: { paidAt: new Date() },
+            data: { paidAt: new Date(), plan: "PROFESSIONAL" },
           });
         } catch (e) {
           console.error("[stripe webhook] org update failed", e);
