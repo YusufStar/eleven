@@ -77,3 +77,13 @@ export type Stage = Prisma.StageModel
  * 
  */
 export type Deal = Prisma.DealModel
+/**
+ * Model Task
+ * 
+ */
+export type Task = Prisma.TaskModel
+/**
+ * Model TaskAttachment
+ * 
+ */
+export type TaskAttachment = Prisma.TaskAttachmentModel

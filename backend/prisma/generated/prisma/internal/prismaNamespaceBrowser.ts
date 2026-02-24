@@ -62,7 +62,9 @@ export const ModelName = {
   Activity: 'Activity',
   Pipeline: 'Pipeline',
   Stage: 'Stage',
-  Deal: 'Deal'
+  Deal: 'Deal',
+  Task: 'Task',
+  TaskAttachment: 'TaskAttachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -272,6 +274,40 @@ export const DealScalarFieldEnum = {
 } as const
 
 export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
+
+
+export const TaskScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  priority: 'priority',
+  dueAt: 'dueAt',
+  completedAt: 'completedAt',
+  assigneeId: 'assigneeId',
+  creatorId: 'creatorId',
+  contactId: 'contactId',
+  dealId: 'dealId',
+  parentTaskId: 'parentTaskId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const TaskAttachmentScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskAttachmentScalarFieldEnum = (typeof TaskAttachmentScalarFieldEnum)[keyof typeof TaskAttachmentScalarFieldEnum]
 
 
 export const SortOrder = {

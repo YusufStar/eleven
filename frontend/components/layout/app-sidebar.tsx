@@ -55,6 +55,15 @@ const navMain = [
     ],
   },
   {
+    title: "Tasks",
+    url: "/dashboard/tasks",
+    icon: <HugeiconsIcon icon={Task01Icon} strokeWidth={2} />,
+    items: [
+      { title: "All tasks", url: "/dashboard/tasks" },
+      { title: "My tasks", url: "/dashboard/tasks/mine" },
+    ],
+  },
+  {
     title: "Team",
     url: "/dashboard/team",
     icon: <HugeiconsIcon icon={UserGroupIcon} strokeWidth={2} />,

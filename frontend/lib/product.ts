@@ -23,7 +23,6 @@ export const FEATURES = [
 ] as const;
 
 export const PLAN_NAMES = {
-  STARTER: "Free",
+  FREE: "Free",
   PROFESSIONAL: "Professional",
-  ENTERPRISE: "Enterprise",
 } as const;

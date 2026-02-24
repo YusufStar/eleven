@@ -37,24 +37,30 @@ export const uploadRoutes = new Elysia()
       const img = sharp(new Uint8Array(body));
       const meta = await img.metadata();
       const { width = 0, height = 0, format, channels } = meta;
-      const size = Math.min(width, height, 1000) || 1000;
-      const isPng = format === "png" || (channels !== undefined && channels === 4);
-      const base = name.replace(/\.[^.]+$/, "") || name;
 
-      if (isPng) {
-        body = await img
-          .resize(size, size, { fit: "cover", position: "center" })
-          .png()
-          .toBuffer();
-        contentType = "image/png";
-        name = `${base}.png`;
+      // Keep GIF as-is so animation is preserved
+      if (format === "gif") {
+        // no resize/convert
       } else {
-        body = await img
-          .resize(size, size, { fit: "cover", position: "center" })
-          .jpeg({ quality: 90 })
-          .toBuffer();
-        contentType = "image/jpeg";
-        name = `${base}.jpg`;
+        const size = Math.min(width, height, 1000) || 1000;
+        const isPng = format === "png" || (channels !== undefined && channels === 4);
+        const base = name.replace(/\.[^.]+$/, "") || name;
+
+        if (isPng) {
+          body = await img
+            .resize(size, size, { fit: "cover", position: "center" })
+            .png()
+            .toBuffer();
+          contentType = "image/png";
+          name = `${base}.png`;
+        } else {
+          body = await img
+            .resize(size, size, { fit: "cover", position: "center" })
+            .jpeg({ quality: 90 })
+            .toBuffer();
+          contentType = "image/jpeg";
+          name = `${base}.jpg`;
+        }
       }
     }
 
@@ -68,5 +74,6 @@ export const uploadRoutes = new Elysia()
       })
     );
     const url = R2_PUBLIC_BASE_URL ? `${R2_PUBLIC_BASE_URL.replace(/\/$/, "")}/${key}` : key;
-    return { url };
+    const fileSize = body instanceof Buffer ? body.length : body.byteLength;
+    return { url, fileName: name, fileType: contentType, fileSize };
   }, { requireAuth: true });

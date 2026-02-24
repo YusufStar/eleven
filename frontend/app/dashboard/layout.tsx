@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const { isPending: isSessionPending } = authClient.useSession();
     const { isPending: isOrganizationsPending, data: organizations } = authClient.useListOrganizations();
     const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
-    const { data: activeOrgPaymentStatus } = useActiveOrgPaymentStatus();
+    const { data: activeOrgPaymentStatus } = useActiveOrgPaymentStatus(activeOrganization?.id ?? "");
     const [loading, setLoading] = useState(true)
     const pathname = usePathname();
 
@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 </div>
                             </header>
                             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                                {activeOrgPaymentStatus?.plan === "STARTER" && !activeOrgPaymentStatus?.paidAt ? (
+                                {activeOrgPaymentStatus?.plan === "FREE" && !activeOrgPaymentStatus?.paidAt ? (
                                     <div className="h-full w-full flex items-center justify-center min-h-[50vh]">
                                         {activeOrganization && <PlanDetailsCard organizationId={activeOrganization.id} />}
                                     </div>

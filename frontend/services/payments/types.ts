@@ -1,4 +1,4 @@
-export type Plan = "STARTER" | "PROFESSIONAL" | "ENTERPRISE";
+export type Plan = "FREE" | "PROFESSIONAL";
 
 export interface ActiveOrgPaymentStatus {
   plan: Plan;

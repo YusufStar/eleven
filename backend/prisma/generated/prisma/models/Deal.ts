@@ -310,6 +310,7 @@ export type DealWhereInput = {
   pipeline?: Prisma.XOR<Prisma.PipelineScalarRelationFilter, Prisma.PipelineWhereInput>
   owner?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
   activities?: Prisma.ActivityListRelationFilter
+  tasks?: Prisma.TaskListRelationFilter
 }
 
 export type DealOrderByWithRelationInput = {
@@ -335,6 +336,7 @@ export type DealOrderByWithRelationInput = {
   pipeline?: Prisma.PipelineOrderByWithRelationInput
   owner?: Prisma.MemberOrderByWithRelationInput
   activities?: Prisma.ActivityOrderByRelationAggregateInput
+  tasks?: Prisma.TaskOrderByRelationAggregateInput
 }
 
 export type DealWhereUniqueInput = Prisma.AtLeast<{
@@ -363,6 +365,7 @@ export type DealWhereUniqueInput = Prisma.AtLeast<{
   pipeline?: Prisma.XOR<Prisma.PipelineScalarRelationFilter, Prisma.PipelineWhereInput>
   owner?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
   activities?: Prisma.ActivityListRelationFilter
+  tasks?: Prisma.TaskListRelationFilter
 }, "id">
 
 export type DealOrderByWithAggregationInput = {
@@ -429,6 +432,7 @@ export type DealCreateInput = {
   pipeline: Prisma.PipelineCreateNestedOneWithoutDealsInput
   owner?: Prisma.MemberCreateNestedOneWithoutOwnedDealsInput
   activities?: Prisma.ActivityCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateInput = {
@@ -449,6 +453,7 @@ export type DealUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealUpdateInput = {
@@ -469,6 +474,7 @@ export type DealUpdateInput = {
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutDealsNestedInput
   owner?: Prisma.MemberUpdateOneWithoutOwnedDealsNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateInput = {
@@ -489,6 +495,7 @@ export type DealUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealCreateManyInput = {
@@ -861,6 +868,22 @@ export type EnumDealStatusFieldUpdateOperationsInput = {
   set?: $Enums.DealStatus
 }
 
+export type DealCreateNestedOneWithoutTasksInput = {
+  create?: Prisma.XOR<Prisma.DealCreateWithoutTasksInput, Prisma.DealUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.DealCreateOrConnectWithoutTasksInput
+  connect?: Prisma.DealWhereUniqueInput
+}
+
+export type DealUpdateOneWithoutTasksNestedInput = {
+  create?: Prisma.XOR<Prisma.DealCreateWithoutTasksInput, Prisma.DealUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.DealCreateOrConnectWithoutTasksInput
+  upsert?: Prisma.DealUpsertWithoutTasksInput
+  disconnect?: Prisma.DealWhereInput | boolean
+  delete?: Prisma.DealWhereInput | boolean
+  connect?: Prisma.DealWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DealUpdateToOneWithWhereWithoutTasksInput, Prisma.DealUpdateWithoutTasksInput>, Prisma.DealUncheckedUpdateWithoutTasksInput>
+}
+
 export type DealCreateWithoutOrganizationInput = {
   id?: string
   title: string
@@ -878,6 +901,7 @@ export type DealCreateWithoutOrganizationInput = {
   pipeline: Prisma.PipelineCreateNestedOneWithoutDealsInput
   owner?: Prisma.MemberCreateNestedOneWithoutOwnedDealsInput
   activities?: Prisma.ActivityCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateWithoutOrganizationInput = {
@@ -897,6 +921,7 @@ export type DealUncheckedCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealCreateOrConnectWithoutOrganizationInput = {
@@ -964,6 +989,7 @@ export type DealCreateWithoutOwnerInput = {
   stage: Prisma.StageCreateNestedOneWithoutDealsInput
   pipeline: Prisma.PipelineCreateNestedOneWithoutDealsInput
   activities?: Prisma.ActivityCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateWithoutOwnerInput = {
@@ -983,6 +1009,7 @@ export type DealUncheckedCreateWithoutOwnerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealCreateOrConnectWithoutOwnerInput = {
@@ -1028,6 +1055,7 @@ export type DealCreateWithoutContactInput = {
   pipeline: Prisma.PipelineCreateNestedOneWithoutDealsInput
   owner?: Prisma.MemberCreateNestedOneWithoutOwnedDealsInput
   activities?: Prisma.ActivityCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateWithoutContactInput = {
@@ -1047,6 +1075,7 @@ export type DealUncheckedCreateWithoutContactInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealCreateOrConnectWithoutContactInput = {
@@ -1092,6 +1121,7 @@ export type DealCreateWithoutActivitiesInput = {
   stage: Prisma.StageCreateNestedOneWithoutDealsInput
   pipeline: Prisma.PipelineCreateNestedOneWithoutDealsInput
   owner?: Prisma.MemberCreateNestedOneWithoutOwnedDealsInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateWithoutActivitiesInput = {
@@ -1111,6 +1141,7 @@ export type DealUncheckedCreateWithoutActivitiesInput = {
   customFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealCreateOrConnectWithoutActivitiesInput = {
@@ -1146,6 +1177,7 @@ export type DealUpdateWithoutActivitiesInput = {
   stage?: Prisma.StageUpdateOneRequiredWithoutDealsNestedInput
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutDealsNestedInput
   owner?: Prisma.MemberUpdateOneWithoutOwnedDealsNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateWithoutActivitiesInput = {
@@ -1165,6 +1197,7 @@ export type DealUncheckedUpdateWithoutActivitiesInput = {
   customFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealCreateWithoutPipelineInput = {
@@ -1184,6 +1217,7 @@ export type DealCreateWithoutPipelineInput = {
   stage: Prisma.StageCreateNestedOneWithoutDealsInput
   owner?: Prisma.MemberCreateNestedOneWithoutOwnedDealsInput
   activities?: Prisma.ActivityCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateWithoutPipelineInput = {
@@ -1203,6 +1237,7 @@ export type DealUncheckedCreateWithoutPipelineInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealCreateOrConnectWithoutPipelineInput = {
@@ -1248,6 +1283,7 @@ export type DealCreateWithoutStageInput = {
   pipeline: Prisma.PipelineCreateNestedOneWithoutDealsInput
   owner?: Prisma.MemberCreateNestedOneWithoutOwnedDealsInput
   activities?: Prisma.ActivityCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateWithoutStageInput = {
@@ -1267,6 +1303,7 @@ export type DealUncheckedCreateWithoutStageInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutDealInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealCreateOrConnectWithoutStageInput = {
@@ -1293,6 +1330,102 @@ export type DealUpdateWithWhereUniqueWithoutStageInput = {
 export type DealUpdateManyWithWhereWithoutStageInput = {
   where: Prisma.DealScalarWhereInput
   data: Prisma.XOR<Prisma.DealUpdateManyMutationInput, Prisma.DealUncheckedUpdateManyWithoutStageInput>
+}
+
+export type DealCreateWithoutTasksInput = {
+  id?: string
+  title: string
+  value?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  probability?: number | null
+  expectedClose?: Date | string | null
+  status?: $Enums.DealStatus
+  lostReason?: string | null
+  customFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutDealsInput
+  contact?: Prisma.ContactCreateNestedOneWithoutDealsInput
+  stage: Prisma.StageCreateNestedOneWithoutDealsInput
+  pipeline: Prisma.PipelineCreateNestedOneWithoutDealsInput
+  owner?: Prisma.MemberCreateNestedOneWithoutOwnedDealsInput
+  activities?: Prisma.ActivityCreateNestedManyWithoutDealInput
+}
+
+export type DealUncheckedCreateWithoutTasksInput = {
+  id?: string
+  organizationId: string
+  title: string
+  value?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  probability?: number | null
+  expectedClose?: Date | string | null
+  status?: $Enums.DealStatus
+  lostReason?: string | null
+  contactId?: string | null
+  stageId: string
+  pipelineId: string
+  ownerId?: string | null
+  customFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutDealInput
+}
+
+export type DealCreateOrConnectWithoutTasksInput = {
+  where: Prisma.DealWhereUniqueInput
+  create: Prisma.XOR<Prisma.DealCreateWithoutTasksInput, Prisma.DealUncheckedCreateWithoutTasksInput>
+}
+
+export type DealUpsertWithoutTasksInput = {
+  update: Prisma.XOR<Prisma.DealUpdateWithoutTasksInput, Prisma.DealUncheckedUpdateWithoutTasksInput>
+  create: Prisma.XOR<Prisma.DealCreateWithoutTasksInput, Prisma.DealUncheckedCreateWithoutTasksInput>
+  where?: Prisma.DealWhereInput
+}
+
+export type DealUpdateToOneWithWhereWithoutTasksInput = {
+  where?: Prisma.DealWhereInput
+  data: Prisma.XOR<Prisma.DealUpdateWithoutTasksInput, Prisma.DealUncheckedUpdateWithoutTasksInput>
+}
+
+export type DealUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  probability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expectedClose?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumDealStatusFieldUpdateOperationsInput | $Enums.DealStatus
+  lostReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutDealsNestedInput
+  contact?: Prisma.ContactUpdateOneWithoutDealsNestedInput
+  stage?: Prisma.StageUpdateOneRequiredWithoutDealsNestedInput
+  pipeline?: Prisma.PipelineUpdateOneRequiredWithoutDealsNestedInput
+  owner?: Prisma.MemberUpdateOneWithoutOwnedDealsNestedInput
+  activities?: Prisma.ActivityUpdateManyWithoutDealNestedInput
+}
+
+export type DealUncheckedUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  probability?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expectedClose?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumDealStatusFieldUpdateOperationsInput | $Enums.DealStatus
+  lostReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stageId?: Prisma.StringFieldUpdateOperationsInput | string
+  pipelineId?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  activities?: Prisma.ActivityUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealCreateManyOrganizationInput = {
@@ -1330,6 +1463,7 @@ export type DealUpdateWithoutOrganizationInput = {
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutDealsNestedInput
   owner?: Prisma.MemberUpdateOneWithoutOwnedDealsNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateWithoutOrganizationInput = {
@@ -1349,6 +1483,7 @@ export type DealUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1404,6 +1539,7 @@ export type DealUpdateWithoutOwnerInput = {
   stage?: Prisma.StageUpdateOneRequiredWithoutDealsNestedInput
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutDealsNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateWithoutOwnerInput = {
@@ -1423,6 +1559,7 @@ export type DealUncheckedUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateManyWithoutOwnerInput = {
@@ -1478,6 +1615,7 @@ export type DealUpdateWithoutContactInput = {
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutDealsNestedInput
   owner?: Prisma.MemberUpdateOneWithoutOwnedDealsNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateWithoutContactInput = {
@@ -1497,6 +1635,7 @@ export type DealUncheckedUpdateWithoutContactInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateManyWithoutContactInput = {
@@ -1552,6 +1691,7 @@ export type DealUpdateWithoutPipelineInput = {
   stage?: Prisma.StageUpdateOneRequiredWithoutDealsNestedInput
   owner?: Prisma.MemberUpdateOneWithoutOwnedDealsNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateWithoutPipelineInput = {
@@ -1571,6 +1711,7 @@ export type DealUncheckedUpdateWithoutPipelineInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateManyWithoutPipelineInput = {
@@ -1626,6 +1767,7 @@ export type DealUpdateWithoutStageInput = {
   pipeline?: Prisma.PipelineUpdateOneRequiredWithoutDealsNestedInput
   owner?: Prisma.MemberUpdateOneWithoutOwnedDealsNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateWithoutStageInput = {
@@ -1645,6 +1787,7 @@ export type DealUncheckedUpdateWithoutStageInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutDealNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateManyWithoutStageInput = {
@@ -1672,10 +1815,12 @@ export type DealUncheckedUpdateManyWithoutStageInput = {
 
 export type DealCountOutputType = {
   activities: number
+  tasks: number
 }
 
 export type DealCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   activities?: boolean | DealCountOutputTypeCountActivitiesArgs
+  tasks?: boolean | DealCountOutputTypeCountTasksArgs
 }
 
 /**
@@ -1693,6 +1838,13 @@ export type DealCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  */
 export type DealCountOutputTypeCountActivitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ActivityWhereInput
+}
+
+/**
+ * DealCountOutputType without action
+ */
+export type DealCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskWhereInput
 }
 
 
@@ -1719,6 +1871,7 @@ export type DealSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   pipeline?: boolean | Prisma.PipelineDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Deal$ownerArgs<ExtArgs>
   activities?: boolean | Prisma.Deal$activitiesArgs<ExtArgs>
+  tasks?: boolean | Prisma.Deal$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.DealCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deal"]>
 
@@ -1797,6 +1950,7 @@ export type DealInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   pipeline?: boolean | Prisma.PipelineDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Deal$ownerArgs<ExtArgs>
   activities?: boolean | Prisma.Deal$activitiesArgs<ExtArgs>
+  tasks?: boolean | Prisma.Deal$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.DealCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DealIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1823,6 +1977,7 @@ export type $DealPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     pipeline: Prisma.$PipelinePayload<ExtArgs>
     owner: Prisma.$MemberPayload<ExtArgs> | null
     activities: Prisma.$ActivityPayload<ExtArgs>[]
+    tasks: Prisma.$TaskPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2241,6 +2396,7 @@ export interface Prisma__DealClient<T, Null = never, ExtArgs extends runtime.Typ
   pipeline<T extends Prisma.PipelineDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PipelineDefaultArgs<ExtArgs>>): Prisma.Prisma__PipelineClient<runtime.Types.Result.GetResult<Prisma.$PipelinePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   owner<T extends Prisma.Deal$ownerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deal$ownerArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   activities<T extends Prisma.Deal$activitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deal$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tasks<T extends Prisma.Deal$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deal$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2741,6 +2897,30 @@ export type Deal$activitiesArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.ActivityScalarFieldEnum | Prisma.ActivityScalarFieldEnum[]
+}
+
+/**
+ * Deal.tasks
+ */
+export type Deal$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Task
+   */
+  select?: Prisma.TaskSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Task
+   */
+  omit?: Prisma.TaskOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskInclude<ExtArgs> | null
+  where?: Prisma.TaskWhereInput
+  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[]
+  cursor?: Prisma.TaskWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
 }
 
 /**

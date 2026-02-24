@@ -83,12 +83,13 @@ model Organization {
   members     Member[]
   invitations Invitation[]
 
-  plan       Plan       @default(STARTER)
+  plan       Plan       @default(FREE)
   paidAt     DateTime?  // set when one-time payment succeeds
   contacts   Contact[]
   deals      Deal[]
   pipelines  Pipeline[]
   activities Activity[]
+  tasks      Task[]
 
   @@unique([slug])
   @@map("organization")
@@ -106,6 +107,8 @@ model Member {
   ownedContacts   Contact[]
   ownedDeals      Deal[]
   ownedActivities Activity[]
+  assignedTasks   Task[] @relation("AssignedTasks")
+  createdTasks    Task[] @relation("CreatedTasks")
 
   @@index([organizationId])
   @@index([userId])
@@ -179,6 +182,7 @@ model Contact {
   // İlişkiler
   deals      Deal[]
   activities Activity[]
+  tasks      Task[]
 
   @@index([organizationId])
   @@index([organizationId, type])
@@ -279,12 +283,70 @@ model Deal {
   updatedAt DateTime @updatedAt
 
   activities Activity[]
+  tasks      Task[]
 
   @@index([organizationId])
   @@index([organizationId, status])
   @@index([organizationId, stageId])
   @@index([organizationId, ownerId])
   @@map("deals")
+}
+
+model Task {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+
+  dueAt       DateTime?
+  completedAt DateTime?
+
+  assigneeId String?
+  assignee   Member? @relation("AssignedTasks", fields: [assigneeId], references: [id])
+
+  creatorId String?
+  creator   Member? @relation("CreatedTasks", fields: [creatorId], references: [id])
+
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  dealId String?
+  deal   Deal? @relation(fields: [dealId], references: [id], onDelete: SetNull)
+
+  parentTaskId String?
+  parentTask   Task?  @relation("SubTasks", fields: [parentTaskId], references: [id])
+  subTasks     Task[] @relation("SubTasks")
+
+  attachments TaskAttachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, assigneeId])
+  @@map("tasks")
+}
+
+model TaskAttachment {
+  id       String @id @default(cuid())
+  taskId   String
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  fileName String
+  fileUrl  String
+  fileType String?
+  fileSize Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+  @@map("task_attachments")
 }
 
 // ─── Enums ───────────────────────────────────────
@@ -326,7 +388,20 @@ enum DealStatus {
 }
 
 enum Plan {
-  STARTER
+  FREE
   PROFESSIONAL
-  ENTERPRISE
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }

@@ -14,10 +14,10 @@ CREATE TYPE "ActivityType" AS ENUM ('CALL', 'EMAIL', 'MEETING', 'TASK', 'NOTE', 
 CREATE TYPE "DealStatus" AS ENUM ('OPEN', 'WON', 'LOST');
 
 -- CreateEnum
-CREATE TYPE "Plan" AS ENUM ('STARTER', 'PROFESSIONAL', 'ENTERPRISE');
+CREATE TYPE "Plan" AS ENUM ('FREE', 'PROFESSIONAL');
 
 -- AlterTable
-ALTER TABLE "organization" ADD COLUMN     "plan" "Plan" NOT NULL DEFAULT 'STARTER';
+ALTER TABLE "organization" ADD COLUMN     "plan" "Plan" NOT NULL DEFAULT 'FREE';
 
 -- CreateTable
 CREATE TABLE "contacts" (

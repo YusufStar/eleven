@@ -212,6 +212,7 @@ export type OrganizationWhereInput = {
   deals?: Prisma.DealListRelationFilter
   pipelines?: Prisma.PipelineListRelationFilter
   activities?: Prisma.ActivityListRelationFilter
+  tasks?: Prisma.TaskListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -229,6 +230,7 @@ export type OrganizationOrderByWithRelationInput = {
   deals?: Prisma.DealOrderByRelationAggregateInput
   pipelines?: Prisma.PipelineOrderByRelationAggregateInput
   activities?: Prisma.ActivityOrderByRelationAggregateInput
+  tasks?: Prisma.TaskOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -249,6 +251,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   deals?: Prisma.DealListRelationFilter
   pipelines?: Prisma.PipelineListRelationFilter
   activities?: Prisma.ActivityListRelationFilter
+  tasks?: Prisma.TaskListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -294,6 +297,7 @@ export type OrganizationCreateInput = {
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -311,6 +315,7 @@ export type OrganizationUncheckedCreateInput = {
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineUncheckedCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -328,6 +333,7 @@ export type OrganizationUpdateInput = {
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -345,6 +351,7 @@ export type OrganizationUncheckedUpdateInput = {
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUncheckedUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -506,6 +513,20 @@ export type OrganizationUpdateOneRequiredWithoutDealsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutDealsInput, Prisma.OrganizationUpdateWithoutDealsInput>, Prisma.OrganizationUncheckedUpdateWithoutDealsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutTasksInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTasksInput, Prisma.OrganizationUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTasksInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutTasksNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTasksInput, Prisma.OrganizationUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTasksInput
+  upsert?: Prisma.OrganizationUpsertWithoutTasksInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTasksInput, Prisma.OrganizationUpdateWithoutTasksInput>, Prisma.OrganizationUncheckedUpdateWithoutTasksInput>
+}
+
 export type OrganizationCreateWithoutMembersInput = {
   id: string
   name: string
@@ -520,6 +541,7 @@ export type OrganizationCreateWithoutMembersInput = {
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -536,6 +558,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineUncheckedCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -568,6 +591,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -584,6 +608,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUncheckedUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutInvitationsInput = {
@@ -600,6 +625,7 @@ export type OrganizationCreateWithoutInvitationsInput = {
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutInvitationsInput = {
@@ -616,6 +642,7 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineUncheckedCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutInvitationsInput = {
@@ -648,6 +675,7 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
@@ -664,6 +692,7 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUncheckedUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutContactsInput = {
@@ -680,6 +709,7 @@ export type OrganizationCreateWithoutContactsInput = {
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutContactsInput = {
@@ -696,6 +726,7 @@ export type OrganizationUncheckedCreateWithoutContactsInput = {
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineUncheckedCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutContactsInput = {
@@ -728,6 +759,7 @@ export type OrganizationUpdateWithoutContactsInput = {
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutContactsInput = {
@@ -744,6 +776,7 @@ export type OrganizationUncheckedUpdateWithoutContactsInput = {
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUncheckedUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutActivitiesInput = {
@@ -760,6 +793,7 @@ export type OrganizationCreateWithoutActivitiesInput = {
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutActivitiesInput = {
@@ -776,6 +810,7 @@ export type OrganizationUncheckedCreateWithoutActivitiesInput = {
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutActivitiesInput = {
@@ -808,6 +843,7 @@ export type OrganizationUpdateWithoutActivitiesInput = {
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutActivitiesInput = {
@@ -824,6 +860,7 @@ export type OrganizationUncheckedUpdateWithoutActivitiesInput = {
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutPipelinesInput = {
@@ -840,6 +877,7 @@ export type OrganizationCreateWithoutPipelinesInput = {
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutPipelinesInput = {
@@ -856,6 +894,7 @@ export type OrganizationUncheckedCreateWithoutPipelinesInput = {
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
   deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutPipelinesInput = {
@@ -888,6 +927,7 @@ export type OrganizationUpdateWithoutPipelinesInput = {
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutPipelinesInput = {
@@ -904,6 +944,7 @@ export type OrganizationUncheckedUpdateWithoutPipelinesInput = {
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
   deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutDealsInput = {
@@ -920,6 +961,7 @@ export type OrganizationCreateWithoutDealsInput = {
   contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutDealsInput = {
@@ -936,6 +978,7 @@ export type OrganizationUncheckedCreateWithoutDealsInput = {
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
   pipelines?: Prisma.PipelineUncheckedCreateNestedManyWithoutOrganizationInput
   activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutDealsInput = {
@@ -968,6 +1011,7 @@ export type OrganizationUpdateWithoutDealsInput = {
   contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutDealsInput = {
@@ -984,6 +1028,91 @@ export type OrganizationUncheckedUpdateWithoutDealsInput = {
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
   pipelines?: Prisma.PipelineUncheckedUpdateManyWithoutOrganizationNestedInput
   activities?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutTasksInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  plan?: $Enums.Plan
+  paidAt?: Date | string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  deals?: Prisma.DealCreateNestedManyWithoutOrganizationInput
+  pipelines?: Prisma.PipelineCreateNestedManyWithoutOrganizationInput
+  activities?: Prisma.ActivityCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutTasksInput = {
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt: Date | string
+  metadata?: string | null
+  plan?: $Enums.Plan
+  paidAt?: Date | string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  deals?: Prisma.DealUncheckedCreateNestedManyWithoutOrganizationInput
+  pipelines?: Prisma.PipelineUncheckedCreateNestedManyWithoutOrganizationInput
+  activities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutTasksInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTasksInput, Prisma.OrganizationUncheckedCreateWithoutTasksInput>
+}
+
+export type OrganizationUpsertWithoutTasksInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTasksInput, Prisma.OrganizationUncheckedUpdateWithoutTasksInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTasksInput, Prisma.OrganizationUncheckedCreateWithoutTasksInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutTasksInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTasksInput, Prisma.OrganizationUncheckedUpdateWithoutTasksInput>
+}
+
+export type OrganizationUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  deals?: Prisma.DealUpdateManyWithoutOrganizationNestedInput
+  pipelines?: Prisma.PipelineUpdateManyWithoutOrganizationNestedInput
+  activities?: Prisma.ActivityUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  deals?: Prisma.DealUncheckedUpdateManyWithoutOrganizationNestedInput
+  pipelines?: Prisma.PipelineUncheckedUpdateManyWithoutOrganizationNestedInput
+  activities?: Prisma.ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -998,6 +1127,7 @@ export type OrganizationCountOutputType = {
   deals: number
   pipelines: number
   activities: number
+  tasks: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1007,6 +1137,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   deals?: boolean | OrganizationCountOutputTypeCountDealsArgs
   pipelines?: boolean | OrganizationCountOutputTypeCountPipelinesArgs
   activities?: boolean | OrganizationCountOutputTypeCountActivitiesArgs
+  tasks?: boolean | OrganizationCountOutputTypeCountTasksArgs
 }
 
 /**
@@ -1061,6 +1192,13 @@ export type OrganizationCountOutputTypeCountActivitiesArgs<ExtArgs extends runti
   where?: Prisma.ActivityWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1077,6 +1215,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   deals?: boolean | Prisma.Organization$dealsArgs<ExtArgs>
   pipelines?: boolean | Prisma.Organization$pipelinesArgs<ExtArgs>
   activities?: boolean | Prisma.Organization$activitiesArgs<ExtArgs>
+  tasks?: boolean | Prisma.Organization$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -1121,6 +1260,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   deals?: boolean | Prisma.Organization$dealsArgs<ExtArgs>
   pipelines?: boolean | Prisma.Organization$pipelinesArgs<ExtArgs>
   activities?: boolean | Prisma.Organization$activitiesArgs<ExtArgs>
+  tasks?: boolean | Prisma.Organization$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1135,6 +1275,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     deals: Prisma.$DealPayload<ExtArgs>[]
     pipelines: Prisma.$PipelinePayload<ExtArgs>[]
     activities: Prisma.$ActivityPayload<ExtArgs>[]
+    tasks: Prisma.$TaskPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1545,6 +1686,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   deals<T extends Prisma.Organization$dealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pipelines<T extends Prisma.Organization$pipelinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$pipelinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PipelinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   activities<T extends Prisma.Organization$activitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tasks<T extends Prisma.Organization$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2111,6 +2253,30 @@ export type Organization$activitiesArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.ActivityScalarFieldEnum | Prisma.ActivityScalarFieldEnum[]
+}
+
+/**
+ * Organization.tasks
+ */
+export type Organization$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Task
+   */
+  select?: Prisma.TaskSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Task
+   */
+  omit?: Prisma.TaskOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskInclude<ExtArgs> | null
+  where?: Prisma.TaskWhereInput
+  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[]
+  cursor?: Prisma.TaskWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
 }
 
 /**

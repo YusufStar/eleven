@@ -61,9 +61,28 @@ export type DealStatus = (typeof DealStatus)[keyof typeof DealStatus]
 
 
 export const Plan = {
-  STARTER: 'STARTER',
-  PROFESSIONAL: 'PROFESSIONAL',
-  ENTERPRISE: 'ENTERPRISE'
+  FREE: 'FREE',
+  PROFESSIONAL: 'PROFESSIONAL'
 } as const
 
 export type Plan = (typeof Plan)[keyof typeof Plan]
+
+
+export const TaskStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus]
+
+
+export const TaskPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority]
