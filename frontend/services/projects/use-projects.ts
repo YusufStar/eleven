@@ -26,6 +26,7 @@ export type CreateProjectBody = {
   name: string;
   description?: string;
   memberIds?: string[];
+  links?: import("./types").ProjectLinkItem[];
 };
 
 export function useCreateProject() {
@@ -35,6 +36,7 @@ export function useCreateProject() {
       const project = await projectsApi.create({
         name: body.name,
         description: body.description,
+        links: body.links,
       });
       for (const memberId of body.memberIds ?? []) {
         await projectsApi.addMember(project.id, memberId);
@@ -94,10 +96,10 @@ export function useRemoveProjectMember(projectId: string) {
   });
 }
 
-export function useProjectFiles(projectId: string | null) {
+export function useProjectFiles(projectId: string | null, params?: { search?: string }) {
   return useQuery({
-    queryKey: [...projectsKey, projectId, "files"],
-    queryFn: () => projectsApi.listFiles(projectId!),
+    queryKey: [...projectsKey, projectId, "files", params?.search ?? ""],
+    queryFn: () => projectsApi.listFiles(projectId!, params),
     enabled: !!projectId,
   });
 }

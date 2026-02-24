@@ -41,7 +41,7 @@ export type ProjectUpdateBody = {
 export const projectsApi = {
   list: (params?: ProjectsListParams) => request<PaginatedProjects>(listPath(params)),
   get: (id: string) => request<ProjectDetail>(`/projects/${id}`),
-  create: (body: { name: string; description?: string }) =>
+  create: (body: { name: string; description?: string; links?: ProjectLinkItem[] }) =>
     request<import("./types").Project>("/projects", { method: "POST", body: JSON.stringify(body) }),
   update: (id: string, body: ProjectUpdateBody) =>
     request<import("./types").Project>(`/projects/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
@@ -56,7 +56,11 @@ export const projectsApi = {
   removeMember: (projectId: string, memberId: string) =>
     request<{ ok: boolean }>(`/projects/${projectId}/members/${memberId}`, { method: "DELETE" }),
 
-  listFiles: (projectId: string) => request<ProjectFileRow[]>(`/projects/${projectId}/files`),
+  listFiles: (projectId: string, params?: { search?: string }) => {
+    const search = params?.search?.trim();
+    const path = search ? `/projects/${projectId}/files?search=${encodeURIComponent(search)}` : `/projects/${projectId}/files`;
+    return request<ProjectFileRow[]>(path);
+  },
   addFile: (projectId: string, file: File) => {
     const form = new FormData();
     form.append("file", file);
@@ -69,4 +73,7 @@ export const projectsApi = {
     }),
   deleteFile: (projectId: string, fileId: string) =>
     request<{ ok: boolean }>(`/projects/${projectId}/files/${fileId}`, { method: "DELETE" }),
+
+  getFileDownloadUrl: (projectId: string, fileId: string) =>
+    `${BASE}/projects/${projectId}/files/${fileId}/download`,
 };

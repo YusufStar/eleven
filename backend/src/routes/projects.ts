@@ -38,11 +38,52 @@ function parseLinks(v: unknown): ProjectLink[] {
   );
 }
 
-async function ensureProjectMember(projectId: string, memberId: string): Promise<{ project: Awaited<ReturnType<typeof prisma.project.findFirst>>; isMember: boolean } | null> {
-  const project = await prisma.project.findFirst({ where: { id: projectId } });
+const EXT_TO_MIME: Record<string, string> = {
+  pdf: "application/pdf",
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  csv: "text/csv",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  svg: "image/svg+xml",
+  mp4: "video/mp4",
+  webm: "video/webm",
+  mov: "video/quicktime",
+  mp3: "audio/mpeg",
+  wav: "audio/wav",
+  zip: "application/zip",
+  json: "application/json",
+  txt: "text/plain",
+  md: "text/markdown",
+};
+
+function inferFileType(fileName: string, existingType: string | null): string | null {
+  if (existingType?.trim()) return existingType.trim();
+  if (!fileName?.includes(".")) return null;
+  const ext = fileName.slice(fileName.lastIndexOf(".") + 1).toLowerCase();
+  return EXT_TO_MIME[ext] ?? null;
+}
+
+async function ensureProjectMember(
+  projectId: string,
+  memberId: string,
+  organizationId: string | null | undefined
+): Promise<{ project: Awaited<ReturnType<typeof prisma.project.findFirst>>; isMember: boolean } | null> {
+  if (!projectId?.trim()) return null;
+  const project = await prisma.project.findFirst({
+    where: {
+      id: projectId.trim(),
+      ...(organizationId ? orgScope(organizationId) : {}),
+    },
+  });
   if (!project) return null;
   const pm = await prisma.projectMember.findUnique({
-    where: { projectId_memberId: { projectId, memberId } },
+    where: { projectId_memberId: { projectId: project.id, memberId } },
   });
   return { project, isMember: !!pm };
 }
@@ -105,7 +146,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
   .post(
     "/",
     async ({ body, activeOrganizationId, activeMember }) => {
-      const b = body as { name?: string; description?: string };
+      const b = body as { name?: string; description?: string; links?: unknown };
       const name = typeof b?.name === "string" ? b.name.trim() : "";
       if (!name) {
         return new Response(JSON.stringify({ message: "name is required" }), {
@@ -118,12 +159,14 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         where: { organizationId: activeOrganizationId!, slug },
       });
       if (existing) slug = `${slug}-${Date.now().toString(36)}`;
+      const links = parseLinks(b?.links);
       const project = await prisma.project.create({
         data: {
           organizationId: activeOrganizationId!,
           name,
           slug,
           description: typeof b?.description === "string" ? b.description.trim() || null : null,
+          links: links.length ? links : undefined,
           members: { create: { memberId: activeMember!.id } },
         },
       });
@@ -133,8 +176,8 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
   )
   .patch(
     "/:id",
-    async ({ params, body, activeOrganizationId, activeMember }) => {
-      const result = await ensureProjectMember(params.id, activeMember!.id);
+    async ({ params, body, activeMember, activeOrganizationId }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
       if (!result)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
       if (!result.isMember)
@@ -193,7 +236,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
   .post(
     "/:id/members",
     async ({ params, body, activeOrganizationId, activeMember }) => {
-      const result = await ensureProjectMember(params.id, activeMember!.id);
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
       if (!result)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
       if (!result.isMember)
@@ -228,7 +271,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
   .delete(
     "/:id/members/:memberId",
     async ({ params, activeOrganizationId, activeMember }) => {
-      const result = await ensureProjectMember(params.id, activeMember!.id);
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
       if (!result)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
       if (!result.isMember)
@@ -242,14 +285,18 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
   )
   .get(
     "/:id/files",
-    async ({ params, activeOrganizationId, activeMember }) => {
-      const result = await ensureProjectMember(params.id, activeMember!.id);
+    async ({ params, query, activeOrganizationId, activeMember }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
       if (!result)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
       if (!result.isMember)
         return new Response(JSON.stringify({ message: "Access denied" }), { status: 403, headers: { "Content-Type": "application/json" } });
+      const search = typeof query?.search === "string" ? query.search.trim() : "";
       const files = await prisma.projectFile.findMany({
-        where: { projectId: params.id },
+        where: {
+          projectId: params.id,
+          ...(search ? { fileName: { contains: search, mode: "insensitive" } } : {}),
+        },
         include: { uploadedBy: { include: { user: { select: { id: true, name: true } } } } },
         orderBy: { createdAt: "desc" },
       });
@@ -260,7 +307,10 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
   .post(
     "/:id/files",
     async ({ params, request, activeOrganizationId, activeMember }) => {
-      const result = await ensureProjectMember(params.id, activeMember!.id);
+      if (!params.id?.trim()) {
+        return new Response(JSON.stringify({ message: "Project ID is required" }), { status: 400, headers: { "Content-Type": "application/json" } });
+      }
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId ?? undefined);
       if (!result)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
       if (!result.isMember)
@@ -314,12 +364,13 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         fileSize = typeof b?.fileSize === "number" ? b.fileSize : null;
       }
 
+      const normalizedType = inferFileType(fileName, fileType);
       const pf = await prisma.projectFile.create({
         data: {
           projectId: params.id,
           fileName,
           fileUrl,
-          fileType,
+          fileType: normalizedType,
           fileSize,
           uploadedById: activeMember!.id,
         },
@@ -328,10 +379,42 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
     },
     { requireAuth: true, requireActiveOrg: true }
   )
+  .get(
+    "/:id/files/:fileId/download",
+    async ({ params, activeOrganizationId, activeMember }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
+      if (!result)
+        return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      if (!result.isMember)
+        return new Response(JSON.stringify({ message: "Access denied" }), { status: 403, headers: { "Content-Type": "application/json" } });
+      const file = await prisma.projectFile.findFirst({
+        where: { id: params.fileId, projectId: params.id },
+      });
+      if (!file)
+        return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      try {
+        const res = await fetch(file.fileUrl, { redirect: "follow" });
+        if (!res.ok)
+          return new Response(JSON.stringify({ message: "Failed to fetch file" }), { status: 502, headers: { "Content-Type": "application/json" } });
+        const filename = file.fileName.replace(/[^\w.\- ]/g, "_");
+        const disposition = `attachment; filename="${filename}"`;
+        return new Response(res.body, {
+          status: 200,
+          headers: {
+            "Content-Disposition": disposition,
+            "Content-Type": res.headers.get("Content-Type") ?? "application/octet-stream",
+          },
+        });
+      } catch {
+        return new Response(JSON.stringify({ message: "Failed to fetch file" }), { status: 502, headers: { "Content-Type": "application/json" } });
+      }
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
   .delete(
     "/:id/files/:fileId",
     async ({ params, activeOrganizationId, activeMember }) => {
-      const result = await ensureProjectMember(params.id, activeMember!.id);
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
       if (!result)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
       if (!result.isMember)

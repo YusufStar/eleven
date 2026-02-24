@@ -24,6 +24,7 @@ import {
   Notification01Icon,
   CreditCardIcon,
   Folder01Icon,
+  File02Icon,
 } from "@hugeicons/core-free-icons"
 
 const navMain = [
@@ -61,6 +62,14 @@ const navMain = [
     icon: <HugeiconsIcon icon={Folder01Icon} strokeWidth={2} />,
     items: [
       { title: "All projects", url: "/dashboard/projects" },
+    ],
+  },
+  {
+    title: "Files",
+    url: "/dashboard/files",
+    icon: <HugeiconsIcon icon={File02Icon} strokeWidth={2} />,
+    items: [
+      { title: "All files", url: "/dashboard/files" },
     ],
   },
   {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Task01Icon, UserIcon, Delete02Icon } from "@hugeicons/core-free-icons";
+import { Task01Icon, UserIcon, Delete02Icon, File02Icon } from "@hugeicons/core-free-icons";
 import type { Project } from "@/services/projects";
 import { useDeleteProject } from "@/services/projects";
 import { toast } from "sonner";
@@ -60,6 +60,12 @@ export function ProjectRowActions({ project }: ProjectRowActionsProps) {
           <Link href={`/dashboard/tasks/mine?projectId=${project.id}`}>
             <HugeiconsIcon icon={UserIcon} className="size-4 mr-1.5" strokeWidth={2} />
             My tasks
+          </Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/dashboard/files?projectId=${project.id}`}>
+            <HugeiconsIcon icon={File02Icon} className="size-4 mr-1.5" strokeWidth={2} />
+            Files
           </Link>
         </Button>
         <Button

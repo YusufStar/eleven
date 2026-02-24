@@ -51,3 +51,16 @@ export const addContactCompanySchema = z.object({
     status: contactStatusEnum.optional(),
 })
 export type AddContactCompanySchema = z.infer<typeof addContactCompanySchema>
+
+const projectLinkSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+})
+
+export const addProjectSchema = z.object({
+  name: z.string().min(1, "Name is required").max(200, "Name is too long"),
+  description: z.string().max(2000).optional().or(z.literal("")),
+  memberIds: z.array(z.string()).optional(),
+  links: z.array(projectLinkSchema).optional(),
+})
+export type AddProjectSchema = z.infer<typeof addProjectSchema>
