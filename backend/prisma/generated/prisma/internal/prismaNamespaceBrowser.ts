@@ -63,6 +63,9 @@ export const ModelName = {
   Pipeline: 'Pipeline',
   Stage: 'Stage',
   Deal: 'Deal',
+  Project: 'Project',
+  ProjectMember: 'ProjectMember',
+  ProjectFile: 'ProjectFile',
   Task: 'Task',
   TaskAttachment: 'TaskAttachment'
 } as const
@@ -276,6 +279,44 @@ export const DealScalarFieldEnum = {
 export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
 
 
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  links: 'links',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const ProjectMemberScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  memberId: 'memberId',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectMemberScalarFieldEnum = (typeof ProjectMemberScalarFieldEnum)[keyof typeof ProjectMemberScalarFieldEnum]
+
+
+export const ProjectFileScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  uploadedById: 'uploadedById',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectFileScalarFieldEnum = (typeof ProjectFileScalarFieldEnum)[keyof typeof ProjectFileScalarFieldEnum]
+
+
 export const TaskScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -287,6 +328,7 @@ export const TaskScalarFieldEnum = {
   completedAt: 'completedAt',
   assigneeId: 'assigneeId',
   creatorId: 'creatorId',
+  projectId: 'projectId',
   contactId: 'contactId',
   dealId: 'dealId',
   parentTaskId: 'parentTaskId',

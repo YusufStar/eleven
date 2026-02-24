@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { auth } from "./auth/auth";
 import { authPlugin } from "./plugins/auth.plugin";
-import { contactsRoutes, paymentsRoutes, stripeWebhookApp, teamRoutes, uploadRoutes } from "./routes";
+import { contactsRoutes, paymentsRoutes, stripeWebhookApp, projectsRoutes, teamRoutes, tasksRoutes, uploadRoutes } from "./routes";
 
 const app = new Elysia()
   .use(
@@ -16,7 +16,9 @@ const app = new Elysia()
   .use(stripeWebhookApp)
   .use(contactsRoutes)
   .use(paymentsRoutes)
+  .use(projectsRoutes)
   .use(teamRoutes)
+  .use(tasksRoutes)
   .use(uploadRoutes)
   .get("/", () => "Hello World")
   .listen(3333);

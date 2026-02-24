@@ -1,5 +1,6 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,6 +34,8 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl")
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -61,7 +64,7 @@ export function SignupForm({
       }
       if (response.data) {
         toast.success("You are signed up")
-        router.replace("/dashboard")
+        router.replace(callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : "/dashboard")
       }
     } catch (error) {
       toast.error("An error occurred")
@@ -122,7 +125,10 @@ export function SignupForm({
                   {isSubmitting ? <div className="flex items-center gap-2"><Spinner /> Creating account...</div> : "Create Account"}
                 </Button>
                 <FieldDescription className="text-center">
-                  Already have an account? <Link href="/login">Sign in</Link>
+                  Already have an account?{" "}
+                  <Link href={callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/login"}>
+                    Sign in
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

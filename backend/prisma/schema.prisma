@@ -89,6 +89,7 @@ model Organization {
   deals      Deal[]
   pipelines  Pipeline[]
   activities Activity[]
+  projects   Project[]
   tasks      Task[]
 
   @@unique([slug])
@@ -109,6 +110,8 @@ model Member {
   ownedActivities Activity[]
   assignedTasks   Task[] @relation("AssignedTasks")
   createdTasks    Task[] @relation("CreatedTasks")
+  projectMembers  ProjectMember[]
+  projectFilesUploaded ProjectFile[]
 
   @@index([organizationId])
   @@index([userId])
@@ -292,6 +295,59 @@ model Deal {
   @@map("deals")
 }
 
+model Project {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  slug           String
+  description    String?
+  // Links: array of { title: string, url: string } (e.g. Figma Dev, Github, etc.)
+  links          Json?        @default("[]")
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  tasks       Task[]
+  members     ProjectMember[]
+  files       ProjectFile[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@map("projects")
+}
+
+// Project members: only assigned members can access project data. Selected from org members.
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, memberId])
+  @@index([projectId])
+  @@index([memberId])
+  @@map("project_members")
+}
+
+// Project files/documents (drive-like)
+model ProjectFile {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fileName    String
+  fileUrl     String
+  fileType    String?
+  fileSize    Int?
+  uploadedById String?
+  uploadedBy  Member?  @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([projectId])
+  @@map("project_files")
+}
+
 model Task {
   id             String       @id @default(cuid())
   organizationId String
@@ -312,6 +368,9 @@ model Task {
   creatorId String?
   creator   Member? @relation("CreatedTasks", fields: [creatorId], references: [id])
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
   contactId String?
   contact   Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
 
@@ -330,6 +389,7 @@ model Task {
   @@index([organizationId])
   @@index([organizationId, status])
   @@index([organizationId, assigneeId])
+  @@index([organizationId, projectId])
   @@map("tasks")
 }
 

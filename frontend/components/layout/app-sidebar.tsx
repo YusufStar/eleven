@@ -23,6 +23,7 @@ import {
   ChartIcon,
   Notification01Icon,
   CreditCardIcon,
+  Folder01Icon,
 } from "@hugeicons/core-free-icons"
 
 const navMain = [
@@ -52,6 +53,14 @@ const navMain = [
       { title: "Board", url: "/dashboard/deals" },
       { title: "All deals", url: "/dashboard/deals/list" },
       { title: "Stages", url: "/dashboard/deals/stages" },
+    ],
+  },
+  {
+    title: "Projects",
+    url: "/dashboard/projects",
+    icon: <HugeiconsIcon icon={Folder01Icon} strokeWidth={2} />,
+    items: [
+      { title: "All projects", url: "/dashboard/projects" },
     ],
   },
   {

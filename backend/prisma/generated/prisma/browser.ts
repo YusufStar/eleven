@@ -78,6 +78,21 @@ export type Stage = Prisma.StageModel
  */
 export type Deal = Prisma.DealModel
 /**
+ * Model Project
+ * 
+ */
+export type Project = Prisma.ProjectModel
+/**
+ * Model ProjectMember
+ * 
+ */
+export type ProjectMember = Prisma.ProjectMemberModel
+/**
+ * Model ProjectFile
+ * 
+ */
+export type ProjectFile = Prisma.ProjectFileModel
+/**
  * Model Task
  * 
  */
