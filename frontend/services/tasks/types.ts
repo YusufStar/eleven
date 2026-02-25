@@ -38,12 +38,19 @@ export interface Task {
   project?: TaskProject | null;
 }
 
+export const TASK_STATUSES = ["TODO", "IN_PROGRESS", "DONE", "CANCELLED"] as const;
+export type TaskStatusValue = (typeof TASK_STATUSES)[number];
+
 export type TasksListParams = {
   page?: number;
   pageSize?: number;
-  assigneeId?: string;
-  projectId?: string;
+  /** When true, filter by current user as assignee (frontend default). */
   mine?: boolean;
+  /** When set, filter by these assignee member ids (ignored if mine is true). */
+  assigneeIds?: string[];
+  projectId?: string | null;
+  search?: string;
+  status?: TaskStatusValue | TaskStatusValue[];
 };
 
 export interface PaginatedTasks {

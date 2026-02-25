@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "cdn.yusufstar.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "loremflickr.com",
+        pathname: "/**",
+      },
     ],
   },
 };

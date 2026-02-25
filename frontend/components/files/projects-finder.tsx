@@ -384,11 +384,9 @@ export function ProjectsFinder({
                       onClick={() => onSelect(project)}
                       className={cn(
                         "flex w-full items-center gap-3 rounded-lg border px-2.5 py-2 text-left transition-colors",
-                        folderConfig.bgClass,
-                        folderConfig.borderClass,
                         selectedId === project.id
-                          ? "ring-2 ring-primary/30"
-                          : "hover:opacity-90"
+                          ? "border-amber-500/40 bg-amber-500/20 ring-1 ring-amber-500/50"
+                          : "border-border bg-muted/50 hover:bg-muted"
                       )}
                     >
                       <div className={cn("flex size-9 shrink-0 items-center justify-center rounded-md border", folderConfig.borderClass, folderConfig.bgClass)}>

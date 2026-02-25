@@ -78,7 +78,6 @@ const navMain = [
     icon: <HugeiconsIcon icon={Task01Icon} strokeWidth={2} />,
     items: [
       { title: "All tasks", url: "/dashboard/tasks" },
-      { title: "My tasks", url: "/dashboard/tasks/mine" },
     ],
   },
   {

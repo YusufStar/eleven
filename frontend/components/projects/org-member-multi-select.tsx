@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { UserGroupIcon, ChevronsUpDown, Cancel01Icon } from "@hugeicons/core-free-icons";
@@ -37,6 +38,10 @@ export type OrgMemberMultiSelectProps = {
   placeholder?: string;
   disabled?: boolean;
   id?: string;
+  /** When true, current user is included in the list (e.g. for task assignee filter). */
+  includeCurrentUser?: boolean;
+  /** When "count", trigger shows "1 assignee selected" instead of badges. */
+  triggerDisplay?: "badges" | "count";
 };
 
 export function OrgMemberMultiSelect({
@@ -45,6 +50,8 @@ export function OrgMemberMultiSelect({
   placeholder = "Select members...",
   disabled,
   id,
+  includeCurrentUser = false,
+  triggerDisplay = "badges",
 }: OrgMemberMultiSelectProps) {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -61,8 +68,9 @@ export function OrgMemberMultiSelect({
 
   const members: OrgMemberOption[] = React.useMemo(() => {
     const list = listData?.data ?? [];
+    if (includeCurrentUser) return list;
     return currentUserId ? list.filter((m) => m.userId !== currentUserId) : list;
-  }, [listData?.data, currentUserId]);
+  }, [listData?.data, currentUserId, includeCurrentUser]);
 
   const selectedMembers = React.useMemo(() => {
     return members.filter((m) => value.includes(m.id));
@@ -115,25 +123,31 @@ export function OrgMemberMultiSelect({
             <span className="inline-flex flex-wrap items-center gap-1.5 truncate">
               <HugeiconsIcon icon={UserGroupIcon} className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
               {selectedMembers.length > 0 ? (
-                selectedMembers.map((m) => (
-                  <Badge
-                    key={m.id}
-                    variant="secondary"
-                    className="gap-0.5 pr-0.5 font-normal"
-                  >
-                    {m.user?.name?.trim() || m.user?.email || "—"}
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      onClick={(e) => handleRemove(e, m.id)}
-                      onKeyDown={(e) => e.key === "Enter" && handleRemove(e as unknown as React.MouseEvent, m.id)}
-                      className="rounded p-0.5 hover:bg-muted ml-0.5"
-                      aria-label="Remove"
+                triggerDisplay === "count" ? (
+                  <span>
+                    {selectedMembers.length} assignee{selectedMembers.length !== 1 ? "s" : ""} selected
+                  </span>
+                ) : (
+                  selectedMembers.map((m) => (
+                    <Badge
+                      key={m.id}
+                      variant="secondary"
+                      className="gap-0.5 pr-0.5 font-normal"
                     >
-                      <HugeiconsIcon icon={Cancel01Icon} className="size-3" strokeWidth={2} />
-                    </span>
-                  </Badge>
-                ))
+                      {m.user?.name?.trim() || m.user?.email || "—"}
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => handleRemove(e, m.id)}
+                        onKeyDown={(e) => e.key === "Enter" && handleRemove(e as unknown as React.MouseEvent, m.id)}
+                        className="rounded p-0.5 hover:bg-muted ml-0.5"
+                        aria-label="Remove"
+                      >
+                        <HugeiconsIcon icon={Cancel01Icon} className="size-3" strokeWidth={2} />
+                      </span>
+                    </Badge>
+                  ))
+                )
               ) : (
                 placeholder
               )}
@@ -185,10 +199,8 @@ export function OrgMemberMultiSelect({
                             ) : (
                               <HugeiconsIcon icon={UserGroupIcon} className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
                             )}
-                            <span className="truncate">{member.user?.name?.trim() || member.user?.email || "—"}</span>
-                            {isSelected && (
-                              <span className="ml-auto text-xs text-muted-foreground">Added</span>
-                            )}
+                            <span className="truncate flex-1">{member.user?.name?.trim() || member.user?.email || "—"}</span>
+                            <Checkbox checked={isSelected} className="ml-auto shrink-0" />
                           </CommandItem>
                         );
                       })}
@@ -200,9 +212,11 @@ export function OrgMemberMultiSelect({
           </Command>
         </PopoverContent>
       </Popover>
-      <p className="text-xs text-muted-foreground">
-        The creator is automatically added as a project member.
-      </p>
+      {!includeCurrentUser && (
+        <p className="text-xs text-muted-foreground">
+          The creator is automatically added as a project member.
+        </p>
+      )}
     </div>
   );
 }

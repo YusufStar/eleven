@@ -57,12 +57,6 @@ export function ProjectRowActions({ project }: ProjectRowActionsProps) {
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/dashboard/tasks/mine?projectId=${project.id}`}>
-            <HugeiconsIcon icon={UserIcon} className="size-4 mr-1.5" strokeWidth={2} />
-            My tasks
-          </Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
           <Link href={`/dashboard/files?projectId=${project.id}`}>
             <HugeiconsIcon icon={File02Icon} className="size-4 mr-1.5" strokeWidth={2} />
             Files
