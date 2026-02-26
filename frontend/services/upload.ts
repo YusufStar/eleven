@@ -38,3 +38,31 @@ export function useUploadImageMutation() {
     mutationFn: uploadImage,
   })
 }
+
+export type UploadFileResponse = {
+  url: string
+  fileName: string
+  fileType: string
+  fileSize: number
+}
+
+async function uploadFile(file: File): Promise<UploadFileResponse> {
+  const formData = new FormData()
+  formData.set("file", file)
+  const res = await fetch(`${BASE_URL}/upload-file`, {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }))
+    throw new Error(err.message ?? "Upload failed")
+  }
+  return res.json()
+}
+
+export function useUploadFileMutation() {
+  return useMutation({
+    mutationFn: uploadFile,
+  })
+}

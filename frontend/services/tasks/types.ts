@@ -21,6 +21,7 @@ export interface Task {
   organizationId: string;
   title: string;
   description: string | null;
+  detailsMarkdown?: string | null;
   status: string;
   priority: string;
   dueAt: string | null;

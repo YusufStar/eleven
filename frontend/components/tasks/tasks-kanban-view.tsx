@@ -48,16 +48,20 @@ export interface TasksKanbanViewProps {
   tasks: Task[];
   isPending: boolean;
   onStatusChange?: (taskId: string, status: string) => void;
+  /** When set, only tasks assigned to this member can be dragged and opened in detail modal. */
+  currentUserMemberId?: string | null;
 }
 
 function KanbanCard({
   task,
   isOverlay,
   onDetailClick,
+  canOpenDetail = true,
 }: {
   task: Task;
   isOverlay?: boolean;
   onDetailClick?: (task: Task) => void;
+  canOpenDetail?: boolean;
 }) {
   const dueLabel = task.dueAt
     ? (() => {
@@ -113,7 +117,7 @@ function KanbanCard({
 
   return (
     <div className="relative rounded-xl border bg-card p-3 shadow-sm">
-      {onDetailClick && (
+      {canOpenDetail && onDetailClick && (
         <Button
           variant="ghost"
           size="icon"
@@ -158,7 +162,21 @@ function DraggableCard({ task, onDetailClick }: { task: Task; onDetailClick?: (t
         isDragging && "opacity-0 pointer-events-none"
       )}
     >
-      <KanbanCard task={task} onDetailClick={onDetailClick} />
+      <KanbanCard task={task} onDetailClick={onDetailClick} canOpenDetail />
+    </motion.div>
+  );
+}
+
+function StaticCard({ task }: { task: Task }) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="cursor-default"
+    >
+      <KanbanCard task={task} canOpenDetail={false} />
     </motion.div>
   );
 }
@@ -168,14 +186,18 @@ function DroppableColumn({
   tasks,
   isPending,
   onDetailClick,
+  currentUserMemberId,
 }: {
   status: TaskStatusValue;
   tasks: Task[];
   isPending: boolean;
   onDetailClick?: (task: Task) => void;
+  currentUserMemberId?: string | null;
 }) {
   const config = COLUMN_CONFIG[status];
   const { setNodeRef, isOver } = useDroppable({ id: status });
+  const isAssignedToMe = (task: Task) =>
+    !!currentUserMemberId && task.assigneeId === currentUserMemberId;
 
   return (
     <motion.div
@@ -208,9 +230,13 @@ function DroppableColumn({
             <Skeleton key={i} className="h-24 w-full rounded-xl" />
           ))
         ) : (
-          tasks.map((task) => (
-            <DraggableCard key={task.id} task={task} onDetailClick={onDetailClick} />
-          ))
+          tasks.map((task) =>
+            isAssignedToMe(task) ? (
+              <DraggableCard key={task.id} task={task} onDetailClick={onDetailClick} />
+            ) : (
+              <StaticCard key={task.id} task={task} />
+            )
+          )
         )}
       </div>
     </motion.div>
@@ -221,10 +247,14 @@ export function TasksKanbanView({
   tasks,
   isPending,
   onStatusChange,
+  currentUserMemberId,
 }: TasksKanbanViewProps) {
   const updateStatus = useUpdateTaskStatus();
   const [activeTask, setActiveTask] = React.useState<Task | null>(null);
   const [detailTaskId, setDetailTaskId] = React.useState<string | null>(null);
+
+  const canOpenDetail = (task: Task) =>
+    !!currentUserMemberId && task.assigneeId === currentUserMemberId;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -257,6 +287,7 @@ export function TasksKanbanView({
     const task = active.data.current?.task as Task | undefined;
     const newStatus = over.id as string;
     if (!task || !TASK_STATUSES.includes(newStatus as TaskStatusValue) || task.status === newStatus) return;
+    if (currentUserMemberId && task.assigneeId !== currentUserMemberId) return;
 
     onStatusChange?.(task.id, newStatus);
     updateStatus.mutate(
@@ -285,7 +316,8 @@ export function TasksKanbanView({
               status={status}
               tasks={tasksByStatus[status]}
               isPending={isPending}
-              onDetailClick={(t) => setDetailTaskId(t.id)}
+              onDetailClick={(t) => canOpenDetail(t) && setDetailTaskId(t.id)}
+              currentUserMemberId={currentUserMemberId}
             />
           </motion.div>
         ))}

@@ -64,3 +64,25 @@ export const addProjectSchema = z.object({
   links: z.array(projectLinkSchema).optional(),
 })
 export type AddProjectSchema = z.infer<typeof addProjectSchema>
+
+const taskStatusEnum = z.enum(["TODO", "IN_PROGRESS", "DONE", "CANCELLED"])
+const taskPriorityEnum = z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"])
+
+export const addTaskSchema = z.object({
+  title: z.string().min(1, "Title is required").max(500, "Title is too long"),
+  description: z.string().max(5000).optional().or(z.literal("")),
+  detailsMarkdown: z.string().max(100_000).optional().or(z.literal("")),
+  assigneeId: z.string().nullable().optional(),
+  projectId: z.string().nullable().optional(),
+  contactId: z.string().nullable().optional(),
+  parentTaskId: z.string().nullable().optional(),
+  status: taskStatusEnum.optional(),
+  priority: taskPriorityEnum.optional(),
+  dueAt: z.string().nullable().optional(),
+})
+export type AddTaskSchema = z.infer<typeof addTaskSchema>
+
+export const updateTaskSchema = addTaskSchema.partial().extend({
+  title: z.string().min(1).max(500).optional(),
+})
+export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>

@@ -1,12 +1,76 @@
 import { Elysia } from "elysia";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
-import { TaskStatus } from "../../prisma/generated/prisma/enums";
+import { TaskStatus, TaskPriority } from "../../prisma/generated/prisma/enums";
 
 const orgScope = (activeOrganizationId: string) => ({ organizationId: activeOrganizationId });
 
+const validStatuses = Object.values(TaskStatus) as string[];
+const validPriorities = Object.values(TaskPriority) as string[];
+
 export const tasksRoutes = new Elysia({ prefix: "/tasks" })
   .use(authPlugin)
+  .post(
+    "/",
+    async ({ activeOrganizationId, activeMember, body }) => {
+      const b = body as {
+        title?: string;
+        description?: string | null;
+        assigneeId?: string | null;
+        projectId?: string | null;
+        contactId?: string | null;
+        parentTaskId?: string | null;
+        status?: string;
+        priority?: string;
+        dueAt?: string | null;
+        detailsMarkdown?: string | null;
+      };
+      const title = typeof b.title === "string" ? b.title.trim() : "";
+      if (!title) {
+        return new Response(JSON.stringify({ message: "Title is required" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const status = typeof b.status === "string" && validStatuses.includes(b.status) ? (b.status as TaskStatus) : TaskStatus.TODO;
+      const priority = typeof b.priority === "string" && validPriorities.includes(b.priority) ? (b.priority as TaskPriority) : TaskPriority.MEDIUM;
+      const dueAt = b.dueAt != null && b.dueAt !== "" ? new Date(b.dueAt as string) : null;
+      if (b.projectId && activeMember) {
+        const pm = await prisma.projectMember.findUnique({
+          where: { projectId_memberId: { projectId: b.projectId, memberId: activeMember.id } },
+        });
+        if (!pm) {
+          return new Response(JSON.stringify({ message: "Access denied. Only project members can add tasks to this project." }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+      }
+      const created = await prisma.task.create({
+        data: {
+          organizationId: activeOrganizationId!,
+          title,
+          description: typeof b.description === "string" ? b.description.trim() || null : null,
+          status,
+          priority,
+          dueAt,
+          assigneeId: b.assigneeId ?? null,
+          creatorId: activeMember?.id ?? null,
+          projectId: b.projectId ?? null,
+          contactId: b.contactId ?? null,
+          parentTaskId: b.parentTaskId ?? null,
+          detailsMarkdown: typeof b.detailsMarkdown === "string" ? b.detailsMarkdown.trim() || null : null,
+        },
+        include: {
+          assignee: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
+          creator: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
+          project: { select: { id: true, name: true, slug: true } },
+        },
+      });
+      return created;
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
   .get(
     "/",
     async ({ activeOrganizationId, activeMember, query }) => {
@@ -121,14 +185,18 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           headers: { "Content-Type": "application/json" },
         });
       }
-      const status = body?.status;
-      const validStatuses = Object.values(TaskStatus) as string[];
-      if (typeof status !== "string" || !validStatuses.includes(status)) {
-        return new Response(JSON.stringify({ message: "Invalid or missing status" }), {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
+      const b = body as {
+        status?: string;
+        title?: string;
+        description?: string | null;
+        assigneeId?: string | null;
+        projectId?: string | null;
+        contactId?: string | null;
+        parentTaskId?: string | null;
+        priority?: string;
+        dueAt?: string | null;
+        detailsMarkdown?: string | null;
+      };
       const existing = await prisma.task.findFirst({
         where: { id, ...orgScope(activeOrganizationId!) },
       });
@@ -138,19 +206,76 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           headers: { "Content-Type": "application/json" },
         });
       }
+      const status = typeof b.status === "string" && validStatuses.includes(b.status) ? (b.status as TaskStatus) : undefined;
+      const data: Record<string, unknown> = {};
+      if (status !== undefined) {
+        data.status = status;
+        data.completedAt = status === "DONE" ? new Date() : null;
+      }
+      if (typeof b.title === "string" && b.title.trim()) data.title = b.title.trim();
+      if (b.description !== undefined) data.description = typeof b.description === "string" ? b.description.trim() || null : null;
+      if (b.assigneeId !== undefined) data.assigneeId = b.assigneeId ?? null;
+      if (b.projectId !== undefined) data.projectId = b.projectId ?? null;
+      if (b.contactId !== undefined) data.contactId = b.contactId ?? null;
+      if (b.parentTaskId !== undefined) data.parentTaskId = b.parentTaskId ?? null;
+      if (typeof b.priority === "string" && validPriorities.includes(b.priority)) data.priority = b.priority as TaskPriority;
+      if (b.dueAt !== undefined) data.dueAt = b.dueAt != null && b.dueAt !== "" ? new Date(b.dueAt as string) : null;
+      if (b.detailsMarkdown !== undefined) data.detailsMarkdown = typeof b.detailsMarkdown === "string" ? b.detailsMarkdown.trim() || null : null;
       const updated = await prisma.task.update({
         where: { id },
-        data: {
-          status: status as TaskStatus,
-          ...(status === "DONE" ? { completedAt: new Date() } : { completedAt: null }),
-        },
+        data,
         include: {
           assignee: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
           creator: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
           project: { select: { id: true, name: true, slug: true } },
+          contact: { select: { id: true, firstName: true, lastName: true, companyName: true, email: true, phone: true } },
+          parentTask: { select: { id: true, title: true, status: true } },
+          subTasks: { select: { id: true, title: true, status: true } },
+          attachments: true,
         },
       });
       return updated;
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .post(
+    "/:id/attachments",
+    async ({ activeOrganizationId, params, body }) => {
+      const id = params?.id;
+      if (!id || typeof id !== "string") {
+        return new Response(JSON.stringify({ message: "Invalid task id" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const b = body as { fileUrl?: string; fileName?: string; fileType?: string | null; fileSize?: number | null };
+      const fileUrl = typeof b.fileUrl === "string" ? b.fileUrl.trim() : "";
+      const fileName = typeof b.fileName === "string" ? b.fileName.trim() : "file";
+      if (!fileUrl) {
+        return new Response(JSON.stringify({ message: "fileUrl is required" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const task = await prisma.task.findFirst({
+        where: { id, ...orgScope(activeOrganizationId!) },
+      });
+      if (!task) {
+        return new Response(JSON.stringify({ message: "Task not found" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const attachment = await prisma.taskAttachment.create({
+        data: {
+          taskId: id,
+          fileUrl,
+          fileName,
+          fileType: typeof b.fileType === "string" ? b.fileType : null,
+          fileSize: typeof b.fileSize === "number" ? b.fileSize : null,
+        },
+      });
+      return attachment;
     },
     { requireAuth: true, requireActiveOrg: true }
   );

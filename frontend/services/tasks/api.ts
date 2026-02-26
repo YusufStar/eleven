@@ -1,4 +1,4 @@
-import type { PaginatedTasks, Task, TaskDetail, TasksListParams } from "./types";
+import type { PaginatedTasks, Task, TaskAttachment, TaskDetail, TasksListParams } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
 
@@ -32,12 +32,43 @@ function listPath(params?: TasksListParams) {
   return search ? `/tasks${search}` : "/tasks";
 }
 
+export type CreateTaskPayload = {
+  title: string;
+  description?: string | null;
+  detailsMarkdown?: string | null;
+  assigneeId?: string | null;
+  projectId?: string | null;
+  contactId?: string | null;
+  parentTaskId?: string | null;
+  status?: string;
+  priority?: string;
+  dueAt?: string | null;
+};
+
+export type UpdateTaskPayload = Partial<CreateTaskPayload>;
+
+export type AddAttachmentPayload = {
+  fileUrl: string;
+  fileName: string;
+  fileType?: string | null;
+  fileSize?: number | null;
+};
+
 export const tasksApi = {
   list: (params?: TasksListParams) => request<PaginatedTasks>(listPath(params)),
   getById: (taskId: string) => request<TaskDetail>(`/tasks/${taskId}`),
+  create: (payload: CreateTaskPayload) =>
+    request<Task>("/tasks", { method: "POST", body: JSON.stringify(payload) }),
+  update: (taskId: string, payload: UpdateTaskPayload) =>
+    request<TaskDetail>(`/tasks/${taskId}`, { method: "PATCH", body: JSON.stringify(payload) }),
   updateStatus: (taskId: string, status: string) =>
     request<Task>(`/tasks/${taskId}`, {
       method: "PATCH",
       body: JSON.stringify({ status }),
+    }),
+  addAttachment: (taskId: string, payload: AddAttachmentPayload) =>
+    request<TaskAttachment>(`/tasks/${taskId}/attachments`, {
+      method: "POST",
+      body: JSON.stringify(payload),
     }),
 };

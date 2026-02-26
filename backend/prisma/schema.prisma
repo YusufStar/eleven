@@ -353,8 +353,9 @@ model Task {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  title       String
-  description String?
+  title           String
+  description     String?
+  detailsMarkdown String?   // Rich markdown content (Task details), supports images
 
   status      TaskStatus   @default(TODO)
   priority    TaskPriority @default(MEDIUM)

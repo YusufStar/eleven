@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Task01Icon,
@@ -19,10 +20,15 @@ import {
   LinkSquare01Icon,
   HierarchyIcon,
   AttachmentIcon,
+  Edit02Icon,
 } from "@hugeicons/core-free-icons";
-import { useTaskDetail } from "@/services/tasks";
+import { useTaskDetail, useUpdateTask } from "@/services/tasks";
 import { TaskStatusBadge } from "@/components/tasks/task-status-badge";
+import { TaskDetailsEditor } from "@/components/tasks/task-details-editor";
+import { MarkdownView } from "@/components/ui/markdown-view";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const PRIORITY_LABELS: Record<string, string> = {
@@ -83,11 +89,33 @@ export interface TaskDetailModalProps {
 
 export function TaskDetailModal({ taskId, open, onOpenChange }: TaskDetailModalProps) {
   const { data: task, isPending } = useTaskDetail(open && taskId ? taskId : null);
+  const updateTask = useUpdateTask();
+  const [editingDetails, setEditingDetails] = React.useState(false);
+  const [detailsDraft, setDetailsDraft] = React.useState("");
+
+  React.useEffect(() => {
+    if (task?.detailsMarkdown != null) {
+      setDetailsDraft(task.detailsMarkdown);
+    } else {
+      setDetailsDraft("");
+    }
+  }, [task?.detailsMarkdown]);
+
+  const handleSaveDetails = async () => {
+    if (!taskId) return;
+    try {
+      await updateTask.mutateAsync({ taskId, payload: { detailsMarkdown: detailsDraft || null } });
+      setEditingDetails(false);
+      toast.success("Task details updated.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update.");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[90vh] max-w-4xl! overflow-hidden flex flex-col p-0 gap-0"
+        className="max-h-[90vh] max-w-5xl! overflow-hidden flex flex-col p-0 gap-0"
         showCloseButton
       >
         <DialogHeader className="shrink-0 border-b border-border/60 px-6 py-4">
@@ -201,6 +229,41 @@ export function TaskDetailModal({ taskId, open, onOpenChange }: TaskDetailModalP
                   )}
                 </DetailSection>
               )}
+
+              <DetailSection title="Task details">
+                {editingDetails ? (
+                  <div className="space-y-2">
+                    <TaskDetailsEditor
+                      value={detailsDraft}
+                      onChange={setDetailsDraft}
+                      minHeight="14rem"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleSaveDetails} disabled={updateTask.isPending}>
+                        {updateTask.isPending ? <Spinner className="size-4" /> : "Save"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditingDetails(false)} disabled={updateTask.isPending}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative group">
+                    <div className="min-h-[4rem] rounded-lg border border-border/60 bg-muted/20 p-4">
+                      <MarkdownView content={task.detailsMarkdown ?? ""} />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => setEditingDetails(true)}
+                    >
+                      <HugeiconsIcon icon={Edit02Icon} className="size-4" strokeWidth={2} />
+                    </Button>
+                  </div>
+                )}
+              </DetailSection>
 
               {task.attachments && task.attachments.length > 0 && (
                 <DetailSection title="Attachments">

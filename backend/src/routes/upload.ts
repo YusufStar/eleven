@@ -15,6 +15,22 @@ const s3 = new S3Client({
 const BUCKET_NAME = process.env.R2_BUCKET_NAME;
 const R2_PUBLIC_BASE_URL = process.env.R2_PUBLIC_BASE_URL ?? "";
 
+/**
+ * Normalize filename for safe use in URLs and markdown (no spaces, no parens).
+ * Replaces spaces with hyphens and strips characters that break markdown image syntax.
+ */
+function normalizeFileName(name: string): string {
+  const ext = name.includes(".") ? name.slice(name.lastIndexOf(".")) : "";
+  const base = name.includes(".") ? name.slice(0, name.lastIndexOf(".")) : name;
+  const normalized = base
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[()[\]]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "") || `file-${Date.now()}`;
+  return normalized + ext;
+}
+
 export const uploadRoutes = new Elysia()
   .use(authPlugin)
   .post("/upload-image", async ({ request, user }) => {
@@ -28,7 +44,7 @@ export const uploadRoutes = new Elysia()
     }
 
     const folder = `images/${user!.id}`;
-    let name = file.name || `img-${Date.now()}`;
+    let name = normalizeFileName(file.name || `img-${Date.now()}`);
     let body: ArrayBuffer | Buffer = await file.arrayBuffer();
     let contentType = file.type || "image/*";
 
@@ -44,7 +60,7 @@ export const uploadRoutes = new Elysia()
       } else {
         const size = Math.min(width, height, 1000) || 1000;
         const isPng = format === "png" || (channels !== undefined && channels === 4);
-        const base = name.replace(/\.[^.]+$/, "") || name;
+        const base = name.includes(".") ? name.slice(0, name.lastIndexOf(".")) : name;
 
         if (isPng) {
           body = await img
@@ -76,4 +92,29 @@ export const uploadRoutes = new Elysia()
     const url = R2_PUBLIC_BASE_URL ? `${R2_PUBLIC_BASE_URL.replace(/\/$/, "")}/${key}` : key;
     const fileSize = body instanceof Buffer ? body.length : body.byteLength;
     return { url, fileName: name, fileType: contentType, fileSize };
+  }, { requireAuth: true })
+  .post("/upload-file", async ({ request, user }) => {
+    const formData = await request.formData();
+    const file = formData.get("file");
+    if (!file || typeof file === "string") {
+      return new Response(JSON.stringify({ error: "No file" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const folder = `files/${user!.id}`;
+    const name = normalizeFileName(file.name || `file-${Date.now()}`);
+    const body = await file.arrayBuffer();
+    const contentType = file.type || "application/octet-stream";
+    const key = `${folder}/${name}`;
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+        Body: new Uint8Array(body),
+        ContentType: contentType,
+      })
+    );
+    const url = R2_PUBLIC_BASE_URL ? `${R2_PUBLIC_BASE_URL.replace(/\/$/, "")}/${key}` : key;
+    return { url, fileName: name, fileType: contentType, fileSize: body.byteLength };
   }, { requireAuth: true });

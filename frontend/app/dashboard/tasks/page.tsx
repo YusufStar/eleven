@@ -9,6 +9,7 @@ import { TasksFilterBar, type TaskViewType } from "@/components/tasks/tasks-filt
 import { TasksDataTableView } from "@/components/tasks/tasks-data-table-view";
 import { TasksKanbanView } from "@/components/tasks/tasks-kanban-view";
 import { TasksCalendarView } from "@/components/tasks/tasks-calendar-view";
+import { AddTaskModal } from "@/components/tasks/add-task-modal";
 import { useTasksList } from "@/services/tasks";
 import { TASK_STATUSES, type TaskStatusValue } from "@/services/tasks/types";
 import { authClient } from "@/lib/auth-client";
@@ -194,11 +195,20 @@ export default function TasksPage() {
         />
       )}
       {viewType === "kanban" && (
-        <TasksKanbanView tasks={tasks} isPending={isPending} />
+        <TasksKanbanView
+          tasks={tasks}
+          isPending={isPending}
+          currentUserMemberId={myMemberId}
+        />
       )}
       {viewType === "calendar" && (
         <TasksCalendarView tasks={tasks} isPending={isPending} />
       )}
+      <AddTaskModal
+        open={addModalOpen}
+        onOpenChange={setAddModalOpen}
+        defaultProjectId={projectId}
+      />
     </div>
   );
 }
