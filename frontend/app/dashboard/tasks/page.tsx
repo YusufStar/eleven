@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
-import { TasksFilterBar } from "@/components/tasks/tasks-filter-bar";
+import { TasksFilterBar, type TaskViewType } from "@/components/tasks/tasks-filter-bar";
 import { useTasksList } from "@/services/tasks";
 import { TASK_STATUSES, type TaskStatusValue } from "@/services/tasks/types";
 import { authClient } from "@/lib/auth-client";
@@ -13,6 +13,8 @@ import { useTeamMembersList } from "@/services/team";
 import { useDebouncedCallback } from "@/lib/use-debounced-callback";
 
 const SEARCH_DEBOUNCE_MS = 400;
+
+const VIEW_TYPES: TaskViewType[] = ["table", "kanban", "calendar"];
 
 function parseTasksUrl(searchParams: URLSearchParams) {
   const projectId = searchParams.get("projectId") || null;
@@ -22,7 +24,9 @@ function parseTasksUrl(searchParams: URLSearchParams) {
     TASK_STATUSES.includes(s as TaskStatusValue)
   );
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
-  return { projectId, assigneeIds, search, statuses, page };
+  const view = searchParams.get("view") || "table";
+  const viewType = VIEW_TYPES.includes(view as TaskViewType) ? (view as TaskViewType) : "table";
+  return { projectId, assigneeIds, search, statuses, page, viewType };
 }
 
 export default function TasksPage() {
@@ -45,6 +49,7 @@ export default function TasksPage() {
   const search = fromUrl.search;
   const statuses = fromUrl.statuses;
   const page = fromUrl.page;
+  const viewType = fromUrl.viewType;
 
   const updateUrl = useCallback(
     (updates: {
@@ -53,6 +58,7 @@ export default function TasksPage() {
       search?: string;
       statuses?: TaskStatusValue[];
       page?: number;
+      viewType?: TaskViewType;
     }) => {
       const next = new URLSearchParams(searchParams.toString());
       if (updates.projectId !== undefined) {
@@ -74,6 +80,10 @@ export default function TasksPage() {
       if (updates.page !== undefined) {
         if (updates.page > 1) next.set("page", String(updates.page));
         else next.delete("page");
+      }
+      if (updates.viewType !== undefined) {
+        if (updates.viewType !== "table") next.set("view", updates.viewType);
+        else next.delete("view");
       }
       const q = next.toString();
       router.replace(q ? `${pathname}?${q}` : pathname);
@@ -150,6 +160,8 @@ export default function TasksPage() {
           statuses.length > 0 ||
           !(assigneeIds.length === 1 && assigneeIds[0] === myMemberId)
         }
+        viewType={viewType}
+        onViewTypeChange={(v) => updateUrl({ viewType: v })}
         className="mb-4"
       />
       {/* Task list / data table to be added; isPending, tasks, total, page, setPage */}

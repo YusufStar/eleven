@@ -4,7 +4,13 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Search01Icon, ChevronsUpDown } from "@hugeicons/core-free-icons";
+import {
+  Search01Icon,
+  ChevronsUpDown,
+  GridTableIcon,
+  KanbanIcon,
+  Calendar03Icon,
+} from "@hugeicons/core-free-icons";
 import { ProjectSelect } from "@/components/projects/project-select";
 import { OrgMemberMultiSelect } from "@/components/projects/org-member-multi-select";
 import {
@@ -13,8 +19,29 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TASK_STATUSES, type TaskStatusValue } from "@/services/tasks/types";
 import { cn } from "@/lib/utils";
+
+export type TaskViewType = "table" | "kanban" | "calendar";
+
+const VIEW_ICONS: Record<TaskViewType, typeof GridTableIcon> = {
+  table: GridTableIcon,
+  kanban: KanbanIcon,
+  calendar: Calendar03Icon,
+};
+
+const VIEW_LABELS: Record<TaskViewType, string> = {
+  table: "Table",
+  kanban: "Kanban",
+  calendar: "Calendar",
+};
 
 const STATUS_LABELS: Record<TaskStatusValue, string> = {
   TODO: "To do",
@@ -34,6 +61,8 @@ export type TasksFilterBarProps = {
   onStatusesChange: (s: TaskStatusValue[]) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
+  viewType: TaskViewType;
+  onViewTypeChange: (v: TaskViewType) => void;
   className?: string;
 };
 
@@ -48,6 +77,8 @@ export function TasksFilterBar({
   onStatusesChange,
   onClearFilters,
   hasActiveFilters,
+  viewType,
+  onViewTypeChange,
   className,
 }: TasksFilterBarProps) {
   const [statusOpen, setStatusOpen] = React.useState(false);
@@ -126,6 +157,31 @@ export function TasksFilterBar({
             Clear filters
           </Button>
         )}
+        <Select value={viewType} onValueChange={onViewTypeChange}>
+          <SelectTrigger size="sm" className="ml-auto w-[140px] h-8 gap-2">
+            <SelectValue placeholder="View" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="table">
+              <span className="flex items-center gap-2">
+                <HugeiconsIcon icon={GridTableIcon} className="size-4" strokeWidth={2} />
+                {VIEW_LABELS.table}
+              </span>
+            </SelectItem>
+            <SelectItem value="kanban">
+              <span className="flex items-center gap-2">
+                <HugeiconsIcon icon={KanbanIcon} className="size-4" strokeWidth={2} />
+                {VIEW_LABELS.kanban}
+              </span>
+            </SelectItem>
+            <SelectItem value="calendar">
+              <span className="flex items-center gap-2">
+                <HugeiconsIcon icon={Calendar03Icon} className="size-4" strokeWidth={2} />
+                {VIEW_LABELS.calendar}
+              </span>
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
