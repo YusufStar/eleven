@@ -22,7 +22,8 @@ const VIEW_TYPES: TaskViewType[] = ["table", "kanban", "calendar"];
 
 function parseTasksUrl(searchParams: URLSearchParams) {
   const projectId = searchParams.get("projectId") || null;
-  const assigneeIds = searchParams.getAll("assigneeId").filter(Boolean);
+  const assigneeIdsRaw = searchParams.get("assigneeIds") || "";
+  const assigneeIds = assigneeIdsRaw.trim() ? assigneeIdsRaw.split(",").map((id) => id.trim()).filter(Boolean) : [];
   const search = searchParams.get("search") || "";
   const statuses = searchParams.getAll("status").filter((s): s is TaskStatusValue =>
     TASK_STATUSES.includes(s as TaskStatusValue)
@@ -70,8 +71,8 @@ export default function TasksPage() {
         else next.delete("projectId");
       }
       if (updates.assigneeIds !== undefined) {
-        next.delete("assigneeId");
-        updates.assigneeIds.forEach((id) => next.append("assigneeId", id));
+        if (updates.assigneeIds.length > 0) next.set("assigneeIds", updates.assigneeIds.join(","));
+        else next.delete("assigneeIds");
       }
       if (updates.search !== undefined) {
         if (updates.search) next.set("search", updates.search);

@@ -81,11 +81,10 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
         : Math.min(100, Math.max(1, Number(query?.pageSize) || 10));
       const projectId = typeof query?.projectId === "string" && query.projectId !== "" ? query.projectId : undefined;
       const mine = query?.mine === "true" || query?.mine === "1";
-      const rawAssigneeIds = query?.assigneeId;
-      const assigneeIds: string[] = Array.isArray(rawAssigneeIds)
-        ? (rawAssigneeIds as string[]).filter((id) => typeof id === "string" && id !== "")
-        : typeof rawAssigneeIds === "string" && rawAssigneeIds !== ""
-          ? [rawAssigneeIds]
+      const rawAssigneeIds = query?.assigneeIds;
+      const assigneeIds: string[] =
+        typeof rawAssigneeIds === "string" && rawAssigneeIds.trim() !== ""
+          ? rawAssigneeIds.split(",").map((id) => id.trim()).filter((id) => id !== "")
           : [];
       const useMine = mine && activeMember;
       const effectiveAssigneeIds = useMine ? [activeMember!.id] : assigneeIds.length > 0 ? assigneeIds : undefined;

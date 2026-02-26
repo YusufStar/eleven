@@ -23,7 +23,7 @@ function listPath(params?: TasksListParams) {
     if (params?.pageSize != null) u.searchParams.set("pageSize", String(params.pageSize));
   }
   if (params?.mine) u.searchParams.set("mine", "true");
-  if (params?.assigneeIds?.length) params.assigneeIds.forEach((id) => u.searchParams.append("assigneeId", id));
+  if (params?.assigneeIds?.length) u.searchParams.set("assigneeIds", params.assigneeIds.join(","));
   if (params?.projectId != null && params.projectId !== "") u.searchParams.set("projectId", params.projectId);
   if (params?.search != null && params.search !== "") u.searchParams.set("search", params.search);
   const statusArr = params?.status == null ? [] : Array.isArray(params.status) ? params.status : [params.status];

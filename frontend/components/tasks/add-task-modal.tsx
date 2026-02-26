@@ -318,9 +318,8 @@ export function AddTaskModal({ open, onOpenChange, defaultProjectId }: AddTaskMo
                 </FieldLabel>
                 <div
                   {...getRootProps()}
-                  className={`rounded-lg border border-dashed p-4 text-center text-sm transition-colors ${
-                    isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/30 hover:border-muted-foreground/50"
-                  }`}
+                  className={`rounded-lg border border-dashed p-4 text-center text-sm transition-colors ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/30 hover:border-muted-foreground/50"
+                    }`}
                 >
                   <input {...getInputProps()} />
                   {uploadFile.isPending ? "Uploading..." : "Drop files here or click to select"}
@@ -340,7 +339,7 @@ export function AddTaskModal({ open, onOpenChange, defaultProjectId }: AddTaskMo
               </Field>
             </FieldGroup>
           </div>
-          <DialogFooter className="shrink-0 border-t border-border/60 px-6 py-4">
+          <DialogFooter className="shrink-0 border-t border-border/60 px-6! p-4 mb-0!">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
               Cancel
             </Button>
