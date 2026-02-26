@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useTeamMembersList } from "@/services/team";
 import { MembersDataTable } from "@/components/team/members/data-table";
 import { membersColumns } from "@/components/team/members/columns";
@@ -8,11 +9,48 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
+import { useDebouncedCallback } from "@/lib/use-debounced-callback";
+
+const SEARCH_DEBOUNCE_MS = 400;
 
 export default function TeamMembersPage() {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [role, setRole] = useState<string>("all");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const search = searchParams.get("search") || "";
+  const role = searchParams.get("role") || "all";
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+
+  const updateUrl = useCallback(
+    (updates: { search?: string; role?: string; page?: number }) => {
+      const next = new URLSearchParams(searchParams.toString());
+      if (updates.search !== undefined) {
+        if (updates.search) next.set("search", updates.search);
+        else next.delete("search");
+      }
+      if (updates.role !== undefined) {
+        if (updates.role && updates.role !== "all") next.set("role", updates.role);
+        else next.delete("role");
+      }
+      if (updates.page !== undefined) {
+        if (updates.page > 1) next.set("page", String(updates.page));
+        else next.delete("page");
+      }
+      const q = next.toString();
+      router.replace(q ? `${pathname}?${q}` : pathname);
+    },
+    [pathname, router, searchParams]
+  );
+
+  const debouncedUpdateSearch = useDebouncedCallback(
+    (v: string) => updateUrl({ search: v, page: 1 }),
+    SEARCH_DEBOUNCE_MS
+  );
+
+  const [searchInput, setSearchInput] = useState(search);
+  useEffect(() => setSearchInput(search), [search]);
+
   const pageSize = 10;
   const params = {
     page,
@@ -23,15 +61,16 @@ export default function TeamMembersPage() {
   const { data, isPending, isFetching } = useTeamMembersList(params);
   const members = data?.data ?? [];
   const total = data?.total ?? 0;
-  const onPageChange = useCallback((p: number) => setPage(p), []);
-  const onSearchChange = useCallback((v: string) => {
-    setSearch(v);
-    setPage(1);
-  }, []);
-  const onRoleChange = useCallback((v: string) => {
-    setRole(v);
-    setPage(1);
-  }, []);
+
+  const onPageChange = useCallback((p: number) => updateUrl({ page: p }), [updateUrl]);
+  const onSearchChange = useCallback(
+    (v: string) => {
+      setSearchInput(v);
+      debouncedUpdateSearch(v);
+    },
+    [debouncedUpdateSearch]
+  );
+  const onRoleChange = useCallback((v: string) => updateUrl({ role: v, page: 1 }), [updateUrl]);
 
   return (
     <div className="container mx-auto py-6">
@@ -68,7 +107,7 @@ export default function TeamMembersPage() {
         pageSize={pageSize}
         total={total}
         onPageChange={onPageChange}
-        search={search}
+        search={searchInput}
         onSearchChange={onSearchChange}
         role={role}
         onRoleChange={onRoleChange}

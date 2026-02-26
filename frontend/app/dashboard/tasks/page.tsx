@@ -1,30 +1,34 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
 import { TasksFilterBar } from "@/components/tasks/tasks-filter-bar";
 import { useTasksList } from "@/services/tasks";
-import type { TaskStatusValue } from "@/services/tasks/types";
+import { TASK_STATUSES, type TaskStatusValue } from "@/services/tasks/types";
 import { authClient } from "@/lib/auth-client";
 import { useTeamMembersList } from "@/services/team";
+import { useDebouncedCallback } from "@/lib/use-debounced-callback";
+
+const SEARCH_DEBOUNCE_MS = 400;
+
+function parseTasksUrl(searchParams: URLSearchParams) {
+  const projectId = searchParams.get("projectId") || null;
+  const assigneeIds = searchParams.getAll("assigneeId").filter(Boolean);
+  const search = searchParams.get("search") || "";
+  const statuses = searchParams.getAll("status").filter((s): s is TaskStatusValue =>
+    TASK_STATUSES.includes(s as TaskStatusValue)
+  );
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+  return { projectId, assigneeIds, search, statuses, page };
+}
 
 export default function TasksPage() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const projectIdFromUrl = useMemo(
-    () => searchParams.get("projectId") || null,
-    [searchParams]
-  );
-
-  const [addModalOpen, setAddModalOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [projectId, setProjectId] = useState<string | null>(projectIdFromUrl);
-
-  useEffect(() => {
-    if (projectIdFromUrl) setProjectId(projectIdFromUrl);
-  }, [projectIdFromUrl]);
 
   const { data: session } = authClient.useSession();
   const { data: teamData } = useTeamMembersList({ pageSize: 200 });
@@ -35,16 +39,58 @@ export default function TasksPage() {
     return list.find((m) => m.userId === uid)?.id ?? null;
   }, [teamData?.data, session?.user?.id]);
 
-  const hasSetDefaultAssignees = useRef(false);
-  const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
-  useEffect(() => {
-    if (hasSetDefaultAssignees.current || myMemberId == null) return;
-    hasSetDefaultAssignees.current = true;
-    setAssigneeIds([myMemberId]);
-  }, [myMemberId]);
+  const fromUrl = useMemo(() => parseTasksUrl(searchParams), [searchParams]);
+  const assigneeIds = fromUrl.assigneeIds.length > 0 ? fromUrl.assigneeIds : (myMemberId ? [myMemberId] : []);
+  const projectId = fromUrl.projectId;
+  const search = fromUrl.search;
+  const statuses = fromUrl.statuses;
+  const page = fromUrl.page;
 
-  const [statuses, setStatuses] = useState<TaskStatusValue[]>([]);
-  const [page, setPage] = useState(1);
+  const updateUrl = useCallback(
+    (updates: {
+      projectId?: string | null;
+      assigneeIds?: string[];
+      search?: string;
+      statuses?: TaskStatusValue[];
+      page?: number;
+    }) => {
+      const next = new URLSearchParams(searchParams.toString());
+      if (updates.projectId !== undefined) {
+        if (updates.projectId) next.set("projectId", updates.projectId);
+        else next.delete("projectId");
+      }
+      if (updates.assigneeIds !== undefined) {
+        next.delete("assigneeId");
+        updates.assigneeIds.forEach((id) => next.append("assigneeId", id));
+      }
+      if (updates.search !== undefined) {
+        if (updates.search) next.set("search", updates.search);
+        else next.delete("search");
+      }
+      if (updates.statuses !== undefined) {
+        next.delete("status");
+        updates.statuses.forEach((s) => next.append("status", s));
+      }
+      if (updates.page !== undefined) {
+        if (updates.page > 1) next.set("page", String(updates.page));
+        else next.delete("page");
+      }
+      const q = next.toString();
+      router.replace(q ? `${pathname}?${q}` : pathname);
+    },
+    [pathname, router, searchParams]
+  );
+
+  const debouncedUpdateSearch = useDebouncedCallback(
+    (v: string) => updateUrl({ search: v, page: 1 }),
+    SEARCH_DEBOUNCE_MS
+  );
+
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState(search);
+  useEffect(() => {
+    setSearchInput(fromUrl.search);
+  }, [fromUrl.search]);
 
   const params = {
     page,
@@ -83,26 +129,27 @@ export default function TasksPage() {
         </div>
       </div>
       <TasksFilterBar
-        search={search}
+        search={searchInput}
         onSearchChange={(v) => {
-          setSearch(v);
-          setPage(1);
+          setSearchInput(v);
+          debouncedUpdateSearch(v);
         }}
         projectId={projectId}
-        onProjectIdChange={(id) => {
-          setProjectId(id);
-          setPage(1);
-        }}
+        onProjectIdChange={(id) => updateUrl({ projectId: id, page: 1 })}
         assigneeIds={assigneeIds}
-        onAssigneeIdsChange={(ids) => {
-          setAssigneeIds(ids);
-          setPage(1);
-        }}
+        onAssigneeIdsChange={(ids) => updateUrl({ assigneeIds: ids, page: 1 })}
         statuses={statuses}
-        onStatusesChange={(s) => {
-          setStatuses(s);
-          setPage(1);
+        onStatusesChange={(s) => updateUrl({ statuses: s, page: 1 })}
+        onClearFilters={() => {
+          setSearchInput("");
+          updateUrl({ projectId: null, assigneeIds: [], search: "", statuses: [], page: 1 });
         }}
+        hasActiveFilters={
+          !!search ||
+          !!projectId ||
+          statuses.length > 0 ||
+          !(assigneeIds.length === 1 && assigneeIds[0] === myMemberId)
+        }
         className="mb-4"
       />
       {/* Task list / data table to be added; isPending, tasks, total, page, setPage */}

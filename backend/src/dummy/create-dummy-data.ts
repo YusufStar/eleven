@@ -52,7 +52,7 @@ export async function createDummyData(): Promise<{ ok: boolean; message: string;
           ContactStatus.PARTNER,
         ]),
         source: faker.helpers.arrayElement(Object.values(ContactSource)),
-        avatar: faker.image.urlLoremFlickr({ category: "business" }),
+        avatar: faker.image.url({ width: 100, height: 100 }),
         firstName: companyName,
         lastName: null,
         email: faker.internet.email().toLowerCase(),

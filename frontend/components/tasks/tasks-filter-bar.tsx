@@ -32,6 +32,8 @@ export type TasksFilterBarProps = {
   onAssigneeIdsChange: (ids: string[]) => void;
   statuses: TaskStatusValue[];
   onStatusesChange: (s: TaskStatusValue[]) => void;
+  onClearFilters: () => void;
+  hasActiveFilters: boolean;
   className?: string;
 };
 
@@ -44,6 +46,8 @@ export function TasksFilterBar({
   onAssigneeIdsChange,
   statuses,
   onStatusesChange,
+  onClearFilters,
+  hasActiveFilters,
   className,
 }: TasksFilterBarProps) {
   const [statusOpen, setStatusOpen] = React.useState(false);
@@ -77,7 +81,7 @@ export function TasksFilterBar({
             className="h-8 pl-8"
           />
         </div>
-        <div className="w-[200px]">
+        <div className="w-[250px]">
           <ProjectSelect
             value={projectId}
             onChange={onProjectIdChange}
@@ -117,18 +121,8 @@ export function TasksFilterBar({
             </div>
           </PopoverContent>
         </Popover>
-        {(search || projectId || statuses.length > 0 || assigneeIds.length > 0) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 text-muted-foreground"
-            onClick={() => {
-              onSearchChange("");
-              onProjectIdChange(null);
-              onStatusesChange([]);
-              onAssigneeIdsChange([]);
-            }}
-          >
+        {hasActiveFilters && (
+          <Button variant="ghost" size="sm" className="h-8 text-muted-foreground" onClick={onClearFilters}>
             Clear filters
           </Button>
         )}
