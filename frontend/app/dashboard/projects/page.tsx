@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useProjectsList } from "@/services/projects";
 import { ProjectsDataTable } from "@/components/projects/data-table";

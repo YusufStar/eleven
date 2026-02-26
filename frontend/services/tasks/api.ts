@@ -1,4 +1,4 @@
-import type { PaginatedTasks, TasksListParams } from "./types";
+import type { PaginatedTasks, Task, TaskDetail, TasksListParams } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
 
@@ -17,8 +17,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 function listPath(params?: TasksListParams) {
   const u = new URL("/tasks", "http://_");
-  if (params?.page != null) u.searchParams.set("page", String(params.page));
-  if (params?.pageSize != null) u.searchParams.set("pageSize", String(params.pageSize));
+  if (params?.all) u.searchParams.set("all", "true");
+  else {
+    if (params?.page != null) u.searchParams.set("page", String(params.page));
+    if (params?.pageSize != null) u.searchParams.set("pageSize", String(params.pageSize));
+  }
   if (params?.mine) u.searchParams.set("mine", "true");
   if (params?.assigneeIds?.length) params.assigneeIds.forEach((id) => u.searchParams.append("assigneeId", id));
   if (params?.projectId != null && params.projectId !== "") u.searchParams.set("projectId", params.projectId);
@@ -31,4 +34,10 @@ function listPath(params?: TasksListParams) {
 
 export const tasksApi = {
   list: (params?: TasksListParams) => request<PaginatedTasks>(listPath(params)),
+  getById: (taskId: string) => request<TaskDetail>(`/tasks/${taskId}`),
+  updateStatus: (taskId: string, status: string) =>
+    request<Task>(`/tasks/${taskId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
 };

@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
 import { TasksFilterBar, type TaskViewType } from "@/components/tasks/tasks-filter-bar";
+import { TasksDataTableView } from "@/components/tasks/tasks-data-table-view";
+import { TasksKanbanView } from "@/components/tasks/tasks-kanban-view";
+import { TasksCalendarView } from "@/components/tasks/tasks-calendar-view";
 import { useTasksList } from "@/services/tasks";
 import { TASK_STATUSES, type TaskStatusValue } from "@/services/tasks/types";
 import { authClient } from "@/lib/auth-client";
@@ -102,7 +105,7 @@ export default function TasksPage() {
     setSearchInput(fromUrl.search);
   }, [fromUrl.search]);
 
-  const params = {
+  const tableParams = {
     page,
     pageSize: 10,
     search: search || undefined,
@@ -110,9 +113,25 @@ export default function TasksPage() {
     assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
     status: statuses.length > 0 ? statuses : undefined,
   };
-  const { data, isPending } = useTasksList(params);
-  const tasks = data?.data ?? [];
-  const total = data?.total ?? 0;
+  const kanbanParams = {
+    all: true,
+    search: search || undefined,
+    projectId: projectId || undefined,
+    assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
+    status: statuses.length > 0 ? statuses : undefined,
+  };
+  const tableQuery = useTasksList(viewType === "table" ? tableParams : undefined);
+  const fullListQuery = useTasksList(
+    viewType === "kanban" || viewType === "calendar" ? kanbanParams : undefined
+  );
+  const tasks =
+    viewType === "table"
+      ? (tableQuery.data?.data ?? [])
+      : (fullListQuery.data?.data ?? []);
+  const total =
+    viewType === "table" ? (tableQuery.data?.total ?? 0) : (fullListQuery.data?.total ?? 0);
+  const isPending =
+    viewType === "table" ? tableQuery.isPending : fullListQuery.isPending;
 
   return (
     <div className="container mx-auto py-6">
@@ -164,7 +183,22 @@ export default function TasksPage() {
         onViewTypeChange={(v) => updateUrl({ viewType: v })}
         className="mb-4"
       />
-      {/* Task list / data table to be added; isPending, tasks, total, page, setPage */}
+      {viewType === "table" && (
+        <TasksDataTableView
+          tasks={tasks}
+          total={total}
+          page={page}
+          pageSize={10}
+          isPending={isPending}
+          onPageChange={(p) => updateUrl({ page: p })}
+        />
+      )}
+      {viewType === "kanban" && (
+        <TasksKanbanView tasks={tasks} isPending={isPending} />
+      )}
+      {viewType === "calendar" && (
+        <TasksCalendarView tasks={tasks} isPending={isPending} />
+      )}
     </div>
   );
 }

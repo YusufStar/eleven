@@ -10,8 +10,11 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
   .get(
     "/",
     async ({ activeOrganizationId, activeMember, query }) => {
-      const page = Math.max(1, Number(query?.page) || 1);
-      const pageSize = Math.min(100, Math.max(1, Number(query?.pageSize) || 10));
+      const fetchAll = query?.all === "true" || query?.all === "1";
+      const page = fetchAll ? 1 : Math.max(1, Number(query?.page) || 1);
+      const pageSize = fetchAll
+        ? 2000
+        : Math.min(100, Math.max(1, Number(query?.pageSize) || 10));
       const projectId = typeof query?.projectId === "string" && query.projectId !== "" ? query.projectId : undefined;
       const mine = query?.mine === "true" || query?.mine === "1";
       const rawAssigneeIds = query?.assigneeId;
@@ -72,6 +75,82 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
         prisma.task.count({ where }),
       ]);
       return { data, total, page, pageSize };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .get(
+    "/:id",
+    async ({ activeOrganizationId, params }) => {
+      const id = params?.id;
+      if (!id || typeof id !== "string") {
+        return new Response(JSON.stringify({ message: "Invalid task id" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const task = await prisma.task.findFirst({
+        where: { id, ...orgScope(activeOrganizationId!) },
+        include: {
+          assignee: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
+          creator: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
+          project: { select: { id: true, name: true, slug: true } },
+          contact: { select: { id: true, firstName: true, lastName: true, companyName: true, email: true, phone: true } },
+          deal: { select: { id: true, title: true, value: true, status: true, currency: true } },
+          parentTask: { select: { id: true, title: true, status: true } },
+          subTasks: { select: { id: true, title: true, status: true } },
+          attachments: true,
+        },
+      });
+      if (!task) {
+        return new Response(JSON.stringify({ message: "Task not found" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return task;
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .patch(
+    "/:id",
+    async ({ activeOrganizationId, activeMember, params, body }) => {
+      const id = params?.id;
+      if (!id || typeof id !== "string") {
+        return new Response(JSON.stringify({ message: "Invalid task id" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const status = body?.status;
+      const validStatuses = Object.values(TaskStatus) as string[];
+      if (typeof status !== "string" || !validStatuses.includes(status)) {
+        return new Response(JSON.stringify({ message: "Invalid or missing status" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const existing = await prisma.task.findFirst({
+        where: { id, ...orgScope(activeOrganizationId!) },
+      });
+      if (!existing) {
+        return new Response(JSON.stringify({ message: "Task not found" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const updated = await prisma.task.update({
+        where: { id },
+        data: {
+          status: status as TaskStatus,
+          ...(status === "DONE" ? { completedAt: new Date() } : { completedAt: null }),
+        },
+        include: {
+          assignee: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
+          creator: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
+          project: { select: { id: true, name: true, slug: true } },
+        },
+      });
+      return updated;
     },
     { requireAuth: true, requireActiveOrg: true }
   );
