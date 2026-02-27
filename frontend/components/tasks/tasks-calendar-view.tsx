@@ -1,23 +1,18 @@
 "use client";
 
-import type { Task } from "@/services/tasks";
+import { CalendarClient } from "@/components/ui/calendar/calendar-client";
 
 export interface TasksCalendarViewProps {
-  tasks: Task[];
-  isPending: boolean;
+  tasks?: unknown[];
+  isPending?: boolean;
   onDateChange?: (taskId: string, dueAt: string | null) => void;
-  onTaskClick?: (task: Task) => void;
+  onTaskClick?: (task: unknown) => void;
 }
 
-export function TasksCalendarView({
-  tasks,
-  isPending,
-  onDateChange,
-  onTaskClick,
-}: TasksCalendarViewProps) {
+export function TasksCalendarView(_props: TasksCalendarViewProps) {
   return (
-    <div className="flex min-h-[320px] items-center justify-center rounded-lg border border-dashed bg-muted/30">
-      <p className="text-muted-foreground">Calendar View</p>
+    <div className="min-h-0 w-full flex-1 overflow-auto p-4 max-h-[calc(100vh-14rem)]">
+      <CalendarClient defaultView="month" />
     </div>
   );
 }

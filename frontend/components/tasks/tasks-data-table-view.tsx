@@ -1,8 +1,11 @@
 "use client";
 
 import type { Task } from "@/services/tasks";
+import { useUpdateTaskStatus } from "@/services/tasks";
+import type { TaskStatusValue } from "@/services/tasks/types";
 import { TasksDataTable } from "@/components/tasks/tasks-data-table";
 import { tasksColumns } from "@/components/tasks/columns";
+import { toast } from "sonner";
 
 export interface TasksDataTableViewProps {
   tasks: Task[];
@@ -21,6 +24,19 @@ export function TasksDataTableView({
   isPending,
   onPageChange,
 }: TasksDataTableViewProps) {
+  const updateStatus = useUpdateTaskStatus();
+
+  const handleBulkStatusChange = async (taskIds: string[], status: TaskStatusValue) => {
+    try {
+      await Promise.all(
+        taskIds.map((taskId) => updateStatus.mutateAsync({ taskId, status }))
+      );
+      toast.success("Status updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update status");
+    }
+  };
+
   return (
     <TasksDataTable
       columns={tasksColumns}
@@ -30,6 +46,7 @@ export function TasksDataTableView({
       pageSize={pageSize}
       total={total}
       onPageChange={onPageChange}
+      onBulkStatusChange={handleBulkStatusChange}
     />
   );
 }

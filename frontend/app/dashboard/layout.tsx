@@ -79,7 +79,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     </Breadcrumb>
                                 </div>
                             </header>
-                            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                            <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
                                 {activeOrgPaymentStatus?.plan === "FREE" && !activeOrgPaymentStatus?.paidAt ? (
                                     <div className="h-full w-full flex items-center justify-center min-h-[50vh]">
                                         {activeOrganization && <PlanDetailsCard organizationId={activeOrganization.id} />}

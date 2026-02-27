@@ -237,21 +237,20 @@ export function AddTaskModal({ open, onOpenChange, defaultProjectId }: AddTaskMo
                   />
                 </Field>
               </div>
-              <Field>
-                <FieldLabel htmlFor="add-task-dueAt">Due date (optional)</FieldLabel>
-                <Controller
-                  control={form.control}
-                  name="dueAt"
-                  render={({ field }) => (
-                    <DateTimePicker
-                      id="add-task-dueAt"
-                      value={field.value ?? null}
-                      onChange={(v) => field.onChange(v ?? null)}
-                      placeholder="Pick date and time"
-                    />
-                  )}
-                />
-              </Field>
+              <Controller
+                control={form.control}
+                name="dueAt"
+                render={({ field }) => (
+                  <DateTimePicker
+                    id="add-task-dueAt"
+                    label="Due date (optional)"
+                    value={field.value ?? null}
+                    onChange={(v) => field.onChange(v ?? null)}
+                    placeholder="Pick date and time"
+                    error={form.formState.errors.dueAt?.message}
+                  />
+                )}
+              />
               <Field>
                 <FieldLabel>Assignee</FieldLabel>
                 <Controller

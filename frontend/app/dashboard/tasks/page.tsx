@@ -136,8 +136,8 @@ export default function TasksPage() {
     viewType === "table" ? tableQuery.isPending : fullListQuery.isPending;
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="container mx-auto flex min-h-0 flex-col py-6">
+      <div className="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Tasks</h1>
           <p className="text-sm text-muted-foreground">
@@ -183,7 +183,7 @@ export default function TasksPage() {
         }
         viewType={viewType}
         onViewTypeChange={(v) => updateUrl({ viewType: v })}
-        className="mb-4"
+        className="mb-4 shrink-0"
       />
       {viewType === "table" && (
         <TasksDataTableView
@@ -203,7 +203,9 @@ export default function TasksPage() {
         />
       )}
       {viewType === "calendar" && (
-        <TasksCalendarView tasks={tasks} isPending={isPending} />
+        <div className="min-h-0 flex-1">
+          <TasksCalendarView tasks={tasks} isPending={isPending} />
+        </div>
       )}
       <AddTaskModal
         open={addModalOpen}

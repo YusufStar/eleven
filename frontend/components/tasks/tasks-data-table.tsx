@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   type ColumnDef,
+  type RowSelectionState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -17,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -25,6 +27,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -38,13 +47,22 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Settings01Icon, Task01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/services/tasks";
+import { TASK_STATUSES, type TaskStatusValue } from "@/services/tasks/types";
 
 const columnLabels: Record<string, string> = {
+  select: "Select",
   title: "Title",
   status: "Status",
   project: "Project",
   assignee: "Assignee",
   dueAt: "Due date",
+};
+
+const STATUS_LABELS: Record<TaskStatusValue, string> = {
+  TODO: "To do",
+  IN_PROGRESS: "In progress",
+  DONE: "Done",
+  CANCELLED: "Cancelled",
 };
 
 export type TasksDataTableProps = {
@@ -56,6 +74,7 @@ export type TasksDataTableProps = {
   pageSize: number;
   total: number;
   onPageChange: (page: number) => void;
+  onBulkStatusChange?: (taskIds: string[], status: TaskStatusValue) => void;
 };
 
 export function TasksDataTable({
@@ -67,16 +86,57 @@ export function TasksDataTable({
   pageSize,
   total,
   onPageChange,
+  onBulkStatusChange,
 }: TasksDataTableProps) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const [statusSelectValue, setStatusSelectValue] = React.useState<string>("");
+
+  const selectionColumn: ColumnDef<Task, unknown> = React.useMemo(
+    () => ({
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+          onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(v) => row.toggleSelected(!!v)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    }),
+    []
+  );
 
   const table = useReactTable({
     data,
-    columns,
+    columns: [selectionColumn, ...columns],
+    getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    state: { columnVisibility },
+    onRowSelectionChange: setRowSelection,
+    state: { columnVisibility, rowSelection },
+    enableRowSelection: true,
   });
+
+  const selectedIds = React.useMemo(
+    () => table.getFilteredSelectedRowModel().rows.map((r) => r.original.id),
+    [table, rowSelection]
+  );
+
+  const handleStatusChange = (value: string) => {
+    if (!value || selectedIds.length === 0) return;
+    onBulkStatusChange?.(selectedIds, value as TaskStatusValue);
+    setStatusSelectValue("");
+    setRowSelection({});
+  };
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const canPrevious = page > 1;
@@ -85,6 +145,20 @@ export function TasksDataTable({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
+        {selectedIds.length > 0 && onBulkStatusChange && (
+          <Select value={statusSelectValue || undefined} onValueChange={handleStatusChange}>
+            <SelectTrigger className="w-[160px]" size="sm">
+              <SelectValue placeholder="Update status" />
+            </SelectTrigger>
+            <SelectContent>
+              {TASK_STATUSES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <div className="ml-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
