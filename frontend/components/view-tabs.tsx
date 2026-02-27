@@ -3,43 +3,14 @@ import { motion, AnimatePresence } from "motion/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { cn } from "@/lib/utils";
-import { useCalendar } from "@/components/calendar-context";
-import {
-  CalendarRange,
-  List,
-  Columns,
-  Grid3X3,
-  Grid2X2,
-} from "lucide-react";
+import { useCalendar } from "@/components/ui/calendar/calendar-context";
+import { Grid3X3, Grid2X2 } from "lucide-react";
 import { TCalendarView } from "@/components/ui/calendar/types";
 import { memo } from "react";
 
 const tabs = [
-  {
-    name: "Agenda",
-    value: "agenda",
-    icon: () => <CalendarRange className="h-4 w-4" />,
-  },
-  {
-    name: "Day",
-    value: "day",
-    icon: () => <List className="h-4 w-4" />,
-  },
-  {
-    name: "Week",
-    value: "week",
-    icon: () => <Columns className="h-4 w-4" />,
-  },
-  {
-    name: "Month",
-    value: "month",
-    icon: () => <Grid3X3 className="h-4 w-4" />,
-  },
-  {
-    name: "Year",
-    value: "year",
-    icon: () => <Grid2X2 className="h-4 w-4" />,
-  },
+  { name: "Month", value: "month", icon: () => <Grid3X3 className="h-4 w-4" /> },
+  { name: "Year", value: "year", icon: () => <Grid2X2 className="h-4 w-4" /> },
 ];
 
 function Views() {
