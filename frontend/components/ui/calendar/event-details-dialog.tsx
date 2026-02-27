@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCalendar } from "@/components/ui/calendar/calendar-context";
-import { AddEditEventDialog } from "@/components/ui/calendar/add-edit-event-dialog";
 import { formatTime } from "@/components/ui/calendar/helpers";
 import type { IEvent } from "@/components/ui/calendar/interfaces";
 import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
@@ -108,9 +107,6 @@ export function EventDetailsDialog({ event, children }: IProps) {
           </div>
         </ScrollArea>
         <div className="flex justify-end gap-2">
-          <AddEditEventDialog event={event}>
-            <Button variant="outline">Edit</Button>
-          </AddEditEventDialog>
           <Button
             variant="destructive"
             onClick={() => {

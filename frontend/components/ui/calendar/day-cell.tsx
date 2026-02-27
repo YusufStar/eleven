@@ -14,9 +14,6 @@ import { useMediaQuery } from "@/components/ui/calendar/hooks";
 import type { ICalendarCell, IEvent } from "@/components/ui/calendar/interfaces";
 import { EventBullet } from "@/components/ui/calendar/event-bullet";
 import { MonthEventBadge } from "@/components/ui/calendar/month-event-badge";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { AddEditEventDialog } from "@/components/ui/calendar/add-edit-event-dialog";
 
 interface IProps {
   cell: ICalendarCell;
@@ -135,21 +132,7 @@ export function DayCell({ cell, events, eventPositions }: IProps) {
               !currentMonth && "opacity-50",
             )}
           >
-            {cellEvents.length === 0 && !isMobile ? (
-              <div className="w-full h-full flex justify-center items-center group">
-                <AddEditEventDialog startDate={date}>
-                  <Button
-                    variant="ghost"
-                    className="border opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="max-sm:hidden">Add Event</span>
-                  </Button>
-                </AddEditEventDialog>
-              </div>
-            ) : (
-              [0, 1, 2].map(renderEventAtPosition)
-            )}
+            {[0, 1, 2].map(renderEventAtPosition)}
           </motion.div>
 
           {showMobileMore && (

@@ -5,7 +5,6 @@ import { DayPicker } from "@/components/ui/day-picker";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCalendar } from "@/components/ui/calendar/calendar-context";
 
-import { AddEditEventDialog } from "@/components/ui/calendar/add-edit-event-dialog";
 import { DroppableArea } from "@/components/ui/calendar/droppable-area";
 import { groupEvents } from "@/components/ui/calendar/helpers";
 import type { IEvent } from "@/components/ui/calendar/interfaces";
@@ -138,12 +137,7 @@ export function CalendarDayView({ singleDayEvents, multiDayEvents }: IProps) {
                       minute={0}
                       className="absolute inset-x-0 top-0 h-[48px]"
                     >
-                      <AddEditEventDialog
-                        startDate={selectedDate}
-                        startTime={{ hour, minute: 0 }}
-                      >
-                        <div className="absolute inset-0 cursor-pointer transition-colors hover:bg-secondary" />
-                      </AddEditEventDialog>
+                      <div className="absolute inset-0" />
                     </DroppableArea>
 
                     <div className="pointer-events-none absolute inset-x-0 top-1/2 border-b border-dashed border-b-tertiary"></div>
@@ -154,12 +148,7 @@ export function CalendarDayView({ singleDayEvents, multiDayEvents }: IProps) {
                       minute={30}
                       className="absolute inset-x-0 bottom-0 h-[48px]"
                     >
-                      <AddEditEventDialog
-                        startDate={selectedDate}
-                        startTime={{ hour, minute: 30 }}
-                      >
-                        <div className="absolute inset-0 cursor-pointer transition-colors hover:bg-secondary" />
-                      </AddEditEventDialog>
+                      <div className="absolute inset-0" />
                     </DroppableArea>
                   </div>
                 ))}
