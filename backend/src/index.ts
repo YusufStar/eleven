@@ -32,7 +32,7 @@ const app = new Elysia()
       return { ok: false, message: err instanceof Error ? err.message : "Unknown error" };
     }
   })
-  .listen(3333);
+  .listen(process.env.PORT ?? 3333);
 
 console.log(`🚀 Backend running at http://localhost:3333`);
 console.log(`🚀 R2_PUBLIC_BASE_URL: ${process.env.R2_PUBLIC_BASE_URL ?? ""}`);
