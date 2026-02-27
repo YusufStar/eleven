@@ -14,6 +14,8 @@ export interface IEvent {
 	color: TEventColor;
 	description: string;
 	user: IUser;
+	/** When set, this event represents a task; click opens TaskDetailModal. */
+	taskId?: string;
 }
 
 export interface ICalendarCell {

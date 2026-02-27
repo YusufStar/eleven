@@ -5,7 +5,6 @@ import { CalendarProvider } from "@/components/ui/calendar/calendar-context";
 import { DndProvider } from "@/components/ui/calendar/dnd-context";
 import { CalendarHeader } from "@/components/ui/calendar/calendar-header";
 import type { IEvent, IUser } from "@/components/ui/calendar/interfaces";
-import { USERS_MOCK } from "@/components/ui/calendar/mocks";
 
 export interface CalendarClientProps {
   events?: IEvent[];
@@ -15,7 +14,7 @@ export interface CalendarClientProps {
 
 export function CalendarClient({
   events = [],
-  users = USERS_MOCK,
+  users = [],
   defaultView = "month",
 }: CalendarClientProps) {
   return (

@@ -73,7 +73,7 @@ export default function TeamMembersPage() {
   const onRoleChange = useCallback((v: string) => updateUrl({ role: v, page: 1 }), [updateUrl]);
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-2">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Members</h1>

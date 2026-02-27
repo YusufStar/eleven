@@ -3,6 +3,7 @@
 import { format, parseISO } from "date-fns";
 import { Calendar, Clock, Text, User } from "lucide-react";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import { useCalendar } from "@/components/ui/calendar/calendar-context";
 import { AddEditEventDialog } from "@/components/ui/calendar/add-edit-event-dialog";
 import { formatTime } from "@/components/ui/calendar/helpers";
 import type { IEvent } from "@/components/ui/calendar/interfaces";
+import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
 
 interface IProps {
   event: IEvent;
@@ -25,9 +27,21 @@ interface IProps {
 }
 
 export function EventDetailsDialog({ event, children }: IProps) {
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
   const startDate = parseISO(event.startDate);
   const endDate = parseISO(event.endDate);
   const { use24HourFormat, removeEvent } = useCalendar();
+
+  if (event.taskId) {
+    return (
+      <>
+        <div role="button" tabIndex={0} onClick={() => setTaskModalOpen(true)} onKeyDown={(e) => e.key === "Enter" && setTaskModalOpen(true)}>
+          {children}
+        </div>
+        <TaskDetailModal taskId={event.taskId} open={taskModalOpen} onOpenChange={setTaskModalOpen} />
+      </>
+    );
+  }
 
   const deleteEvent = (eventId: number) => {
     try {

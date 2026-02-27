@@ -46,7 +46,7 @@ export default function TeamInvitePage() {
   const onSearchChange = useCallback((v: string) => setSearch(v), []);
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-2">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Invitations</h1>

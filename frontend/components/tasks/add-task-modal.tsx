@@ -244,8 +244,8 @@ export function AddTaskModal({ open, onOpenChange, defaultProjectId }: AddTaskMo
                   <DateTimePicker
                     id="add-task-dueAt"
                     label="Due date (optional)"
-                    value={field.value ?? null}
-                    onChange={(v) => field.onChange(v ?? null)}
+                    value={field.value ? new Date(field.value) : null}
+                    onChange={(v) => field.onChange(v ? v.toISOString() : null)}
                     placeholder="Pick date and time"
                     error={form.formState.errors.dueAt?.message}
                   />

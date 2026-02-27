@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useLocalStorage } from "@/components/ui/calendar/hooks";
 import type { IEvent, IUser } from "@/components/ui/calendar/interfaces";
 import type { TCalendarView, TEventColor } from "@/components/ui/calendar/types";
@@ -89,6 +89,12 @@ export function CalendarProvider({
 
   const [allEvents, setAllEvents] = useState<IEvent[]>(events || []);
   const [filteredEvents, setFilteredEvents] = useState<IEvent[]>(events || []);
+
+  useEffect(() => {
+    const next = events || [];
+    setAllEvents(next);
+    setFilteredEvents(next);
+  }, [events]);
 
   const updateSettings = (newPartialSettings: Partial<CalendarSettings>) => {
     setSettings({
