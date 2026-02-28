@@ -24,6 +24,8 @@ interface ICalendarContext {
   filterEventsBySelectedUser: (userId: IUser["id"] | "all") => void;
   users: IUser[];
   events: IEvent[];
+  /** When set, only events with event.user.id === currentUserId can open details. */
+  currentUserId: string | null;
   addEvent: (event: IEvent) => void;
   updateEvent: (event: IEvent) => void;
   removeEvent: (eventId: number) => void;
@@ -50,12 +52,15 @@ export function CalendarProvider({
   children,
   users,
   events,
+  currentUserId = null,
   badge = "colored",
   view = "day",
 }: {
   children: React.ReactNode;
   users: IUser[];
   events: IEvent[];
+  /** When set, only events with event.user.id === currentUserId can open details. */
+  currentUserId?: string | null;
   view?: TCalendarView;
   badge?: "dot" | "colored";
 }) {
@@ -205,6 +210,7 @@ export function CalendarProvider({
     setView,
     agendaModeGroupBy,
     setAgendaModeGroupBy,
+    currentUserId,
     addEvent,
     updateEvent,
     removeEvent,

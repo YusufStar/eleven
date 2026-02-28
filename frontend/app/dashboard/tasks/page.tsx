@@ -203,7 +203,11 @@ export default function TasksPage() {
         />
       )}
       {viewType === "calendar" && (
-        <TasksCalendarView tasks={tasks} isPending={isPending} />
+        <TasksCalendarView
+          tasks={tasks}
+          teamMembers={(teamData?.data ?? []).map((m) => ({ id: m.id, userId: m.userId }))}
+          isPending={isPending}
+        />
       )}
       <AddTaskModal
         open={addModalOpen}

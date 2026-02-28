@@ -29,17 +29,36 @@ export function EventDetailsDialog({ event, children }: IProps) {
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const startDate = parseISO(event.startDate);
   const endDate = parseISO(event.endDate);
-  const { use24HourFormat, removeEvent } = useCalendar();
+  const { use24HourFormat, removeEvent, currentUserId } = useCalendar();
+
+  const canViewDetails =
+    currentUserId == null || event.user.id === currentUserId;
 
   if (event.taskId) {
     return (
       <>
-        <div role="button" tabIndex={0} onClick={() => setTaskModalOpen(true)} onKeyDown={(e) => e.key === "Enter" && setTaskModalOpen(true)}>
+        <div
+          role={canViewDetails ? "button" : undefined}
+          tabIndex={canViewDetails ? 0 : undefined}
+          onClick={canViewDetails ? () => setTaskModalOpen(true) : undefined}
+          onKeyDown={
+            canViewDetails
+              ? (e) => e.key === "Enter" && setTaskModalOpen(true)
+              : undefined
+          }
+          className={canViewDetails ? "" : "cursor-default"}
+        >
           {children}
         </div>
-        <TaskDetailModal taskId={event.taskId} open={taskModalOpen} onOpenChange={setTaskModalOpen} />
+        {canViewDetails && (
+          <TaskDetailModal taskId={event.taskId} open={taskModalOpen} onOpenChange={setTaskModalOpen} />
+        )}
       </>
     );
+  }
+
+  if (!canViewDetails) {
+    return <>{children}</>;
   }
 
   const deleteEvent = (eventId: number) => {

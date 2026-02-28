@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { authClient } from "@/lib/auth-client";
 import type { Task } from "@/services/tasks";
 import type { TaskStatusValue } from "@/services/tasks/types";
 import { CalendarClient } from "@/components/ui/calendar/calendar-client";
@@ -38,15 +39,22 @@ function taskToEvent(task: Task, index: number): IEvent {
 
 export interface TasksCalendarViewProps {
   tasks?: Task[];
+  teamMembers?: { id: string; userId: string }[];
   isPending?: boolean;
 }
 
-export function TasksCalendarView({ tasks = [], isPending }: TasksCalendarViewProps) {
+export function TasksCalendarView({ tasks = [], teamMembers = [], isPending }: TasksCalendarViewProps) {
+  const { data: session } = authClient.useSession();
+  const currentUserMemberId = useMemo(() => {
+    const uid = session?.user?.id;
+    if (!uid) return null;
+    return teamMembers.find((m) => m.userId === uid)?.id ?? null;
+  }, [teamMembers, session?.user?.id]);
   const events = useMemo(() => tasks.map((t, i) => taskToEvent(t, i)), [tasks]);
 
   return (
     <div className="min-h-0 w-full flex-1 overflow-auto">
-      <CalendarClient events={events} defaultView="month" />
+      <CalendarClient events={events} currentUserId={currentUserMemberId} defaultView="month" />
     </div>
   );
 }
