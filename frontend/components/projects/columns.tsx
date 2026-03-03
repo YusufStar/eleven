@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Folder01Icon, LinkSquare01Icon, NoteIcon, Github01Icon } from "@hugeicons/core-free-icons";
+import { Folder01Icon, LinkSquare01Icon, NoteIcon, GithubIcon } from "@hugeicons/core-free-icons";
 import type { Project, ProjectLinkItem } from "@/services/projects";
 import { ProjectRowActions } from "@/components/projects/project-row-actions";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,7 @@ export const projectsColumns: ColumnDef<Project>[] = [
     accessorKey: "githubRepoUrl",
     header: () => (
       <span className="inline-flex items-center gap-2">
-        <HugeiconsIcon icon={Github01Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
+        <HugeiconsIcon icon={GithubIcon} className="size-4 text-muted-foreground" strokeWidth={2} />
         Repository
       </span>
     ),
