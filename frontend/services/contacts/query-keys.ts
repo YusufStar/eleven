@@ -4,4 +4,6 @@ export const contactQueryKeys = {
   companies: (params?: { page?: number; pageSize?: number; search?: string; status?: string }) => [...contactQueryKeys.all, "companies", params] as const,
   details: () => [...contactQueryKeys.all, "detail"] as const,
   detail: (id: string) => [...contactQueryKeys.details(), id] as const,
+  personDetail: (id: string) => [...contactQueryKeys.all, "people", "detail", id] as const,
+  companyDetail: (id: string) => [...contactQueryKeys.all, "companies", "detail", id] as const,
 };

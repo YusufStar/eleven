@@ -27,6 +27,22 @@ export function useContact(id: string | null) {
   });
 }
 
+export function useContactPersonDetail(id: string | null) {
+  return useQuery({
+    queryKey: contactQueryKeys.personDetail(id ?? ""),
+    queryFn: () => contactsApi.getPersonDetail(id!),
+    enabled: !!id,
+  });
+}
+
+export function useContactCompanyDetail(id: string | null) {
+  return useQuery({
+    queryKey: contactQueryKeys.companyDetail(id ?? ""),
+    queryFn: () => contactsApi.getCompanyDetail(id!),
+    enabled: !!id,
+  });
+}
+
 export function useCreateContactMutation() {
   const qc = useQueryClient();
   return useMutation({

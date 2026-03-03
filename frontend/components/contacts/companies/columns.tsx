@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -95,7 +96,12 @@ export const companiesColumns: ColumnDef<Contact>[] = [
               />
             </span>
           ) : null}
-          <span className="font-medium text-foreground">{name}</span>
+          <Link
+            href={`/dashboard/contacts/companies/${c.id}`}
+            className="font-medium text-foreground hover:text-primary hover:underline"
+          >
+            {name}
+          </Link>
         </span>
       );
     },

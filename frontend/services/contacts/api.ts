@@ -1,4 +1,12 @@
-import type { Contact, ContactCreatePayload, ContactUpdatePayload, PaginatedContacts, ContactsListParams } from "./types";
+import type {
+  Contact,
+  ContactCreatePayload,
+  ContactUpdatePayload,
+  PaginatedContacts,
+  ContactsListParams,
+  ContactPersonDetailResponse,
+  ContactCompanyDetailResponse,
+} from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -34,6 +42,8 @@ export const contactsApi = {
   listPeople: (params?: ContactsListParams) => request<PaginatedContacts>(paginatedPath("/contacts/people", params)),
   listCompanies: (params?: ContactsListParams) => request<PaginatedContacts>(paginatedPath("/contacts/companies", params)),
   get: (id: string) => request<Contact>(`/contacts/get/${id}`),
+  getPersonDetail: (id: string) => request<ContactPersonDetailResponse>(`/contacts/people/${id}`),
+  getCompanyDetail: (id: string) => request<ContactCompanyDetailResponse>(`/contacts/companies/${id}`),
   create: (payload: ContactCreatePayload) => request<Contact>("/contacts/create", { method: "POST", body: payload }),
   update: (id: string, payload: ContactUpdatePayload) => request<Contact>(`/contacts/update/${id}`, { method: "PATCH", body: payload }),
   delete: (id: string) => request<{ ok: boolean }>(`/contacts/delete/${id}`, { method: "DELETE" }),

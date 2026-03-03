@@ -24,11 +24,11 @@ export const settingsRoutes = new Elysia({ prefix: "/settings" })
         set.status = 400;
         return { message: "Active organization required" };
       }
-      if (activeMember.role !== "owner" && activeMember.role !== "admin") {
+      if (activeMember.role !== "owner") {
         set.status = 403;
-        return { message: "Owner or admin role required" };
+        return { message: "Only the organization owner can connect GitHub" };
       }
-      const state = encodeURIComponent(activeOrganizationId);
+      const state = encodeURIComponent(`org_${activeOrganizationId}`);
       const scope = "read:user user:email repo";
       const url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri())}&scope=${encodeURIComponent(scope)}&state=${state}`;
       return redirect(url);
@@ -39,23 +39,18 @@ export const settingsRoutes = new Elysia({ prefix: "/settings" })
     "/github/callback",
     async ({ query, request, redirect }) => {
       const code = typeof query.code === "string" ? query.code : null;
-      const state = typeof query.state === "string" ? decodeURIComponent(query.state) : null;
-      const errorRedirect = `${FRONTEND_URL}/dashboard/settings?github=error`;
-      const successRedirect = `${FRONTEND_URL}/dashboard/settings?github=connected`;
-      if (!code || !state || !GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
-        return redirect(errorRedirect);
+      const rawState = typeof query.state === "string" ? decodeURIComponent(query.state) : null;
+      const settingsError = `${FRONTEND_URL}/dashboard/settings?github=error`;
+      const settingsSuccess = `${FRONTEND_URL}/dashboard/settings?github=connected`;
+      const profileError = `${FRONTEND_URL}/dashboard/settings/profile?github=error`;
+      const profileSuccess = `${FRONTEND_URL}/dashboard/settings/profile?github=connected`;
+      if (!code || !rawState || !GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+        return redirect(settingsError);
       }
       const session = await import("../auth/auth").then((m) => m.auth.api.getSession({ headers: request.headers }));
       const user = session?.user;
-      const activeOrganizationId = (session?.session as { activeOrganizationId?: string } | undefined)?.activeOrganizationId;
-      if (!user?.id || !activeOrganizationId || state !== activeOrganizationId) {
-        return redirect(errorRedirect);
-      }
-      const member = await prisma.member.findFirst({
-        where: { userId: user.id, organizationId: activeOrganizationId },
-      });
-      if (!member || (member.role !== "owner" && member.role !== "admin")) {
-        return redirect(errorRedirect);
+      if (!user?.id) {
+        return redirect(rawState.startsWith("user_") ? profileError : settingsError);
       }
       const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
         method: "POST",
@@ -70,51 +65,96 @@ export const settingsRoutes = new Elysia({ prefix: "/settings" })
       const tokenData = (await tokenRes.json()) as { access_token?: string; error?: string };
       const accessToken = tokenData.access_token;
       if (!accessToken) {
-        return redirect(errorRedirect);
+        return redirect(rawState.startsWith("user_") ? profileError : settingsError);
       }
       const userRes = await fetch("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (!userRes.ok) {
-        return redirect(errorRedirect);
+        return redirect(rawState.startsWith("user_") ? profileError : settingsError);
       }
       const ghUser = (await userRes.json()) as { id: number; login: string; avatar_url?: string };
-      await prisma.organizationGithubConnection.upsert({
-        where: { organizationId: activeOrganizationId },
-        create: {
-          organizationId: activeOrganizationId,
-          githubUserId: String(ghUser.id),
-          githubLogin: ghUser.login,
-          avatarUrl: ghUser.avatar_url ?? null,
-          accessToken,
-        },
-        update: {
-          githubUserId: String(ghUser.id),
-          githubLogin: ghUser.login,
-          avatarUrl: ghUser.avatar_url ?? null,
-          accessToken,
-        },
-      });
-      return redirect(successRedirect);
+
+      if (rawState.startsWith("user_")) {
+        const userId = rawState.slice(5);
+        if (userId !== user.id) return redirect(profileError);
+        const accountId = String(ghUser.id);
+        await prisma.$transaction([
+          prisma.account.deleteMany({ where: { userId: user.id, providerId: "github" } }),
+          prisma.account.create({
+            data: {
+              id: `github_${user.id}_${accountId}`,
+              accountId,
+              providerId: "github",
+              userId: user.id,
+              accessToken,
+            },
+          }),
+          prisma.userGithubProfile.upsert({
+            where: { userId: user.id },
+            create: {
+              userId: user.id,
+              githubLogin: ghUser.login,
+              avatarUrl: ghUser.avatar_url ?? null,
+            },
+            update: {
+              githubLogin: ghUser.login,
+              avatarUrl: ghUser.avatar_url ?? null,
+            },
+          }),
+        ]);
+        return redirect(profileSuccess);
+      }
+
+      if (rawState.startsWith("org_")) {
+        const activeOrganizationId = rawState.slice(4);
+        const activeOrgId = (session?.session as { activeOrganizationId?: string } | undefined)?.activeOrganizationId;
+        if (!activeOrgId || activeOrganizationId !== activeOrgId) return redirect(settingsError);
+        const member = await prisma.member.findFirst({
+          where: { userId: user.id, organizationId: activeOrganizationId },
+        });
+        if (!member || member.role !== "owner") return redirect(settingsError);
+        await prisma.organizationGithubConnection.upsert({
+          where: { organizationId: activeOrganizationId },
+          create: {
+            organizationId: activeOrganizationId,
+            githubUserId: String(ghUser.id),
+            githubLogin: ghUser.login,
+            avatarUrl: ghUser.avatar_url ?? null,
+            accessToken,
+          },
+          update: {
+            githubUserId: String(ghUser.id),
+            githubLogin: ghUser.login,
+            avatarUrl: ghUser.avatar_url ?? null,
+            accessToken,
+          },
+        });
+        return redirect(settingsSuccess);
+      }
+
+      return redirect(settingsError);
     }
   )
   .get(
     "/github",
-    async ({ activeOrganizationId, set }) => {
-      if (!activeOrganizationId) {
+    async ({ activeOrganizationId, activeMember, set }) => {
+      if (!activeOrganizationId || !activeMember) {
         set.status = 400;
         return { message: "Active organization required" };
       }
       const conn = await prisma.organizationGithubConnection.findUnique({
         where: { organizationId: activeOrganizationId },
       });
-      if (!conn) return { connection: null };
+      const canManage = activeMember.role === "owner";
+      if (!conn) return { connection: null, canManage };
       return {
         connection: {
           githubUserId: conn.githubUserId,
           githubLogin: conn.githubLogin,
           avatarUrl: conn.avatarUrl,
         },
+        canManage,
       };
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -152,9 +192,9 @@ export const settingsRoutes = new Elysia({ prefix: "/settings" })
         set.status = 400;
         return { message: "Active organization required" };
       }
-      if (activeMember.role !== "owner" && activeMember.role !== "admin") {
+      if (activeMember.role !== "owner") {
         set.status = 403;
-        return { message: "Owner or admin role required" };
+        return { message: "Only the organization owner can disconnect GitHub" };
       }
       await prisma.organizationGithubConnection.deleteMany({
         where: { organizationId: activeOrganizationId },

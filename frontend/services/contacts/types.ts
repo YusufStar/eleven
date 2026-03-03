@@ -43,3 +43,72 @@ export type PaginatedContacts = {
 };
 
 export type ContactsListParams = { page?: number; pageSize?: number; search?: string; status?: ContactStatus | "" | "all" };
+
+// Detail: minimal related entities for contact detail page
+export interface ContactDetailDeal {
+  id: string;
+  title: string;
+  value: string | null;
+  currency: string;
+  status: string;
+  stageId: string;
+  expectedClose: string | null;
+  stage: { name: string; color: string | null };
+  pipeline: { name: string };
+}
+
+export interface ContactDetailActivity {
+  id: string;
+  type: string;
+  title: string;
+  description: string | null;
+  dueAt: string | null;
+  isDone: boolean;
+  completedAt: string | null;
+  createdAt: string;
+}
+
+export interface ContactDetailTask {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+  dueAt: string | null;
+  completedAt: string | null;
+}
+
+export interface ContactDetailCompanyRef {
+  id: string;
+  companyName: string | null;
+  website: string | null;
+  industry: string | null;
+  status: ContactStatus;
+  avatar: string | null;
+}
+
+export interface ContactDetailEmployeeRef {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  email: string | null;
+  title: string | null;
+  phone: string | null;
+  status: ContactStatus;
+  avatar: string | null;
+}
+
+export interface ContactPersonDetailResponse {
+  contact: Contact;
+  company: ContactDetailCompanyRef | null;
+  deals: ContactDetailDeal[];
+  activities: ContactDetailActivity[];
+  tasks: ContactDetailTask[];
+}
+
+export interface ContactCompanyDetailResponse {
+  contact: Contact;
+  employees: ContactDetailEmployeeRef[];
+  deals: ContactDetailDeal[];
+  activities: ContactDetailActivity[];
+  tasks: ContactDetailTask[];
+}

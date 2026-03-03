@@ -10,7 +10,7 @@ import { GithubIcon } from "@hugeicons/core-free-icons";
 
 export default function SettingsPage() {
   const searchParams = useSearchParams();
-  const { connection, isPending, disconnect, isDisconnecting } = useSettingsGithub();
+  const { connection, canManage, isPending, disconnect, isDisconnecting } = useSettingsGithub();
 
   useEffect(() => {
     const status = searchParams.get("github");
@@ -32,10 +32,12 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <HugeiconsIcon icon={GithubIcon} className="size-5" strokeWidth={2} />
-            Connect organization GitHub
+            Organization GitHub
           </CardTitle>
           <CardDescription>
-            Link your company&apos;s main GitHub account. Only owners and admins can connect or disconnect.
+            {canManage
+              ? "Link your company's main GitHub account. Only the organization owner can connect or disconnect."
+              : "The organization's GitHub connection. Only the owner can change it."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -54,23 +56,31 @@ export default function SettingsPage() {
                 <p className="font-medium">{connection.githubLogin}</p>
                 <p className="text-muted-foreground text-sm">GitHub user ID: {connection.githubUserId}</p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => disconnect()}
-                disabled={isDisconnecting}
-                className="ml-auto"
-              >
-                {isDisconnecting ? "Disconnecting…" : "Disconnect"}
-              </Button>
+              {canManage && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => disconnect()}
+                  disabled={isDisconnecting}
+                  className="ml-auto"
+                >
+                  {isDisconnecting ? "Disconnecting…" : "Disconnect"}
+                </Button>
+              )}
             </div>
           ) : (
-            <a href={connectUrl}>
-              <Button>
-                <HugeiconsIcon icon={GithubIcon} className="size-4 mr-2" strokeWidth={2} />
-                Connect organization GitHub
-              </Button>
-            </a>
+            <>
+              {canManage ? (
+                <a href={connectUrl}>
+                  <Button>
+                    <HugeiconsIcon icon={GithubIcon} className="size-4 mr-2" strokeWidth={2} />
+                    Connect organization GitHub
+                  </Button>
+                </a>
+              ) : (
+                <p className="text-muted-foreground text-sm">No GitHub account connected to this organization.</p>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

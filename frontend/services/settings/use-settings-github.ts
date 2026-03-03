@@ -17,6 +17,7 @@ export function useSettingsGithub() {
   });
   return {
     connection: query.data?.connection ?? null,
+    canManage: query.data?.canManage ?? false,
     isPending: query.isPending,
     error: query.error,
     disconnect: disconnect.mutateAsync,

@@ -27,7 +27,7 @@ export const teamRoutes = new Elysia({ prefix: "/team" })
       const [data, total] = await Promise.all([
         prisma.member.findMany({
           where,
-          include: { user: { select: { id: true, name: true, email: true, image: true } } },
+          include: { user: { select: { id: true, name: true, email: true, image: true, githubProfile: { select: { githubLogin: true, avatarUrl: true } } } } },
           orderBy: { createdAt: "asc" },
           skip,
           take: pageSize,

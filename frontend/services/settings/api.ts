@@ -8,6 +8,16 @@ export interface GithubConnectionInfo {
 
 export interface GithubConnectionResponse {
   connection: GithubConnectionInfo | null;
+  canManage?: boolean;
+}
+
+export interface ProfileGithubConnectionInfo {
+  githubLogin: string;
+  avatarUrl: string | null;
+}
+
+export interface ProfileGithubConnectionResponse {
+  connection: ProfileGithubConnectionInfo | null;
 }
 
 export interface GithubRepoItem {
@@ -45,4 +55,12 @@ export const settingsApi = {
     request<{ ok: boolean }>("/settings/github", { method: "DELETE" }),
 
   connectGithubUrl: () => `${BASE}/settings/github/connect`,
+
+  getProfileGithubConnection: () =>
+    request<ProfileGithubConnectionResponse>("/profile/github"),
+
+  disconnectProfileGithub: () =>
+    request<{ ok: boolean }>("/profile/github", { method: "DELETE" }),
+
+  connectProfileGithubUrl: () => `${BASE}/profile/github/connect`,
 };

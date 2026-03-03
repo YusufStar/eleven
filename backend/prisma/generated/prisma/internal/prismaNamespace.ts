@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  UserGithubProfile: 'UserGithubProfile',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationGithubConnection" | "member" | "invitation" | "contact" | "activity" | "pipeline" | "stage" | "deal" | "project" | "projectMember" | "projectFile" | "task" | "taskAttachment"
+    modelProps: "user" | "userGithubProfile" | "session" | "account" | "verification" | "organization" | "organizationGithubConnection" | "member" | "invitation" | "contact" | "activity" | "pipeline" | "stage" | "deal" | "project" | "projectMember" | "projectFile" | "task" | "taskAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -492,6 +493,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserGithubProfile: {
+      payload: Prisma.$UserGithubProfilePayload<ExtArgs>
+      fields: Prisma.UserGithubProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserGithubProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserGithubProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.UserGithubProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserGithubProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>
+        }
+        findMany: {
+          args: Prisma.UserGithubProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>[]
+        }
+        create: {
+          args: Prisma.UserGithubProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>
+        }
+        createMany: {
+          args: Prisma.UserGithubProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserGithubProfileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>[]
+        }
+        delete: {
+          args: Prisma.UserGithubProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>
+        }
+        update: {
+          args: Prisma.UserGithubProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.UserGithubProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserGithubProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserGithubProfileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>[]
+        }
+        upsert: {
+          args: Prisma.UserGithubProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserGithubProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.UserGithubProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserGithubProfile>
+        }
+        groupBy: {
+          args: Prisma.UserGithubProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserGithubProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserGithubProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserGithubProfileCountAggregateOutputType> | number
         }
       }
     }
@@ -1805,6 +1880,18 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const UserGithubProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  githubLogin: 'githubLogin',
+  avatarUrl: 'avatarUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserGithubProfileScalarFieldEnum = (typeof UserGithubProfileScalarFieldEnum)[keyof typeof UserGithubProfileScalarFieldEnum]
+
+
 export const SessionScalarFieldEnum = {
   id: 'id',
   expiresAt: 'expiresAt',
@@ -2420,6 +2507,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  userGithubProfile?: Prisma.UserGithubProfileOmit
   session?: Prisma.SessionOmit
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit

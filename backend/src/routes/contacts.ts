@@ -74,6 +74,153 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
     { requireAuth: true, requireActiveOrg: true }
   )
   .get(
+    "/people/:id",
+    async ({ params, activeOrganizationId, set }) => {
+      const contact = await prisma.contact.findFirst({
+        where: { id: params.id, ...orgScope(activeOrganizationId!), type: "PERSON" },
+        include: {
+          company: { select: { id: true, companyName: true, website: true, industry: true, status: true, avatar: true } },
+          deals: {
+            select: {
+              id: true,
+              title: true,
+              value: true,
+              currency: true,
+              status: true,
+              stageId: true,
+              expectedClose: true,
+              stage: { select: { name: true, color: true } },
+              pipeline: { select: { name: true } },
+            },
+          },
+          activities: {
+            select: {
+              id: true,
+              type: true,
+              title: true,
+              description: true,
+              dueAt: true,
+              isDone: true,
+              completedAt: true,
+              createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+          },
+          tasks: {
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              priority: true,
+              dueAt: true,
+              completedAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+          },
+        },
+      });
+      if (!contact) {
+        set.status = 404;
+        return { message: "Not found" };
+      }
+      return {
+        contact: {
+          ...contact,
+          company: contact.company,
+          deals: contact.deals,
+          activities: contact.activities,
+          tasks: contact.tasks,
+        },
+        company: contact.company,
+        deals: contact.deals,
+        activities: contact.activities,
+        tasks: contact.tasks,
+      };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .get(
+    "/companies/:id",
+    async ({ params, activeOrganizationId, set }) => {
+      const contact = await prisma.contact.findFirst({
+        where: { id: params.id, ...orgScope(activeOrganizationId!), type: "COMPANY" },
+        include: {
+          employees: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              title: true,
+              phone: true,
+              status: true,
+              avatar: true,
+            },
+          },
+          deals: {
+            select: {
+              id: true,
+              title: true,
+              value: true,
+              currency: true,
+              status: true,
+              stageId: true,
+              expectedClose: true,
+              stage: { select: { name: true, color: true } },
+              pipeline: { select: { name: true } },
+            },
+          },
+          activities: {
+            select: {
+              id: true,
+              type: true,
+              title: true,
+              description: true,
+              dueAt: true,
+              isDone: true,
+              completedAt: true,
+              createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+          },
+          tasks: {
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              priority: true,
+              dueAt: true,
+              completedAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+          },
+        },
+      });
+      if (!contact) {
+        set.status = 404;
+        return { message: "Not found" };
+      }
+      return {
+        contact: {
+          ...contact,
+          employees: contact.employees,
+          deals: contact.deals,
+          activities: contact.activities,
+          tasks: contact.tasks,
+        },
+        employees: contact.employees,
+        deals: contact.deals,
+        activities: contact.activities,
+        tasks: contact.tasks,
+      };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .get(
     "/get/:id",
     async ({ params, activeOrganizationId }) => {
       const contact = await prisma.contact.findFirst({

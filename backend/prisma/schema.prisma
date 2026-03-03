@@ -19,9 +19,23 @@ model User {
   accounts      Account[]
   members       Member[]
   invitations   Invitation[]
+  githubProfile UserGithubProfile?
 
   @@unique([email])
   @@map("user")
+}
+
+// Per-user GitHub link (profile-level). Used to show "GitHub connected" in team list.
+model UserGithubProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  githubLogin String
+  avatarUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("user_github_profile")
 }
 
 model Session {

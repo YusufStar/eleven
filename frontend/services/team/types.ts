@@ -3,6 +3,7 @@ export interface TeamMemberUser {
   name: string;
   email: string;
   image: string | null;
+  githubProfile?: { githubLogin: string; avatarUrl: string | null } | null;
 }
 
 export interface TeamMember {
