@@ -146,7 +146,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
   .post(
     "/",
     async ({ body, activeOrganizationId, activeMember }) => {
-      const b = body as { name?: string; description?: string; links?: unknown };
+      const b = body as { name?: string; description?: string; links?: unknown; githubRepoFullName?: string; githubRepoUrl?: string };
       const name = typeof b?.name === "string" ? b.name.trim() : "";
       if (!name) {
         return new Response(JSON.stringify({ message: "name is required" }), {
@@ -160,6 +160,8 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
       });
       if (existing) slug = `${slug}-${Date.now().toString(36)}`;
       const links = parseLinks(b?.links);
+      const githubRepoFullName = typeof b?.githubRepoFullName === "string" ? b.githubRepoFullName.trim() || null : null;
+      const githubRepoUrl = typeof b?.githubRepoUrl === "string" ? b.githubRepoUrl.trim() || null : null;
       const project = await prisma.project.create({
         data: {
           organizationId: activeOrganizationId!,
@@ -167,6 +169,8 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
           slug,
           description: typeof b?.description === "string" ? b.description.trim() || null : null,
           links: links.length ? links : undefined,
+          githubRepoFullName: githubRepoFullName || undefined,
+          githubRepoUrl: githubRepoUrl || undefined,
           members: { create: { memberId: activeMember!.id } },
         },
       });
@@ -185,14 +189,16 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
           status: 403,
           headers: { "Content-Type": "application/json" },
         });
-      const b = body as { name?: string; description?: string; links?: unknown };
-      const updates: { name?: string; slug?: string; description?: string | null; links?: ProjectLink[] } = {};
+      const b = body as { name?: string; description?: string; links?: unknown; githubRepoFullName?: string; githubRepoUrl?: string };
+      const updates: { name?: string; slug?: string; description?: string | null; links?: ProjectLink[]; githubRepoFullName?: string | null; githubRepoUrl?: string | null } = {};
       if (typeof b?.name === "string" && b.name.trim()) {
         updates.name = b.name.trim();
         updates.slug = slugify(updates.name);
       }
       if ("description" in b) updates.description = typeof b.description === "string" ? b.description.trim() || null : null;
       if (b?.links !== undefined) updates.links = parseLinks(b.links);
+      if ("githubRepoFullName" in b) updates.githubRepoFullName = typeof b.githubRepoFullName === "string" ? b.githubRepoFullName.trim() || null : null;
+      if ("githubRepoUrl" in b) updates.githubRepoUrl = typeof b.githubRepoUrl === "string" ? b.githubRepoUrl.trim() || null : null;
       const updated = await prisma.project.update({
         where: { id: params.id },
         data: updates,

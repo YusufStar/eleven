@@ -27,6 +27,8 @@ export type CreateProjectBody = {
   description?: string;
   memberIds?: string[];
   links?: import("./types").ProjectLinkItem[];
+  githubRepoFullName?: string;
+  githubRepoUrl?: string;
 };
 
 export function useCreateProject() {
@@ -37,6 +39,8 @@ export function useCreateProject() {
         name: body.name,
         description: body.description,
         links: body.links,
+        githubRepoFullName: body.githubRepoFullName,
+        githubRepoUrl: body.githubRepoUrl,
       });
       for (const memberId of body.memberIds ?? []) {
         await projectsApi.addMember(project.id, memberId);

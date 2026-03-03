@@ -5,6 +5,8 @@ export interface Project {
   slug: string;
   description: string | null;
   links?: ProjectLinkItem[];
+  githubRepoFullName?: string | null;
+  githubRepoUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -30,6 +30,8 @@ export type ProjectMinAggregateOutputType = {
   name: string | null
   slug: string | null
   description: string | null
+  githubRepoFullName: string | null
+  githubRepoUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,6 +42,8 @@ export type ProjectMaxAggregateOutputType = {
   name: string | null
   slug: string | null
   description: string | null
+  githubRepoFullName: string | null
+  githubRepoUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -51,6 +55,8 @@ export type ProjectCountAggregateOutputType = {
   slug: number
   description: number
   links: number
+  githubRepoFullName: number
+  githubRepoUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -63,6 +69,8 @@ export type ProjectMinAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  githubRepoFullName?: true
+  githubRepoUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -73,6 +81,8 @@ export type ProjectMaxAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  githubRepoFullName?: true
+  githubRepoUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -84,6 +94,8 @@ export type ProjectCountAggregateInputType = {
   slug?: true
   description?: true
   links?: true
+  githubRepoFullName?: true
+  githubRepoUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -168,6 +180,8 @@ export type ProjectGroupByOutputType = {
   slug: string
   description: string | null
   links: runtime.JsonValue | null
+  githubRepoFullName: string | null
+  githubRepoUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: ProjectCountAggregateOutputType | null
@@ -200,6 +214,8 @@ export type ProjectWhereInput = {
   slug?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringNullableFilter<"Project"> | string | null
   links?: Prisma.JsonNullableFilter<"Project">
+  githubRepoFullName?: Prisma.StringNullableFilter<"Project"> | string | null
+  githubRepoUrl?: Prisma.StringNullableFilter<"Project"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -215,6 +231,8 @@ export type ProjectOrderByWithRelationInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   links?: Prisma.SortOrderInput | Prisma.SortOrder
+  githubRepoFullName?: Prisma.SortOrderInput | Prisma.SortOrder
+  githubRepoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -234,6 +252,8 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   slug?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringNullableFilter<"Project"> | string | null
   links?: Prisma.JsonNullableFilter<"Project">
+  githubRepoFullName?: Prisma.StringNullableFilter<"Project"> | string | null
+  githubRepoUrl?: Prisma.StringNullableFilter<"Project"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -249,6 +269,8 @@ export type ProjectOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   links?: Prisma.SortOrderInput | Prisma.SortOrder
+  githubRepoFullName?: Prisma.SortOrderInput | Prisma.SortOrder
+  githubRepoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
@@ -266,6 +288,8 @@ export type ProjectScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Project"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   links?: Prisma.JsonNullableWithAggregatesFilter<"Project">
+  githubRepoFullName?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  githubRepoUrl?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
 }
@@ -276,6 +300,8 @@ export type ProjectCreateInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
@@ -291,6 +317,8 @@ export type ProjectUncheckedCreateInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput
@@ -304,6 +332,8 @@ export type ProjectUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
@@ -319,6 +349,8 @@ export type ProjectUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput
@@ -333,6 +365,8 @@ export type ProjectCreateManyInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -343,6 +377,8 @@ export type ProjectUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -354,6 +390,8 @@ export type ProjectUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -380,6 +418,8 @@ export type ProjectCountOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
   links?: Prisma.SortOrder
+  githubRepoFullName?: Prisma.SortOrder
+  githubRepoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -390,6 +430,8 @@ export type ProjectMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  githubRepoFullName?: Prisma.SortOrder
+  githubRepoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -400,6 +442,8 @@ export type ProjectMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  githubRepoFullName?: Prisma.SortOrder
+  githubRepoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -506,6 +550,8 @@ export type ProjectCreateWithoutOrganizationInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput
@@ -519,6 +565,8 @@ export type ProjectUncheckedCreateWithoutOrganizationInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput
@@ -562,6 +610,8 @@ export type ProjectScalarWhereInput = {
   slug?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringNullableFilter<"Project"> | string | null
   links?: Prisma.JsonNullableFilter<"Project">
+  githubRepoFullName?: Prisma.StringNullableFilter<"Project"> | string | null
+  githubRepoUrl?: Prisma.StringNullableFilter<"Project"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
 }
@@ -572,6 +622,8 @@ export type ProjectCreateWithoutMembersInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
@@ -586,6 +638,8 @@ export type ProjectUncheckedCreateWithoutMembersInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput
@@ -614,6 +668,8 @@ export type ProjectUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
@@ -628,6 +684,8 @@ export type ProjectUncheckedUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput
@@ -640,6 +698,8 @@ export type ProjectCreateWithoutFilesInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
@@ -654,6 +714,8 @@ export type ProjectUncheckedCreateWithoutFilesInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput
@@ -682,6 +744,8 @@ export type ProjectUpdateWithoutFilesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
@@ -696,6 +760,8 @@ export type ProjectUncheckedUpdateWithoutFilesInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput
@@ -708,6 +774,8 @@ export type ProjectCreateWithoutTasksInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
@@ -722,6 +790,8 @@ export type ProjectUncheckedCreateWithoutTasksInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -750,6 +820,8 @@ export type ProjectUpdateWithoutTasksInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
@@ -764,6 +836,8 @@ export type ProjectUncheckedUpdateWithoutTasksInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -776,6 +850,8 @@ export type ProjectCreateManyOrganizationInput = {
   slug: string
   description?: string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: string | null
+  githubRepoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -786,6 +862,8 @@ export type ProjectUpdateWithoutOrganizationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput
@@ -799,6 +877,8 @@ export type ProjectUncheckedUpdateWithoutOrganizationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput
@@ -812,6 +892,8 @@ export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   links?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoFullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -872,6 +954,8 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   slug?: boolean
   description?: boolean
   links?: boolean
+  githubRepoFullName?: boolean
+  githubRepoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -888,6 +972,8 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   slug?: boolean
   description?: boolean
   links?: boolean
+  githubRepoFullName?: boolean
+  githubRepoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -900,6 +986,8 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   slug?: boolean
   description?: boolean
   links?: boolean
+  githubRepoFullName?: boolean
+  githubRepoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -912,11 +1000,13 @@ export type ProjectSelectScalar = {
   slug?: boolean
   description?: boolean
   links?: boolean
+  githubRepoFullName?: boolean
+  githubRepoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "slug" | "description" | "links" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "slug" | "description" | "links" | "githubRepoFullName" | "githubRepoUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   tasks?: boolean | Prisma.Project$tasksArgs<ExtArgs>
@@ -946,6 +1036,8 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     slug: string
     description: string | null
     links: runtime.JsonValue | null
+    githubRepoFullName: string | null
+    githubRepoUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["project"]>
@@ -1381,6 +1473,8 @@ export interface ProjectFieldRefs {
   readonly slug: Prisma.FieldRef<"Project", 'String'>
   readonly description: Prisma.FieldRef<"Project", 'String'>
   readonly links: Prisma.FieldRef<"Project", 'Json'>
+  readonly githubRepoFullName: Prisma.FieldRef<"Project", 'String'>
+  readonly githubRepoUrl: Prisma.FieldRef<"Project", 'String'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>
 }

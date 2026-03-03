@@ -1,7 +1,8 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
-import { Calendar, Clock, Text, User } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar03Icon, Clock01Icon, TextIcon, UserIcon } from "@hugeicons/core-free-icons";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -81,7 +82,7 @@ export function EventDetailsDialog({ event, children }: IProps) {
         <ScrollArea className="max-h-[80vh]">
           <div className="space-y-4 p-4">
             <div className="flex items-start gap-2">
-              <User className="mt-1 size-4 shrink-0 text-muted-foreground" />
+              <HugeiconsIcon icon={UserIcon} className="mt-1 size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
               <div>
                 <p className="text-sm font-medium">Responsible</p>
                 <p className="text-sm text-muted-foreground">
@@ -91,7 +92,7 @@ export function EventDetailsDialog({ event, children }: IProps) {
             </div>
 
             <div className="flex items-start gap-2">
-              <Calendar className="mt-1 size-4 shrink-0 text-muted-foreground" />
+              <HugeiconsIcon icon={Calendar03Icon} className="mt-1 size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
               <div>
                 <p className="text-sm font-medium">Start Date</p>
                 <p className="text-sm text-muted-foreground">
@@ -103,7 +104,7 @@ export function EventDetailsDialog({ event, children }: IProps) {
             </div>
 
             <div className="flex items-start gap-2">
-              <Clock className="mt-1 size-4 shrink-0 text-muted-foreground" />
+              <HugeiconsIcon icon={Clock01Icon} className="mt-1 size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
               <div>
                 <p className="text-sm font-medium">End Date</p>
                 <p className="text-sm text-muted-foreground">
@@ -115,7 +116,7 @@ export function EventDetailsDialog({ event, children }: IProps) {
             </div>
 
             <div className="flex items-start gap-2">
-              <Text className="mt-1 size-4 shrink-0 text-muted-foreground" />
+              <HugeiconsIcon icon={TextIcon} className="mt-1 size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
               <div>
                 <p className="text-sm font-medium">Description</p>
                 <p className="text-sm text-muted-foreground">

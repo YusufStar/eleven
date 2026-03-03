@@ -43,6 +43,11 @@ export type Verification = Prisma.VerificationModel
  */
 export type Organization = Prisma.OrganizationModel
 /**
+ * Model OrganizationGithubConnection
+ * 
+ */
+export type OrganizationGithubConnection = Prisma.OrganizationGithubConnectionModel
+/**
  * Model Member
  * 
  */

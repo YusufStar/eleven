@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import {
   DayPicker as ReactDayPicker,
   getDefaultClassNames,
@@ -96,9 +97,9 @@ function DayPicker({
       components={{
         Chevron: ({ orientation }) => {
           if (orientation === "left") {
-            return <ChevronLeft className="h-4 w-4" />;
+            return <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" strokeWidth={2} />;
           }
-          return <ChevronRight className="h-4 w-4" />;
+          return <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" strokeWidth={2} />;
         },
       }}
       {...props}

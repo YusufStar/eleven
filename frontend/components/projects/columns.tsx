@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Folder01Icon, LinkSquare01Icon, NoteIcon } from "@hugeicons/core-free-icons";
+import { Folder01Icon, LinkSquare01Icon, NoteIcon, Github01Icon } from "@hugeicons/core-free-icons";
 import type { Project, ProjectLinkItem } from "@/services/projects";
 import { ProjectRowActions } from "@/components/projects/project-row-actions";
 import { Button } from "@/components/ui/button";
@@ -93,6 +94,32 @@ export const projectsColumns: ColumnDef<Project>[] = [
       </span>
     ),
     cell: ({ row }) => <ProjectLinksCell links={row.original.links} />,
+    enableSorting: false,
+  },
+  {
+    id: "repository",
+    accessorKey: "githubRepoUrl",
+    header: () => (
+      <span className="inline-flex items-center gap-2">
+        <HugeiconsIcon icon={Github01Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
+        Repository
+      </span>
+    ),
+    cell: ({ row }) => {
+      const url = row.original.githubRepoUrl;
+      const label = row.original.githubRepoFullName ?? url;
+      if (!url) return <span className="text-muted-foreground">—</span>;
+      return (
+        <Link
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline truncate max-w-[200px] inline-block"
+        >
+          {label}
+        </Link>
+      );
+    },
     enableSorting: false,
   },
   {

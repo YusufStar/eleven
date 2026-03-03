@@ -1,6 +1,7 @@
 import { formatDate } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,7 +76,7 @@ export function DateNavigator({ view, events }: IProps) {
           whileHover="hover"
           whileTap="tap"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" strokeWidth={2} />
         </MotionButton>
 
         <motion.p
@@ -96,7 +97,7 @@ export function DateNavigator({ view, events }: IProps) {
           whileHover="hover"
           whileTap="tap"
         >
-          <ChevronRight className="h-4 w-4" />
+          <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" strokeWidth={2} />
         </MotionButton>
       </div>
     </div>

@@ -36,12 +36,14 @@ export type ProjectUpdateBody = {
   name?: string;
   description?: string;
   links?: ProjectLinkItem[];
+  githubRepoFullName?: string | null;
+  githubRepoUrl?: string | null;
 };
 
 export const projectsApi = {
   list: (params?: ProjectsListParams) => request<PaginatedProjects>(listPath(params)),
   get: (id: string) => request<ProjectDetail>(`/projects/${id}`),
-  create: (body: { name: string; description?: string; links?: ProjectLinkItem[] }) =>
+  create: (body: { name: string; description?: string; links?: ProjectLinkItem[]; githubRepoFullName?: string; githubRepoUrl?: string }) =>
     request<import("./types").Project>("/projects", { method: "POST", body: JSON.stringify(body) }),
   update: (id: string, body: ProjectUpdateBody) =>
     request<import("./types").Project>(`/projects/${id}`, { method: "PATCH", body: JSON.stringify(body) }),

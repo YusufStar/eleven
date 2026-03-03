@@ -389,6 +389,7 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   Organization: 'Organization',
+  OrganizationGithubConnection: 'OrganizationGithubConnection',
   Member: 'Member',
   Invitation: 'Invitation',
   Contact: 'Contact',
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "member" | "invitation" | "contact" | "activity" | "pipeline" | "stage" | "deal" | "project" | "projectMember" | "projectFile" | "task" | "taskAttachment"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "organizationGithubConnection" | "member" | "invitation" | "contact" | "activity" | "pipeline" | "stage" | "deal" | "project" | "projectMember" | "projectFile" | "task" | "taskAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -787,6 +788,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.OrganizationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.OrganizationCountAggregateOutputType> | number
+        }
+      }
+    }
+    OrganizationGithubConnection: {
+      payload: Prisma.$OrganizationGithubConnectionPayload<ExtArgs>
+      fields: Prisma.OrganizationGithubConnectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrganizationGithubConnectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrganizationGithubConnectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>
+        }
+        findFirst: {
+          args: Prisma.OrganizationGithubConnectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrganizationGithubConnectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>
+        }
+        findMany: {
+          args: Prisma.OrganizationGithubConnectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>[]
+        }
+        create: {
+          args: Prisma.OrganizationGithubConnectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>
+        }
+        createMany: {
+          args: Prisma.OrganizationGithubConnectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrganizationGithubConnectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>[]
+        }
+        delete: {
+          args: Prisma.OrganizationGithubConnectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>
+        }
+        update: {
+          args: Prisma.OrganizationGithubConnectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrganizationGithubConnectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrganizationGithubConnectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrganizationGithubConnectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrganizationGithubConnectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationGithubConnectionPayload>
+        }
+        aggregate: {
+          args: Prisma.OrganizationGithubConnectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrganizationGithubConnection>
+        }
+        groupBy: {
+          args: Prisma.OrganizationGithubConnectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrganizationGithubConnectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrganizationGithubConnectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrganizationGithubConnectionCountAggregateOutputType> | number
         }
       }
     }
@@ -1790,6 +1865,20 @@ export const OrganizationScalarFieldEnum = {
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
 
 
+export const OrganizationGithubConnectionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  githubUserId: 'githubUserId',
+  githubLogin: 'githubLogin',
+  avatarUrl: 'avatarUrl',
+  accessToken: 'accessToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationGithubConnectionScalarFieldEnum = (typeof OrganizationGithubConnectionScalarFieldEnum)[keyof typeof OrganizationGithubConnectionScalarFieldEnum]
+
+
 export const MemberScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -1917,6 +2006,8 @@ export const ProjectScalarFieldEnum = {
   slug: 'slug',
   description: 'description',
   links: 'links',
+  githubRepoFullName: 'githubRepoFullName',
+  githubRepoUrl: 'githubRepoUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2333,6 +2424,7 @@ export type GlobalOmitConfig = {
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit
   organization?: Prisma.OrganizationOmit
+  organizationGithubConnection?: Prisma.OrganizationGithubConnectionOmit
   member?: Prisma.MemberOmit
   invitation?: Prisma.InvitationOmit
   contact?: Prisma.ContactOmit

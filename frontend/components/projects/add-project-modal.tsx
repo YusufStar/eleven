@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -20,6 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useCreateProject } from "@/services/projects";
+import { useSettingsGithubRepos } from "@/services/settings/use-settings-github";
 import { addProjectSchema, type AddProjectSchema } from "@/lib/schema";
 import { toast } from "sonner";
 import {
@@ -35,9 +36,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { OrgMemberMultiSelect } from "@/components/projects/org-member-multi-select";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Delete02Icon, LinkSquare01Icon, MoveIcon } from "@hugeicons/core-free-icons";
+import { Delete02Icon, LinkSquare01Icon, MoveIcon, Github01Icon } from "@hugeicons/core-free-icons";
+import type { GithubRepoItem } from "@/services/settings/api";
 
 export type AddProjectModalProps = {
   open: boolean;
@@ -96,14 +105,20 @@ function SortableLinkRow({
 
 export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
   const createMutation = useCreateProject();
+  const { data: reposData } = useSettingsGithubRepos();
+  const [selectedRepo, setSelectedRepo] = useState<GithubRepoItem | null>(null);
   const form = useForm<AddProjectSchema>({
     resolver: zodResolver(addProjectSchema),
     defaultValues,
   });
   const { fields: linkFields, append, remove, move } = useFieldArray({ control: form.control, name: "links" });
+  const repos = reposData?.repos ?? [];
 
   useEffect(() => {
-    if (!open) form.reset(defaultValues);
+    if (!open) {
+      form.reset(defaultValues);
+      setSelectedRepo(null);
+    }
   }, [open, form]);
 
   const sensors = useSensors(
@@ -126,6 +141,8 @@ export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
         description: data.description?.trim() || undefined,
         memberIds: data.memberIds?.length ? data.memberIds : undefined,
         links: validLinks.length ? validLinks : undefined,
+        githubRepoFullName: selectedRepo?.fullName,
+        githubRepoUrl: selectedRepo?.htmlUrl,
       },
       {
         onSuccess: () => {
@@ -179,6 +196,37 @@ export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
                   />
                 )}
               />
+            </Field>
+            <Field>
+              <FieldLabel className="inline-flex items-center gap-2">
+                <HugeiconsIcon icon={Github01Icon} className="size-4" />
+                GitHub repository (optional)
+              </FieldLabel>
+              {repos.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  Connect GitHub in Organization settings to link a repository.
+                </p>
+              ) : (
+                <Select
+                  value={selectedRepo?.htmlUrl ?? "__none__"}
+                  onValueChange={(value) => {
+                    if (value === "__none__") setSelectedRepo(null);
+                    else setSelectedRepo(repos.find((r) => r.htmlUrl === value) ?? null);
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="None" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
+                    {repos.map((r) => (
+                      <SelectItem key={r.id} value={r.htmlUrl}>
+                        {r.fullName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </Field>
             <Field>
               <FieldLabel className="inline-flex items-center gap-2">

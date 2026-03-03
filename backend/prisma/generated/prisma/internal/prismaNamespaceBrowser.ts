@@ -56,6 +56,7 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   Organization: 'Organization',
+  OrganizationGithubConnection: 'OrganizationGithubConnection',
   Member: 'Member',
   Invitation: 'Invitation',
   Contact: 'Contact',
@@ -157,6 +158,20 @@ export const OrganizationScalarFieldEnum = {
 } as const
 
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+export const OrganizationGithubConnectionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  githubUserId: 'githubUserId',
+  githubLogin: 'githubLogin',
+  avatarUrl: 'avatarUrl',
+  accessToken: 'accessToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationGithubConnectionScalarFieldEnum = (typeof OrganizationGithubConnectionScalarFieldEnum)[keyof typeof OrganizationGithubConnectionScalarFieldEnum]
 
 
 export const MemberScalarFieldEnum = {
@@ -286,6 +301,8 @@ export const ProjectScalarFieldEnum = {
   slug: 'slug',
   description: 'description',
   links: 'links',
+  githubRepoFullName: 'githubRepoFullName',
+  githubRepoUrl: 'githubRepoUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

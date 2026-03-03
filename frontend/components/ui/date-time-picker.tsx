@@ -1,7 +1,8 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar03Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -82,7 +83,7 @@ export function DateTimePicker({
                   use24HourFormat ? "MM/dd/yyyy HH:mm" : "MM/dd/yyyy hh:mm a",
                 )
               : placeholder}
-            <CalendarIcon className="ml-auto size-4 opacity-50" />
+            <HugeiconsIcon icon={Calendar03Icon} className="ml-auto size-4 opacity-50" strokeWidth={2} />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">

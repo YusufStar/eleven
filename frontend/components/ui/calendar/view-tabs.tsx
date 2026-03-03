@@ -4,13 +4,14 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { cn } from "@/lib/utils";
 import { useCalendar } from "@/components/ui/calendar/calendar-context";
-import { Grid3X3, Grid2X2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { LayoutGridIcon, Layout01Icon } from "@hugeicons/core-free-icons";
 import { TCalendarView } from "@/components/ui/calendar/types";
 import { memo } from "react";
 
 const tabs = [
-  { name: "Month", value: "month", icon: () => <Grid3X3 className="h-4 w-4" /> },
-  { name: "Year", value: "year", icon: () => <Grid2X2 className="h-4 w-4" /> },
+  { name: "Month", value: "month", icon: () => <HugeiconsIcon icon={LayoutGridIcon} className="h-4 w-4" strokeWidth={2} /> },
+  { name: "Year", value: "year", icon: () => <HugeiconsIcon icon={Layout01Icon} className="h-4 w-4" strokeWidth={2} /> },
 ];
 
 function Views() {

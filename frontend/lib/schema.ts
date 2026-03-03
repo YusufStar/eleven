@@ -62,6 +62,8 @@ export const addProjectSchema = z.object({
   description: z.string().max(2000).optional().or(z.literal("")),
   memberIds: z.array(z.string()).optional(),
   links: z.array(projectLinkSchema).optional(),
+  githubRepoFullName: z.string().optional().or(z.literal("")),
+  githubRepoUrl: z.string().url().optional().or(z.literal("")),
 })
 export type AddProjectSchema = z.infer<typeof addProjectSchema>
 

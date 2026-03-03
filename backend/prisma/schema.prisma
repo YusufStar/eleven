@@ -92,8 +92,26 @@ model Organization {
   projects   Project[]
   tasks      Task[]
 
+  githubConnection OrganizationGithubConnection?
+
   @@unique([slug])
   @@map("organization")
+}
+
+// Organization's main GitHub account (company account). One per organization.
+model OrganizationGithubConnection {
+  id             String       @id @default(cuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  githubUserId   String
+  githubLogin    String
+  avatarUrl      String?
+  accessToken    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@map("organization_github_connection")
 }
 
 model Member {
@@ -296,14 +314,17 @@ model Deal {
 }
 
 model Project {
-  id             String       @id @default(cuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  name           String
-  slug           String
-  description    String?
+  id                  String       @id @default(cuid())
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name                String
+  slug                String
+  description         String?
   // Links: array of { title: string, url: string } (e.g. Figma Dev, Github, etc.)
-  links          Json?        @default("[]")
+  links               Json?        @default("[]")
+  // GitHub repo linked to this project (from org's connected GitHub account)
+  githubRepoFullName  String?      // e.g. "owner/repo"
+  githubRepoUrl       String?      // e.g. "https://github.com/owner/repo"
 
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
