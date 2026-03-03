@@ -1,6 +1,7 @@
 export type {
   Project,
   ProjectDetail,
+  ProjectDetailTask,
   ProjectLinkItem,
   ProjectMemberRow,
   ProjectFileRow,
@@ -14,6 +15,7 @@ export type { CreateProjectBody } from "./use-projects";
 export {
   useProjectsList,
   useProject,
+  useProjectDetail,
   useCreateProject,
   useUpdateProject,
   useDeleteProject,

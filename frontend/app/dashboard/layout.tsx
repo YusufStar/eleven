@@ -17,7 +17,7 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { FirstOrgCreate } from "@/components/auth/first-org-create";
@@ -29,7 +29,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const { isPending: isOrganizationsPending, data: organizations } = authClient.useListOrganizations();
     const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();
     const { data: activeOrgPaymentStatus } = useActiveOrgPaymentStatus(activeOrganization?.id ?? "");
-    const [loading, setLoading] = useState(true)
     const pathname = usePathname();
 
     const breadcrumb = useMemo(() => {
@@ -40,16 +39,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }));
     }, [pathname])
 
-    useEffect(() => {
-        setTimeout(() => {
-            setLoading(false)
-        }, 3000)
-    }, [])
-
     return (
         <div className="relative">
             <AnimatePresence>
-                {(loading || isSessionPending || isOrganizationsPending || isActiveOrganizationPending) ? <Loading key="loading" /> : organizations && organizations.length > 0 ? (
+                {(isSessionPending || isOrganizationsPending || isActiveOrganizationPending) ? <Loading key="loading" /> : organizations && organizations.length > 0 ? (
                     <SidebarProvider>
                         <AppSidebar />
                         <SidebarInset>

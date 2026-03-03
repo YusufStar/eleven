@@ -11,6 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import type { Task } from "@/services/tasks";
 import { TaskStatusBadge } from "@/components/tasks/task-status-badge";
+import { TaskPriorityBadge } from "@/components/tasks/task-priority-badge";
 
 export const tasksColumns: ColumnDef<Task>[] = [
   {
@@ -36,6 +37,17 @@ export const tasksColumns: ColumnDef<Task>[] = [
       </span>
     ),
     cell: ({ row }) => <TaskStatusBadge status={row.original.status} />,
+  },
+  {
+    id: "priority",
+    accessorKey: "priority",
+    header: () => (
+      <span className="inline-flex items-center gap-2">
+        <HugeiconsIcon icon={Flag03Icon} className="size-4 text-muted-foreground" strokeWidth={2} />
+        Priority
+      </span>
+    ),
+    cell: ({ row }) => <TaskPriorityBadge priority={row.original.priority} />,
   },
   {
     id: "project",

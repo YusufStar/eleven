@@ -25,6 +25,13 @@ import { Button } from "@/components/ui/button";
 import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
 import { motion } from "framer-motion";
 
+const PRIORITY_CARD_BORDER: Record<string, string> = {
+  LOW: "border-l-4 border-l-slate-400 dark:border-l-slate-500",
+  MEDIUM: "border-l-4 border-l-amber-400 dark:border-l-amber-500",
+  HIGH: "border-l-4 border-l-orange-400 dark:border-l-orange-500",
+  URGENT: "border-l-4 border-l-red-400 dark:border-l-red-500",
+};
+
 const COLUMN_CONFIG: Record<TaskStatusValue, { label: string; className: string }> = {
   TODO: {
     label: "To do",
@@ -102,13 +109,18 @@ function KanbanCard({
     </>
   );
 
+  const priorityBorder = PRIORITY_CARD_BORDER[task.priority] ?? "";
+
   if (isOverlay) {
     return (
       <motion.div
         initial={{ scale: 0.96, opacity: 0.9 }}
         animate={{ scale: 1.02, opacity: 1 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="rounded-xl border border-border bg-card p-3 shadow-xl ring-2 ring-primary/25"
+        className={cn(
+          "rounded-xl border border-border bg-card p-3 shadow-xl ring-2 ring-primary/25",
+          priorityBorder
+        )}
       >
         {content}
       </motion.div>
@@ -116,7 +128,7 @@ function KanbanCard({
   }
 
   return (
-    <div className="relative rounded-xl border bg-card p-3 shadow-sm">
+    <div className={cn("relative rounded-xl border bg-card p-3 shadow-sm", priorityBorder)}>
       {canOpenDetail && onDetailClick && (
         <Button
           variant="ghost"

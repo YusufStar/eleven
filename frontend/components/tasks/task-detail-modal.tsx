@@ -21,22 +21,21 @@ import {
   HierarchyIcon,
   AttachmentIcon,
   Edit02Icon,
+  CheckmarkCircle01Icon,
+  ArrowLeft01Icon,
 } from "@hugeicons/core-free-icons";
-import { useTaskDetail, useUpdateTask } from "@/services/tasks";
+import { useTaskDetail, useUpdateTask, useUpdateTaskStatus } from "@/services/tasks";
 import { TaskStatusBadge } from "@/components/tasks/task-status-badge";
+import { TaskPriorityBadge } from "@/components/tasks/task-priority-badge";
 import { TaskDetailsEditor } from "@/components/tasks/task-details-editor";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { MarkdownView } from "@/components/ui/markdown-view";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
-const PRIORITY_LABELS: Record<string, string> = {
-  LOW: "Low",
-  MEDIUM: "Medium",
-  HIGH: "High",
-  URGENT: "Urgent",
-};
+import { authClient } from "@/lib/auth-client";
+import { useTeamMembersList } from "@/services/team";
 
 function formatDate(s: string | null | undefined): string {
   if (!s) return "—";
@@ -88,8 +87,21 @@ export interface TaskDetailModalProps {
 }
 
 export function TaskDetailModal({ taskId, open, onOpenChange }: TaskDetailModalProps) {
+  const { data: session } = authClient.useSession();
+  const { data: teamData } = useTeamMembersList({ pageSize: 200 });
   const { data: task, isPending } = useTaskDetail(open && taskId ? taskId : null);
+  const myMember = React.useMemo(() => {
+    const list = teamData?.data ?? [];
+    const uid = session?.user?.id;
+    if (!uid) return null;
+    return list.find((m) => m.userId === uid) ?? null;
+  }, [teamData?.data, session?.user?.id]);
+  const canEditDueDate = React.useMemo(() => {
+    if (!taskId || !myMember || !task) return false;
+    return task.creatorId === myMember.id || myMember.role === "owner";
+  }, [task?.creatorId, myMember, taskId, task]);
   const updateTask = useUpdateTask();
+  const updateStatus = useUpdateTaskStatus();
   const [editingDetails, setEditingDetails] = React.useState(false);
   const [detailsDraft, setDetailsDraft] = React.useState("");
 
@@ -100,6 +112,29 @@ export function TaskDetailModal({ taskId, open, onOpenChange }: TaskDetailModalP
       setDetailsDraft("");
     }
   }, [task?.detailsMarkdown]);
+
+  const handleComplete = () => {
+    if (!taskId) return;
+    updateStatus.mutate(
+      { taskId, status: "DONE" },
+      { onSuccess: () => toast.success("Task completed."), onError: (e) => toast.error(e.message ?? "Failed") }
+    );
+  };
+  const handleReopen = () => {
+    if (!taskId) return;
+    updateStatus.mutate(
+      { taskId, status: "IN_PROGRESS" },
+      { onSuccess: () => toast.success("Task reopened."), onError: (e) => toast.error(e.message ?? "Failed") }
+    );
+  };
+  const handleDueDateChange = (date: Date | null | undefined) => {
+    if (!taskId) return;
+    const value = date ? date.toISOString() : null;
+    updateTask.mutate(
+      { taskId, payload: { dueAt: value } },
+      { onSuccess: () => toast.success("Due date updated."), onError: (e) => toast.error(e.message ?? "Failed") }
+    );
+  };
 
   const handleSaveDetails = async () => {
     if (!taskId) return;
@@ -118,10 +153,34 @@ export function TaskDetailModal({ taskId, open, onOpenChange }: TaskDetailModalP
         className="max-h-[90vh] max-w-5xl! overflow-hidden flex flex-col p-0 gap-0"
         showCloseButton
       >
-        <DialogHeader className="shrink-0 border-b border-border/60 px-6 py-4">
+        <DialogHeader className="shrink-0 border-b border-border/60 px-6 py-4 flex flex-row items-center justify-between gap-2">
           <DialogTitle className="text-lg font-semibold pr-8">
             {task ? task.title?.trim() || "Untitled task" : "Task details"}
           </DialogTitle>
+          {task && taskId && (
+            <div className="flex shrink-0 gap-2">
+              {task.status === "DONE" ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReopen}
+                  disabled={updateStatus.isPending}
+                >
+                  {updateStatus.isPending ? <Spinner className="size-4" /> : <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4 mr-1" />}
+                  Reopen
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={handleComplete}
+                  disabled={updateStatus.isPending}
+                >
+                  {updateStatus.isPending ? <Spinner className="size-4" /> : <HugeiconsIcon icon={CheckmarkCircle01Icon} className="size-4 mr-1" />}
+                  Complete
+                </Button>
+              )}
+            </div>
+          )}
         </DialogHeader>
         <div className="flex-1 overflow-y-auto px-6 py-5">
           {isPending ? (
@@ -146,14 +205,20 @@ export function TaskDetailModal({ taskId, open, onOpenChange }: TaskDetailModalP
                     <TaskStatusBadge status={task.status} />
                   </DetailRow>
                   <DetailRow icon={Flag03Icon} label="Priority">
-                    <span className="text-sm">
-                      {PRIORITY_LABELS[task.priority] ?? task.priority}
-                    </span>
+                    <TaskPriorityBadge priority={task.priority} />
                   </DetailRow>
                 </div>
                 <div className="grid grid-cols-2 gap-x-6">
                   <DetailRow icon={Calendar03Icon} label="Due date">
-                    {formatDate(task.dueAt)}
+                    {canEditDueDate ? (
+                      <DateTimePicker
+                        value={task.dueAt ? new Date(task.dueAt) : null}
+                        onChange={handleDueDateChange}
+                        placeholder="Set due date"
+                      />
+                    ) : (
+                      formatDate(task.dueAt)
+                    )}
                   </DetailRow>
                   <DetailRow icon={Calendar03Icon} label="Completed at">
                     {formatDate(task.completedAt)}

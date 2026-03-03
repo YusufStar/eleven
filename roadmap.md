@@ -36,22 +36,20 @@ CRM and project management app. CRUD is done for core entities; next phase is **
 
 - [x] **Contact (Person)** — e.g. `/dashboard/contacts/people/[id]`: full contact info, linked company, deals, activities, tasks, notes.
 - [x] **Contact (Company)** — e.g. `/dashboard/contacts/companies/[id]`: company info, linked people, deals, activities.
-- [ ] **Deal** — e.g. `/dashboard/deals/[id]` or modal: value, stage, contact, activities, tasks, timeline.
-- [ ] **Project** — e.g. `/dashboard/projects/[slug]` or `[id]`: description, links, members, files, tasks list.
-- [ ] **Task** — optional full-page detail `/dashboard/tasks/[id]` in addition to existing modal (or keep modal-only and skip).
-- [ ] **Team member** — e.g. `/dashboard/team/[id]`: profile, role, assigned tasks/contacts/deals (read-only or minimal edit).
-- [ ] **File** — e.g. `/dashboard/files/[id]` or preview: metadata, download, which project, uploader.
+- [x] **Deal** — e.g. `/dashboard/deals/[id]` or modal: value, stage, contact, activities, tasks, timeline.
+- [x] **Project** — e.g. `/dashboard/projects/[slug]` or `[id]`: description, links, members, files, tasks list.
+- [x] **File** — e.g. `/dashboard/files/[id]` or preview: metadata, download, which project, uploader.
 
 ### 2. List ↔ detail navigation
 
-- [ ] Ensure every list row (contacts, companies, deals, projects, tasks, team, files) can open the corresponding detail (page or modal).
-- [ ] Breadcrumbs and back navigation from detail to list.
+- [x] Ensure every list row (contacts, companies, deals, projects, tasks, team, files) can open the corresponding detail (page or modal).
+- [x] Breadcrumbs and back navigation from detail to list.
 
 ### 3. Pipeline / Deals
 
-- [ ] Board view (`/dashboard/deals`) fully working (drag-and-drop stages).
-- [ ] Stages config (`/dashboard/deals/stages`) CRUD if not done.
-- [ ] Deal detail (see above).
+- [x] Board view (`/dashboard/deals`) fully working (drag-and-drop stages).
+- [x] Stages config (`/dashboard/deals/stages`) CRUD if not done.
+- [x] Deal detail (see above).
 
 ### 4. Activities
 

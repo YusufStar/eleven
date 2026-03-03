@@ -3,16 +3,15 @@
 import { useMemo } from "react";
 import { authClient } from "@/lib/auth-client";
 import type { Task } from "@/services/tasks";
-import type { TaskStatusValue } from "@/services/tasks/types";
 import { CalendarClient } from "@/components/ui/calendar/calendar-client";
 import type { IEvent, IUser } from "@/components/ui/calendar/interfaces";
 import type { TEventColor } from "@/components/ui/calendar/types";
 
-const STATUS_TO_COLOR: Record<TaskStatusValue, TEventColor> = {
-  TODO: "orange",
-  IN_PROGRESS: "blue",
-  DONE: "green",
-  CANCELLED: "red",
+const PRIORITY_TO_COLOR: Record<string, TEventColor> = {
+  LOW: "blue",
+  MEDIUM: "yellow",
+  HIGH: "orange",
+  URGENT: "red",
 };
 
 const DEFAULT_USER: IUser = { id: "", name: "Unassigned", picturePath: null };
@@ -21,7 +20,7 @@ function taskToEvent(task: Task, index: number): IEvent {
   const dueAt = task.dueAt ? new Date(task.dueAt) : new Date(task.createdAt);
   const startDate = dueAt.toISOString();
   const endDate = new Date(dueAt.getTime() + 60 * 60 * 1000).toISOString();
-  const status = (task.status in STATUS_TO_COLOR ? task.status : "TODO") as TaskStatusValue;
+  const color = PRIORITY_TO_COLOR[task.priority] ?? "blue";
   const user: IUser = task.assignee?.user
     ? { id: task.assignee.id, name: task.assignee.user.name ?? "—", picturePath: task.assignee.user.image ?? null }
     : DEFAULT_USER;
@@ -30,7 +29,7 @@ function taskToEvent(task: Task, index: number): IEvent {
     startDate,
     endDate,
     title: task.title?.trim() || "Untitled",
-    color: STATUS_TO_COLOR[status],
+    color,
     description: task.description?.trim() || "",
     user,
     taskId: task.id,

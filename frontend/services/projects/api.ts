@@ -43,6 +43,7 @@ export type ProjectUpdateBody = {
 export const projectsApi = {
   list: (params?: ProjectsListParams) => request<PaginatedProjects>(listPath(params)),
   get: (id: string) => request<ProjectDetail>(`/projects/${id}`),
+  getDetail: (idOrSlug: string) => request<ProjectDetail>(`/projects/detail/${encodeURIComponent(idOrSlug)}`),
   create: (body: { name: string; description?: string; links?: ProjectLinkItem[]; githubRepoFullName?: string; githubRepoUrl?: string }) =>
     request<import("./types").Project>("/projects", { method: "POST", body: JSON.stringify(body) }),
   update: (id: string, body: ProjectUpdateBody) =>

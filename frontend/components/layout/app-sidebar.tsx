@@ -48,10 +48,9 @@ const navMain = [
   },
   {
     title: "Pipeline",
-    url: "/dashboard/deals",
+    url: "/dashboard/deals/list",
     icon: <HugeiconsIcon icon={PipelineIcon} strokeWidth={2} />,
     items: [
-      { title: "Board", url: "/dashboard/deals" },
       { title: "All deals", url: "/dashboard/deals/list" },
       { title: "Stages", url: "/dashboard/deals/stages" },
     ],

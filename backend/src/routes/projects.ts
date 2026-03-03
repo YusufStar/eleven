@@ -121,14 +121,41 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
     { requireAuth: true, requireActiveOrg: true }
   )
   .get(
+    "/detail/:idOrSlug",
+    async ({ params, activeOrganizationId, activeMember, set }) => {
+      const idOrSlug = decodeURIComponent(params.idOrSlug);
+      const project = await prisma.project.findFirst({
+        where: {
+          ...orgScope(activeOrganizationId!),
+          OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+        },
+        include: {
+          tasks: { select: { id: true, title: true, status: true, priority: true, dueAt: true, completedAt: true }, orderBy: { createdAt: "desc" }, take: 50 },
+          members: { include: { member: { include: { user: { select: { id: true, name: true, email: true, image: true } } } } } },
+          files: { include: { uploadedBy: { include: { user: { select: { id: true, name: true } } } } }, orderBy: { createdAt: "desc" }, take: 50 },
+        },
+      });
+      if (!project)
+        return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      const isMember = project.members.some((m) => m.memberId === activeMember!.id);
+      if (!isMember)
+        return new Response(JSON.stringify({ message: "Access denied. Only project members can view this project." }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        });
+      return project;
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .get(
     "/:id",
     async ({ params, activeOrganizationId, activeMember, set }) => {
       const project = await prisma.project.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
         include: {
-          tasks: true,
+          tasks: { select: { id: true, title: true, status: true, priority: true, dueAt: true, completedAt: true }, orderBy: { createdAt: "desc" }, take: 50 },
           members: { include: { member: { include: { user: { select: { id: true, name: true, email: true, image: true } } } } } },
-          files: { include: { uploadedBy: { include: { user: { select: { id: true, name: true } } } } } },
+          files: { include: { uploadedBy: { include: { user: { select: { id: true, name: true } } } } }, orderBy: { createdAt: "desc" }, take: 50 },
         },
       });
       if (!project)

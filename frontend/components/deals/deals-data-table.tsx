@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   type ColumnDef,
-  type RowSelectionState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -18,7 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -28,13 +26,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -42,50 +33,55 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Settings01Icon, Task01Icon } from "@hugeicons/core-free-icons";
+import { Settings01Icon, Search01Icon, MoneyReceive01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
-import type { Task } from "@/services/tasks";
-import { TASK_STATUSES, type TaskStatusValue } from "@/services/tasks/types";
+import type { Pipeline, Stage } from "@/services/deals";
 
-const columnLabels: Record<string, string> = {
-  select: "Select",
-  title: "Title",
-  status: "Status",
-  priority: "Priority",
-  project: "Project",
-  assignee: "Assignee",
-  dueAt: "Due date",
-};
-
-const PRIORITY_ROW_BORDER: Record<string, string> = {
-  LOW: "border-l-4 border-l-slate-400 dark:border-l-slate-500",
-  MEDIUM: "border-l-4 border-l-amber-400 dark:border-l-amber-500",
-  HIGH: "border-l-4 border-l-orange-400 dark:border-l-orange-500",
-  URGENT: "border-l-4 border-l-red-400 dark:border-l-red-500",
-};
-
-const STATUS_LABELS: Record<TaskStatusValue, string> = {
-  TODO: "To do",
-  IN_PROGRESS: "In progress",
-  DONE: "Done",
-  CANCELLED: "Cancelled",
-};
-
-export type TasksDataTableProps = {
-  columns: ColumnDef<Task, unknown>[];
-  data: Task[];
+export type DealsDataTableProps<TData, TValue> = {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
   loading?: boolean;
   fetching?: boolean;
   page: number;
   pageSize: number;
   total: number;
   onPageChange: (page: number) => void;
-  onBulkStatusChange?: (taskIds: string[], status: TaskStatusValue) => void;
+  /** When true, only show Columns dropdown; filters are in DealsFilterBar. */
+  useExternalFilters?: boolean;
+  search?: string;
+  onSearchChange?: (value: string) => void;
+  pipelines?: Pipeline[];
+  pipelineId?: string;
+  onPipelineChange?: (id: string) => void;
+  stages?: Stage[];
+  stageId?: string;
+  onStageChange?: (id: string) => void;
+  /** For empty state when using external filters. */
+  hasActiveFilters?: boolean;
 };
 
-export function TasksDataTable({
+const columnLabels: Record<string, string> = {
+  title: "Deal",
+  value: "Value",
+  stage: "Stage",
+  pipeline: "Pipeline",
+  contact: "Contact",
+  owner: "Owner",
+  status: "Status",
+  actions: "Actions",
+};
+
+export function DealsDataTable<TData, TValue>({
   columns,
   data,
   loading = false,
@@ -94,78 +90,77 @@ export function TasksDataTable({
   pageSize,
   total,
   onPageChange,
-  onBulkStatusChange,
-}: TasksDataTableProps) {
+  useExternalFilters = false,
+  search = "",
+  onSearchChange,
+  pipelines = [],
+  pipelineId,
+  onPipelineChange,
+  stages = [],
+  stageId,
+  onStageChange,
+  hasActiveFilters = false,
+}: DealsDataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-  const [statusSelectValue, setStatusSelectValue] = React.useState<string>("");
-
-  const selectionColumn: ColumnDef<Task, unknown> = React.useMemo(
-    () => ({
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-          onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(v) => row.toggleSelected(!!v)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    }),
-    []
-  );
 
   const table = useReactTable({
     data,
-    columns: [selectionColumn, ...columns],
-    getRowId: (row) => row.id,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: { columnVisibility, rowSelection },
-    enableRowSelection: true,
+    state: { columnVisibility },
   });
-
-  const selectedIds = React.useMemo(
-    () => table.getFilteredSelectedRowModel().rows.map((r) => r.original.id),
-    [table, rowSelection]
-  );
-
-  const handleStatusChange = (value: string) => {
-    if (!value || selectedIds.length === 0) return;
-    onBulkStatusChange?.(selectedIds, value as TaskStatusValue);
-    setStatusSelectValue("");
-    setRowSelection({});
-  };
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const canPrevious = page > 1;
   const canNext = page < totalPages;
+  const showFilters = !useExternalFilters;
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        {selectedIds.length > 0 && onBulkStatusChange && (
-          <Select value={statusSelectValue || undefined} onValueChange={handleStatusChange}>
-            <SelectTrigger className="w-[160px]" size="sm">
-              <SelectValue placeholder="Update status" />
-            </SelectTrigger>
-            <SelectContent>
-              {TASK_STATUSES.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {STATUS_LABELS[s]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="flex flex-wrap items-center gap-2">
+        {showFilters && (
+          <>
+            <div className="relative flex-1 min-w-[180px] max-w-[280px]">
+              <HugeiconsIcon
+                icon={Search01Icon}
+                className="text-muted-foreground pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2"
+                strokeWidth={2}
+              />
+              <Input
+                placeholder="Search deals..."
+                className="pl-8 h-8"
+                value={search}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+              />
+            </div>
+            {pipelines.length > 0 && (
+              <Select value={pipelineId ?? "all"} onValueChange={(v) => onPipelineChange?.(v === "all" ? "" : v)}>
+                <SelectTrigger size="sm" className="w-[140px] h-8">
+                  <SelectValue placeholder="Pipeline" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All pipelines</SelectItem>
+                  {pipelines.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {stages.length > 0 && (
+              <Select value={stageId ?? "all"} onValueChange={(v) => onStageChange?.(v === "all" ? "" : v)}>
+                <SelectTrigger size="sm" className="w-[140px] h-8">
+                  <SelectValue placeholder="Stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All stages</SelectItem>
+                  {stages.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </>
         )}
         <div className="ml-auto">
           <DropdownMenu>
@@ -196,12 +191,7 @@ export function TasksDataTable({
         </div>
       </div>
 
-      <div
-        className={cn(
-          "overflow-hidden rounded-lg border bg-card relative",
-          fetching && "opacity-60 pointer-events-none"
-        )}
-      >
+      <div className={cn("overflow-hidden rounded-lg border bg-card relative", fetching && "opacity-60 pointer-events-none")}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -229,11 +219,7 @@ export function TasksDataTable({
               ))
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className={PRIORITY_ROW_BORDER[row.original.priority] ?? ""}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -247,11 +233,13 @@ export function TasksDataTable({
                   <Empty className="min-h-[280px] border-0">
                     <EmptyHeader>
                       <EmptyMedia variant="icon">
-                        <HugeiconsIcon icon={Task01Icon} className="size-5" strokeWidth={2} />
+                        <HugeiconsIcon icon={MoneyReceive01Icon} className="size-5" strokeWidth={2} />
                       </EmptyMedia>
-                      <EmptyTitle>No tasks found</EmptyTitle>
+                      <EmptyTitle>No deals found</EmptyTitle>
                       <EmptyDescription>
-                        Adjust filters or create a new task.
+                        {(hasActiveFilters || search || pipelineId || stageId)
+                          ? "Try adjusting your filters or search."
+                          : "Create a deal or add one from the board."}
                       </EmptyDescription>
                     </EmptyHeader>
                   </Empty>

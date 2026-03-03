@@ -41,8 +41,9 @@ export function useUpdateTaskStatus() {
   return useMutation({
     mutationFn: ({ taskId, status }: { taskId: string; status: string }) =>
       tasksApi.updateStatus(taskId, status),
-    onSuccess: () => {
+    onSuccess: (_, { taskId }) => {
       queryClient.invalidateQueries({ queryKey: tasksKey });
+      queryClient.invalidateQueries({ queryKey: [...tasksKey, "detail", taskId] });
     },
   });
 }

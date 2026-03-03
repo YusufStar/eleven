@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +8,9 @@ import {
   useContactPersonDetail,
   type ContactStatus,
 } from "@/services/contacts";
+import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
+import { TaskStatusBadge } from "@/components/tasks/task-status-badge";
+import { TaskPriorityBadge } from "@/components/tasks/task-priority-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -50,6 +53,7 @@ export function ContactPersonDetailContent() {
   const router = useRouter();
   const id = typeof params.id === "string" ? params.id : null;
   const { data, isPending, error } = useContactPersonDetail(id);
+  const [taskModalTaskId, setTaskModalTaskId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) router.replace("/dashboard/contacts/people");
@@ -253,15 +257,17 @@ export function ContactPersonDetailContent() {
             <ul className="space-y-2">
               {tasks.map((t) => (
                 <li key={t.id}>
-                  <Link
-                    href={`/dashboard/tasks?taskId=${t.id}`}
-                    className="text-sm font-medium text-primary hover:underline"
+                  <button
+                    type="button"
+                    onClick={() => setTaskModalTaskId(t.id)}
+                    className="text-sm font-medium text-primary hover:underline text-left"
                   >
                     {t.title}
-                  </Link>
-                  <span className="text-muted-foreground text-sm ml-2">
-                    {t.status} · {t.priority}
-                    {t.dueAt ? ` · ${formatDate(t.dueAt)}` : ""}
+                  </button>
+                  <span className="text-muted-foreground text-sm ml-2 inline-flex items-center gap-1.5">
+                    <TaskStatusBadge status={t.status} />
+                    <TaskPriorityBadge priority={t.priority} />
+                    {t.dueAt ? formatDate(t.dueAt) : ""}
                   </span>
                 </li>
               ))}
@@ -269,6 +275,12 @@ export function ContactPersonDetailContent() {
           )}
         </CardContent>
       </Card>
+
+      <TaskDetailModal
+        taskId={taskModalTaskId}
+        open={taskModalTaskId != null}
+        onOpenChange={(open) => !open && setTaskModalTaskId(null)}
+      />
 
       {contact.notes && (
         <Card>

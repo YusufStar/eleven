@@ -43,8 +43,17 @@ export interface ProjectFileRow {
   uploadedBy?: { id: string; user: { id: string; name: string } } | null;
 }
 
+export interface ProjectDetailTask {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+  dueAt: string | null;
+  completedAt: string | null;
+}
+
 export interface ProjectDetail extends Project {
-  tasks: unknown[];
+  tasks: ProjectDetailTask[];
   members: ProjectMemberRow[];
   files: ProjectFileRow[];
 }

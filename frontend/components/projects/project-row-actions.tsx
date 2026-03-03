@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Task01Icon, UserIcon, Delete02Icon, File02Icon } from "@hugeicons/core-free-icons";
+import { ViewIcon, Task01Icon, File02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 import type { Project } from "@/services/projects";
 import { useDeleteProject } from "@/services/projects";
 import { toast } from "sonner";
@@ -47,9 +47,17 @@ export function ProjectRowActions({ project }: ProjectRowActionsProps) {
     .filter(Boolean)
     .join(" · ");
 
+  const detailHref = `/dashboard/projects/${encodeURIComponent(project.slug || project.id)}`;
+
   return (
     <>
       <div className="flex items-center justify-end gap-1.5">
+        <Button variant="outline" size="sm" asChild>
+          <Link href={detailHref}>
+            <HugeiconsIcon icon={ViewIcon} className="size-4 mr-1.5" strokeWidth={2} />
+            View
+          </Link>
+        </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={`/dashboard/tasks?projectId=${project.id}`}>
             <HugeiconsIcon icon={Task01Icon} className="size-4 mr-1.5" strokeWidth={2} />

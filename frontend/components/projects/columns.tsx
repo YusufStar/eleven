@@ -52,9 +52,16 @@ export const projectsColumns: ColumnDef<Project>[] = [
         Name
       </span>
     ),
-    cell: ({ row }) => (
-      <span className="font-medium text-foreground">{row.original.name?.trim() ?? "—"}</span>
-    ),
+    cell: ({ row }) => {
+      const p = row.original;
+      const name = p.name?.trim() ?? "—";
+      const href = `/dashboard/projects/${encodeURIComponent(p.slug || p.id)}`;
+      return (
+        <Link href={href} className="font-medium text-foreground hover:text-primary hover:underline">
+          {name}
+        </Link>
+      );
+    },
   },
   {
     id: "slug",

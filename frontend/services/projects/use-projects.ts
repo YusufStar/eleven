@@ -22,6 +22,14 @@ export function useProject(id: string | null) {
   });
 }
 
+export function useProjectDetail(idOrSlug: string | null) {
+  return useQuery({
+    queryKey: [...projectsKey, "detail", idOrSlug],
+    queryFn: () => projectsApi.getDetail(idOrSlug!),
+    enabled: !!idOrSlug,
+  });
+}
+
 export type CreateProjectBody = {
   name: string;
   description?: string;
