@@ -173,28 +173,30 @@ export default function DealsStagesPage() {
                     key={stage.id}
                     className="flex items-center justify-between rounded-lg border px-3 py-2"
                   >
-                    <span className="font-medium">{stage.name}</span>
+                    <span className="font-medium w-[250px] truncate">{stage.name}</span>
                     <span className="text-muted-foreground text-sm">Order: {stage.order}</span>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <HugeiconsIcon icon={MoreVerticalIcon} className="size-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setEditStage(stage)}>
-                          <HugeiconsIcon icon={Edit02Icon} className="size-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={() => handleDeleteStage(stage)}
-                        >
-                          <HugeiconsIcon icon={Delete02Icon} className="size-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="w-[250px] flex items-center justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <HugeiconsIcon icon={MoreVerticalIcon} className="size-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setEditStage(stage)}>
+                            <HugeiconsIcon icon={Edit02Icon} className="size-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => handleDeleteStage(stage)}
+                          >
+                            <HugeiconsIcon icon={Delete02Icon} className="size-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </li>
                 ))}
             </ul>
@@ -208,12 +210,12 @@ export default function DealsStagesPage() {
             <CardTitle>New pipeline</CardTitle>
             <CardDescription>Add another pipeline.</CardDescription>
           </CardHeader>
-          <CardContent className="flex gap-2">
+          <CardContent className="flex gap-2 w-full">
             <Input
               placeholder="Pipeline name"
               value={newPipelineName}
               onChange={(e) => setNewPipelineName(e.target.value)}
-              className="max-w-xs"
+              className="w-full"
             />
             <Button onClick={handleCreatePipeline} disabled={createPipeline.isPending}>
               Create pipeline

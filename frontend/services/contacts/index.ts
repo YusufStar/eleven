@@ -11,7 +11,6 @@ export type {
   ContactPersonDetailResponse,
   ContactCompanyDetailResponse,
   ContactDetailDeal,
-  ContactDetailActivity,
   ContactDetailTask,
   ContactDetailCompanyRef,
   ContactDetailEmployeeRef,

@@ -2,6 +2,8 @@ import { Elysia } from "elysia";
 import { prisma } from "../db/prisma";
 import type { Prisma } from "../../prisma/generated/prisma/client";
 import { authPlugin } from "../plugins/auth.plugin";
+import { logActivity } from "../lib/activity-log";
+import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
 
 type ContactCreateBody = Omit<Prisma.ContactUncheckedCreateInput, "organizationId">;
 type ContactUpdateBody = Omit<Prisma.ContactUncheckedUpdateInput, "organizationId">;
@@ -75,7 +77,7 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
   )
   .get(
     "/people/:id",
-    async ({ params, activeOrganizationId, set }) => {
+    async ({ params, activeOrganizationId, activeMember, set }) => {
       const contact = await prisma.contact.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!), type: "PERSON" },
         include: {
@@ -92,20 +94,6 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
               stage: { select: { name: true, color: true } },
               pipeline: { select: { name: true } },
             },
-          },
-          activities: {
-            select: {
-              id: true,
-              type: true,
-              title: true,
-              description: true,
-              dueAt: true,
-              isDone: true,
-              completedAt: true,
-              createdAt: true,
-            },
-            orderBy: { createdAt: "desc" },
-            take: 50,
           },
           tasks: {
             select: {
@@ -125,25 +113,35 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
         set.status = 404;
         return { message: "Not found" };
       }
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.VIEW,
+          entityType: ActivityEntityType.CONTACT,
+          entityId: contact.id,
+          entityTitle: contact.type === "PERSON" ? ([contact.firstName, contact.lastName].filter(Boolean).join(" ").trim() || contact.email) ?? undefined : contact.companyName ?? undefined,
+        });
+      }
       return {
         contact: {
           ...contact,
           company: contact.company,
           deals: contact.deals,
-          activities: contact.activities,
           tasks: contact.tasks,
         },
         company: contact.company,
         deals: contact.deals,
-        activities: contact.activities,
         tasks: contact.tasks,
+        activities: [] as { id: string; type: string; title: string; description: string | null; dueAt: Date | null; isDone: boolean; completedAt: Date | null; createdAt: Date }[],
       };
     },
     { requireAuth: true, requireActiveOrg: true }
   )
   .get(
     "/companies/:id",
-    async ({ params, activeOrganizationId, set }) => {
+    async ({ params, activeOrganizationId, activeMember, set }) => {
       const contact = await prisma.contact.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!), type: "COMPANY" },
         include: {
@@ -172,20 +170,6 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
               pipeline: { select: { name: true } },
             },
           },
-          activities: {
-            select: {
-              id: true,
-              type: true,
-              title: true,
-              description: true,
-              dueAt: true,
-              isDone: true,
-              completedAt: true,
-              createdAt: true,
-            },
-            orderBy: { createdAt: "desc" },
-            take: 50,
-          },
           tasks: {
             select: {
               id: true,
@@ -204,36 +188,57 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
         set.status = 404;
         return { message: "Not found" };
       }
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.VIEW,
+          entityType: ActivityEntityType.CONTACT,
+          entityId: contact.id,
+          entityTitle: (contact.companyName ?? contact.firstName ?? undefined),
+        });
+      }
       return {
         contact: {
           ...contact,
           employees: contact.employees,
           deals: contact.deals,
-          activities: contact.activities,
           tasks: contact.tasks,
         },
         employees: contact.employees,
         deals: contact.deals,
-        activities: contact.activities,
         tasks: contact.tasks,
+        activities: [] as { id: string; type: string; title: string; description: string | null; dueAt: Date | null; isDone: boolean; completedAt: Date | null; createdAt: Date }[],
       };
     },
     { requireAuth: true, requireActiveOrg: true }
   )
   .get(
     "/get/:id",
-    async ({ params, activeOrganizationId }) => {
+    async ({ params, activeOrganizationId, activeMember }) => {
       const contact = await prisma.contact.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
       });
       if (!contact) return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.VIEW,
+          entityType: ActivityEntityType.CONTACT,
+          entityId: contact.id,
+          entityTitle: contact.type === "PERSON" ? ([contact.firstName, contact.lastName].filter(Boolean).join(" ").trim() || contact.email) ?? undefined : contact.companyName ?? undefined,
+        });
+      }
       return contact;
     },
     { requireAuth: true, requireActiveOrg: true }
   )
   .post(
     "/create",
-    async ({ body, activeOrganizationId }) => {
+    async ({ body, activeOrganizationId, activeMember }) => {
       const b = body as ContactCreateBody & {
         type?: string;
         firstName?: string;
@@ -260,6 +265,15 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
           companyName: companyName || null,
         };
         const contact = await prisma.contact.create({ data });
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember!.id,
+          action: ActivityAction.CREATE,
+          entityType: ActivityEntityType.CONTACT,
+          entityId: contact.id,
+          entityTitle: companyName || undefined,
+        });
         return contact;
       }
 
@@ -284,13 +298,22 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
         organizationId: activeOrganizationId!,
       };
       const contact = await prisma.contact.create({ data });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.CONTACT,
+        entityId: contact.id,
+        entityTitle: [firstName, lastName].filter(Boolean).join(" ").trim() || email || undefined,
+      });
       return contact;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .patch(
     "/update/:id",
-    async ({ params, body, activeOrganizationId }) => {
+    async ({ params, body, activeOrganizationId, activeMember }) => {
       const existing = await prisma.contact.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
       });
@@ -300,18 +323,38 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
         where: { id: params.id },
         data: rest,
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.UPDATE,
+        entityType: ActivityEntityType.CONTACT,
+        entityId: contact.id,
+        entityTitle: existing.type === "PERSON" ? ([existing.firstName, existing.lastName].filter(Boolean).join(" ").trim() || existing.email) ?? undefined : existing.companyName ?? undefined,
+      });
       return contact;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .delete(
     "/delete/:id",
-    async ({ params, activeOrganizationId }) => {
+    async ({ params, activeOrganizationId, activeMember }) => {
       const existing = await prisma.contact.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
       });
       if (!existing) return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      const entityTitle = existing.type === "PERSON" ? ([existing.firstName, existing.lastName].filter(Boolean).join(" ").trim() || existing.email) ?? undefined : existing.companyName ?? undefined;
       await prisma.contact.delete({ where: { id: params.id } });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.DELETE,
+        entityType: ActivityEntityType.CONTACT,
+        entityId: params.id,
+        entityTitle: entityTitle ?? undefined,
+        metadata: { deleted: entityTitle ?? null },
+      });
       return { ok: true };
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }

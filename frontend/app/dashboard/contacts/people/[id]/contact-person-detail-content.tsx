@@ -20,7 +20,6 @@ import {
   NoteIcon,
   PipelineIcon,
   Task01Icon,
-  ActivityIcon,
 } from "@hugeicons/core-free-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -83,7 +82,7 @@ export function ContactPersonDetailContent() {
     );
   }
 
-  const { contact, company, deals, activities, tasks } = data;
+  const { contact, company, deals, tasks } = data;
   const name = formatPersonName(contact.firstName, contact.lastName);
 
   return (
@@ -207,35 +206,6 @@ export function ContactPersonDetailContent() {
                   <span className="text-muted-foreground text-sm ml-2">
                     {d.value != null ? `${d.value} ${d.currency}` : ""} · {d.stage?.name ?? ""}
                   </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <HugeiconsIcon icon={ActivityIcon} className="size-4" strokeWidth={2} />
-            Activities ({activities.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {activities.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No activities.</p>
-          ) : (
-            <ul className="space-y-2">
-              {activities.map((a) => (
-                <li key={a.id} className="text-sm">
-                  <span className="font-medium">{a.title}</span>
-                  <span className="text-muted-foreground ml-2">{a.type}</span>
-                  {a.dueAt && (
-                    <span className="text-muted-foreground ml-2">{formatDate(a.dueAt)}</span>
-                  )}
-                  {a.isDone && (
-                    <span className="ml-2 text-emerald-600 dark:text-emerald-400">Done</span>
-                  )}
                 </li>
               ))}
             </ul>

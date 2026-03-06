@@ -1,6 +1,9 @@
 import { Elysia } from "elysia";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
+import { logActivity } from "../lib/activity-log";
+import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
+import type { DealStatus } from "../../prisma/generated/prisma/enums";
 
 const orgScope = (activeOrganizationId: string) => ({ organizationId: activeOrganizationId });
 
@@ -20,7 +23,7 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
   )
   .post(
     "/pipelines",
-    async ({ body, activeOrganizationId }) => {
+    async ({ body, activeOrganizationId, activeMember }) => {
       const name = typeof (body as { name?: string })?.name === "string"
         ? (body as { name: string }).name.trim()
         : "Sales";
@@ -33,13 +36,22 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         },
         include: { stages: true },
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.PIPELINE,
+        entityId: pipeline.id,
+        entityTitle: pipeline.name,
+      });
       return pipeline;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .get(
     "/pipelines/:id",
-    async ({ params, activeOrganizationId, set }) => {
+    async ({ params, activeOrganizationId, activeMember, set }) => {
       const pipeline = await prisma.pipeline.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
         include: { stages: { orderBy: { order: "asc" } } },
@@ -48,13 +60,24 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         set.status = 404;
         return { message: "Not found" };
       }
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.VIEW,
+          entityType: ActivityEntityType.PIPELINE,
+          entityId: pipeline.id,
+          entityTitle: pipeline.name,
+        });
+      }
       return pipeline;
     },
     { requireAuth: true, requireActiveOrg: true }
   )
   .post(
     "/pipelines/:id/stages",
-    async ({ params, body, activeOrganizationId, set }) => {
+    async ({ params, body, activeOrganizationId, activeMember, set }) => {
       const pipeline = await prisma.pipeline.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
         include: { stages: { orderBy: { order: "desc" }, take: 1 } },
@@ -70,13 +93,23 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
       const stage = await prisma.stage.create({
         data: { pipelineId: params.id, name, order, color },
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.STAGE,
+        entityId: stage.id,
+        entityTitle: stage.name,
+        metadata: { pipelineId: params.id },
+      });
       return stage;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .patch(
     "/stages/:id",
-    async ({ params, body, activeOrganizationId, set }) => {
+    async ({ params, body, activeOrganizationId, activeMember, set }) => {
       const stage = await prisma.stage.findFirst({
         where: { id: params.id, pipeline: orgScope(activeOrganizationId!) },
       });
@@ -93,13 +126,22 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         where: { id: params.id },
         data: updates,
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.UPDATE,
+        entityType: ActivityEntityType.STAGE,
+        entityId: updated.id,
+        entityTitle: updated.name,
+      });
       return updated;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .delete(
     "/stages/:id",
-    async ({ params, activeOrganizationId, set }) => {
+    async ({ params, activeOrganizationId, activeMember, set }) => {
       const stage = await prisma.stage.findFirst({
         where: { id: params.id, pipeline: orgScope(activeOrganizationId!) },
         include: { _count: { select: { deals: true } } },
@@ -112,7 +154,18 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         set.status = 400;
         return { message: "Cannot delete stage with deals. Move deals first." };
       }
+      const entityTitle = stage.name;
       await prisma.stage.delete({ where: { id: params.id } });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.DELETE,
+        entityType: ActivityEntityType.STAGE,
+        entityId: params.id,
+        entityTitle,
+        metadata: { deleted: entityTitle },
+      });
       return { ok: true };
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
@@ -134,7 +187,7 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         ...(pipelineId && { pipelineId }),
         ...(stageId && { stageId }),
         ...(contactId && { contactId }),
-        ...(status && validStatuses.includes(status as (typeof validStatuses)[number]) && { status }),
+        ...(status && validStatuses.includes(status as (typeof validStatuses)[number]) && { status: status as DealStatus }),
         ...(search && { title: { contains: search, mode: "insensitive" as const } }),
       };
       const [data, total] = await Promise.all([
@@ -158,7 +211,7 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
   )
   .get(
     "/:id",
-    async ({ params, activeOrganizationId, set }) => {
+    async ({ params, activeOrganizationId, activeMember, set }) => {
       const deal = await prisma.deal.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
         include: {
@@ -166,20 +219,6 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
           pipeline: true,
           contact: true,
           owner: { include: { user: { select: { id: true, name: true, email: true, image: true } } } },
-          activities: {
-            select: {
-              id: true,
-              type: true,
-              title: true,
-              description: true,
-              dueAt: true,
-              isDone: true,
-              completedAt: true,
-              createdAt: true,
-            },
-            orderBy: { createdAt: "desc" },
-            take: 50,
-          },
           tasks: {
             select: {
               id: true,
@@ -198,13 +237,24 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         set.status = 404;
         return { message: "Not found" };
       }
-      return deal;
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.VIEW,
+          entityType: ActivityEntityType.DEAL,
+          entityId: deal.id,
+          entityTitle: deal.title,
+        });
+      }
+      return { ...deal, activities: [] as { id: string; type: string; title: string; description: string | null; dueAt: Date | null; isDone: boolean; completedAt: Date | null; createdAt: Date }[] };
     },
     { requireAuth: true, requireActiveOrg: true }
   )
   .post(
     "/",
-    async ({ body, activeOrganizationId, set }) => {
+    async ({ body, activeOrganizationId, activeMember, set }) => {
       const b = body as {
         title?: string;
         value?: number;
@@ -249,13 +299,22 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
           ownerId: b?.ownerId ?? null,
         },
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.DEAL,
+        entityId: deal.id,
+        entityTitle: deal.title,
+      });
       return deal;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .patch(
     "/:id",
-    async ({ params, body, activeOrganizationId, set }) => {
+    async ({ params, body, activeOrganizationId, activeMember, set }) => {
       const existing = await prisma.deal.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
       });
@@ -290,13 +349,22 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         where: { id: params.id },
         data: updates,
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.UPDATE,
+        entityType: ActivityEntityType.DEAL,
+        entityId: updated.id,
+        entityTitle: updated.title,
+      });
       return updated;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .delete(
     "/:id",
-    async ({ params, activeOrganizationId, set }) => {
+    async ({ params, activeOrganizationId, activeMember, set }) => {
       const existing = await prisma.deal.findFirst({
         where: { id: params.id, ...orgScope(activeOrganizationId!) },
       });
@@ -304,7 +372,18 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         set.status = 404;
         return { message: "Not found" };
       }
+      const entityTitle = existing.title;
       await prisma.deal.delete({ where: { id: params.id } });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.DELETE,
+        entityType: ActivityEntityType.DEAL,
+        entityId: params.id,
+        entityTitle,
+        metadata: { deleted: entityTitle },
+      });
       return { ok: true };
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }

@@ -20,6 +20,7 @@ import {
   UserGroupIcon,
   Settings05Icon,
   Task01Icon,
+  Activity01Icon,
   ChartIcon,
   Notification01Icon,
   CreditCardIcon,
@@ -91,11 +92,9 @@ const navMain = [
   {
     title: "Activities",
     url: "/dashboard/activities",
-    icon: <HugeiconsIcon icon={Task01Icon} strokeWidth={2} />,
+    icon: <HugeiconsIcon icon={Activity01Icon} strokeWidth={2} />,
     items: [
-      { title: "Tasks", url: "/dashboard/activities" },
-      { title: "Calendar", url: "/dashboard/activities/calendar" },
-      { title: "Log", url: "/dashboard/activities/log" },
+      { title: "All activities", url: "/dashboard/activities" },
     ],
   },
   {

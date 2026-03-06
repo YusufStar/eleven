@@ -139,7 +139,7 @@ model Member {
 
   ownedContacts   Contact[]
   ownedDeals      Deal[]
-  ownedActivities Activity[]
+  activityLogs    Activity[]
   assignedTasks   Task[] @relation("AssignedTasks")
   createdTasks    Task[] @relation("CreatedTasks")
   projectMembers  ProjectMember[]
@@ -216,7 +216,6 @@ model Contact {
 
   // İlişkiler
   deals      Deal[]
-  activities Activity[]
   tasks      Task[]
 
   @@index([organizationId])
@@ -227,35 +226,30 @@ model Contact {
   @@map("contacts")
 }
 
+// Audit log: who did what (create/update/delete/view) on which entity. List endpoints are not logged.
 model Activity {
   id             String       @id @default(cuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  type        ActivityType
-  title       String
-  description String?
-  dueAt       DateTime?
-  completedAt DateTime?
-  isDone      Boolean      @default(false)
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  // İlişkiler — bir aktivite kişiye ve/veya deal'e bağlı olabilir
-  contactId String?
-  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  dealId    String?
-  deal      Deal?    @relation(fields: [dealId], references: [id], onDelete: SetNull)
-
-  // Kimin yarattığı / sorumlusu
-  ownerId String?
-  owner   Member? @relation(fields: [ownerId], references: [id])
+  action    ActivityAction
+  entityType ActivityEntityType
+  entityId  String
+  entityTitle String?  // optional display/search label (e.g. contact name, deal title)
+  metadata  Json?     // optional details (e.g. changed fields for UPDATE)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([organizationId])
-  @@index([contactId])
-  @@index([dealId])
-  @@index([organizationId, isDone])
+  @@index([organizationId, action])
+  @@index([organizationId, entityType])
+  @@index([organizationId, memberId])
+  @@index([organizationId, entityId])
+  @@index([organizationId, createdAt])
+  @@index([organizationId, entityTitle])
   @@map("activities")
 }
 
@@ -317,7 +311,6 @@ model Deal {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  activities Activity[]
   tasks      Task[]
 
   @@index([organizationId])
@@ -468,13 +461,23 @@ enum ContactSource {
   API // dış sistem
 }
 
-enum ActivityType {
-  CALL // telefon araması
-  EMAIL // email
-  MEETING // toplantı
-  TASK // görev
-  NOTE // not
-  VISIT // ziyaret
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+}
+
+enum ActivityEntityType {
+  CONTACT
+  DEAL
+  PROJECT
+  TASK
+  PIPELINE
+  STAGE
+  PROJECT_FILE
+  TASK_ATTACHMENT
+  PROJECT_MEMBER
 }
 
 enum DealStatus {

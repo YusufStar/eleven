@@ -4,7 +4,6 @@ import {
   ContactType,
   ContactStatus,
   ContactSource,
-  ActivityType,
   DealStatus,
   TaskStatus,
   TaskPriority,
@@ -178,32 +177,6 @@ export async function createDummyData(): Promise<{ ok: boolean; message: string;
     deals.push({ id: d.id });
   }
 
-  // ─── Activities ────────────────────────────────────────────────────────
-  const activityCount = faker.number.int({ min: 40, max: 70 });
-  for (let i = 0; i < activityCount; i++) {
-    await prisma.activity.create({
-      data: {
-        organizationId: orgId,
-        type: faker.helpers.arrayElement(Object.values(ActivityType)),
-        title: faker.helpers.arrayElement([
-          "Follow-up call",
-          "Send proposal",
-          "Demo scheduled",
-          "Contract review",
-          "Discovery meeting",
-          faker.lorem.sentence(),
-        ]),
-        description: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-        dueAt: faker.date.soon({ days: 14 }),
-        completedAt: faker.datatype.boolean(0.4) ? faker.date.recent({ days: 7 }) : null,
-        isDone: faker.datatype.boolean(0.4),
-        contactId: faker.datatype.boolean(0.6) ? faker.helpers.arrayElement(people).id : null,
-        dealId: faker.datatype.boolean(0.5) && deals.length ? faker.helpers.arrayElement(deals).id : null,
-        ownerId: ownerId,
-      },
-    });
-  }
-
   // ─── Projects & Project Members ─────────────────────────────────────────
   const projectNames = [
     "Website Redesign",
@@ -278,7 +251,6 @@ export async function createDummyData(): Promise<{ ok: boolean; message: string;
       pipelines: 2,
       stages: stages1.length + stages2.length,
       deals: dealCount,
-      activities: activityCount,
       projects: projects.length,
       tasks: taskCount,
     },

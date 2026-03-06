@@ -5,7 +5,6 @@ export type {
   DealListItem,
   DealDetail,
   DealContactRef,
-  DealDetailActivity,
   DealDetailTask,
   DealsListParams,
   PaginatedDeals,

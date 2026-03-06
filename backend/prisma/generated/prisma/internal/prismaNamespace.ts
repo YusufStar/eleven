@@ -2025,17 +2025,13 @@ export type ContactScalarFieldEnum = (typeof ContactScalarFieldEnum)[keyof typeo
 export const ActivityScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
-  type: 'type',
-  title: 'title',
-  description: 'description',
-  dueAt: 'dueAt',
-  completedAt: 'completedAt',
-  isDone: 'isDone',
-  contactId: 'contactId',
-  dealId: 'dealId',
-  ownerId: 'ownerId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  memberId: 'memberId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  entityTitle: 'entityTitle',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
 } as const
 
 export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
@@ -2329,16 +2325,30 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
- * Reference to a field of type 'ActivityType'
+ * Reference to a field of type 'ActivityAction'
  */
-export type EnumActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityType'>
+export type EnumActivityActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityAction'>
     
 
 
 /**
- * Reference to a field of type 'ActivityType[]'
+ * Reference to a field of type 'ActivityAction[]'
  */
-export type ListEnumActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityType[]'>
+export type ListEnumActivityActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityAction[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ActivityEntityType'
+ */
+export type EnumActivityEntityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityEntityType'>
+    
+
+
+/**
+ * Reference to a field of type 'ActivityEntityType[]'
+ */
+export type ListEnumActivityEntityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityEntityType[]'>
     
 
 

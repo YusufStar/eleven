@@ -2,6 +2,8 @@ import { Elysia } from "elysia";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
+import { logActivity } from "../lib/activity-log";
+import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
 
 const orgScope = (activeOrganizationId: string) => ({ organizationId: activeOrganizationId });
 
@@ -143,6 +145,15 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
           status: 403,
           headers: { "Content-Type": "application/json" },
         });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.VIEW,
+        entityType: ActivityEntityType.PROJECT,
+        entityId: project.id,
+        entityTitle: project.name,
+      });
       return project;
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -166,6 +177,15 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
           status: 403,
           headers: { "Content-Type": "application/json" },
         });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.VIEW,
+        entityType: ActivityEntityType.PROJECT,
+        entityId: project.id,
+        entityTitle: project.name,
+      });
       return project;
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -201,6 +221,15 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
           members: { create: { memberId: activeMember!.id } },
         },
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.PROJECT,
+        entityId: project.id,
+        entityTitle: project.name,
+      });
       return project;
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -230,6 +259,15 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         where: { id: params.id },
         data: updates,
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.UPDATE,
+        entityType: ActivityEntityType.PROJECT,
+        entityId: updated.id,
+        entityTitle: updated.name,
+      });
       return updated;
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -246,7 +284,18 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
       const isMember = project.members.length > 0;
       if (!isMember)
         return new Response(JSON.stringify({ message: "Access denied" }), { status: 403, headers: { "Content-Type": "application/json" } });
+      const entityTitle = project.name;
       await prisma.project.delete({ where: { id: params.id } });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.DELETE,
+        entityType: ActivityEntityType.PROJECT,
+        entityId: params.id,
+        entityTitle,
+        metadata: { deleted: entityTitle },
+      });
       return { ok: true };
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -297,6 +346,16 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         data: { projectId: params.id, memberId },
         include: { member: { include: { user: { select: { id: true, name: true, email: true, image: true } } } } },
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.PROJECT_MEMBER,
+        entityId: pm.id,
+        entityTitle: null,
+        metadata: { projectId: params.id, memberId },
+      });
       return pm;
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -311,6 +370,15 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         return new Response(JSON.stringify({ message: "Access denied" }), { status: 403, headers: { "Content-Type": "application/json" } });
       await prisma.projectMember.deleteMany({
         where: { projectId: params.id, memberId: params.memberId },
+      });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.DELETE,
+        entityType: ActivityEntityType.PROJECT_MEMBER,
+        entityId: params.memberId,
+        metadata: { projectId: params.id },
       });
       return { ok: true };
     },
@@ -408,6 +476,16 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
           uploadedById: activeMember!.id,
         },
       });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.PROJECT_FILE,
+        entityId: pf.id,
+        entityTitle: pf.fileName,
+        metadata: { projectId: params.id },
+      });
       return pf;
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -425,6 +503,16 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
       });
       if (!file)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.VIEW,
+        entityType: ActivityEntityType.PROJECT_FILE,
+        entityId: file.id,
+        entityTitle: file.fileName,
+        metadata: { projectId: params.id },
+      });
       try {
         const res = await fetch(file.fileUrl, { redirect: "follow" });
         if (!res.ok)
@@ -457,7 +545,18 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
       });
       if (!file)
         return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      const entityTitle = file.fileName;
       await prisma.projectFile.delete({ where: { id: params.fileId } });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.DELETE,
+        entityType: ActivityEntityType.PROJECT_FILE,
+        entityId: params.fileId,
+        entityTitle,
+        metadata: { projectId: params.id, deleted: entityTitle },
+      });
       return { ok: true };
     },
     { requireAuth: true, requireActiveOrg: true }

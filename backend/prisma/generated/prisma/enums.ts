@@ -39,16 +39,29 @@ export const ContactSource = {
 export type ContactSource = (typeof ContactSource)[keyof typeof ContactSource]
 
 
-export const ActivityType = {
-  CALL: 'CALL',
-  EMAIL: 'EMAIL',
-  MEETING: 'MEETING',
-  TASK: 'TASK',
-  NOTE: 'NOTE',
-  VISIT: 'VISIT'
+export const ActivityAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  VIEW: 'VIEW'
 } as const
 
-export type ActivityType = (typeof ActivityType)[keyof typeof ActivityType]
+export type ActivityAction = (typeof ActivityAction)[keyof typeof ActivityAction]
+
+
+export const ActivityEntityType = {
+  CONTACT: 'CONTACT',
+  DEAL: 'DEAL',
+  PROJECT: 'PROJECT',
+  TASK: 'TASK',
+  PIPELINE: 'PIPELINE',
+  STAGE: 'STAGE',
+  PROJECT_FILE: 'PROJECT_FILE',
+  TASK_ATTACHMENT: 'TASK_ATTACHMENT',
+  PROJECT_MEMBER: 'PROJECT_MEMBER'
+} as const
+
+export type ActivityEntityType = (typeof ActivityEntityType)[keyof typeof ActivityEntityType]
 
 
 export const DealStatus = {

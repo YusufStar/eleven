@@ -186,7 +186,7 @@ export type MemberWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   ownedContacts?: Prisma.ContactListRelationFilter
   ownedDeals?: Prisma.DealListRelationFilter
-  ownedActivities?: Prisma.ActivityListRelationFilter
+  activityLogs?: Prisma.ActivityListRelationFilter
   assignedTasks?: Prisma.TaskListRelationFilter
   createdTasks?: Prisma.TaskListRelationFilter
   projectMembers?: Prisma.ProjectMemberListRelationFilter
@@ -203,7 +203,7 @@ export type MemberOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   ownedContacts?: Prisma.ContactOrderByRelationAggregateInput
   ownedDeals?: Prisma.DealOrderByRelationAggregateInput
-  ownedActivities?: Prisma.ActivityOrderByRelationAggregateInput
+  activityLogs?: Prisma.ActivityOrderByRelationAggregateInput
   assignedTasks?: Prisma.TaskOrderByRelationAggregateInput
   createdTasks?: Prisma.TaskOrderByRelationAggregateInput
   projectMembers?: Prisma.ProjectMemberOrderByRelationAggregateInput
@@ -223,7 +223,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   ownedContacts?: Prisma.ContactListRelationFilter
   ownedDeals?: Prisma.DealListRelationFilter
-  ownedActivities?: Prisma.ActivityListRelationFilter
+  activityLogs?: Prisma.ActivityListRelationFilter
   assignedTasks?: Prisma.TaskListRelationFilter
   createdTasks?: Prisma.TaskListRelationFilter
   projectMembers?: Prisma.ProjectMemberListRelationFilter
@@ -260,7 +260,7 @@ export type MemberCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
@@ -275,7 +275,7 @@ export type MemberUncheckedCreateInput = {
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
@@ -290,7 +290,7 @@ export type MemberUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
@@ -305,7 +305,7 @@ export type MemberUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
@@ -478,20 +478,18 @@ export type MemberUpdateOneWithoutOwnedContactsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutOwnedContactsInput, Prisma.MemberUpdateWithoutOwnedContactsInput>, Prisma.MemberUncheckedUpdateWithoutOwnedContactsInput>
 }
 
-export type MemberCreateNestedOneWithoutOwnedActivitiesInput = {
-  create?: Prisma.XOR<Prisma.MemberCreateWithoutOwnedActivitiesInput, Prisma.MemberUncheckedCreateWithoutOwnedActivitiesInput>
-  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutOwnedActivitiesInput
+export type MemberCreateNestedOneWithoutActivityLogsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutActivityLogsInput, Prisma.MemberUncheckedCreateWithoutActivityLogsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutActivityLogsInput
   connect?: Prisma.MemberWhereUniqueInput
 }
 
-export type MemberUpdateOneWithoutOwnedActivitiesNestedInput = {
-  create?: Prisma.XOR<Prisma.MemberCreateWithoutOwnedActivitiesInput, Prisma.MemberUncheckedCreateWithoutOwnedActivitiesInput>
-  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutOwnedActivitiesInput
-  upsert?: Prisma.MemberUpsertWithoutOwnedActivitiesInput
-  disconnect?: Prisma.MemberWhereInput | boolean
-  delete?: Prisma.MemberWhereInput | boolean
+export type MemberUpdateOneRequiredWithoutActivityLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutActivityLogsInput, Prisma.MemberUncheckedCreateWithoutActivityLogsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutActivityLogsInput
+  upsert?: Prisma.MemberUpsertWithoutActivityLogsInput
   connect?: Prisma.MemberWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutOwnedActivitiesInput, Prisma.MemberUpdateWithoutOwnedActivitiesInput>, Prisma.MemberUncheckedUpdateWithoutOwnedActivitiesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutActivityLogsInput, Prisma.MemberUpdateWithoutActivityLogsInput>, Prisma.MemberUncheckedUpdateWithoutActivityLogsInput>
 }
 
 export type MemberCreateNestedOneWithoutOwnedDealsInput = {
@@ -579,7 +577,7 @@ export type MemberCreateWithoutUserInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
@@ -593,7 +591,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
@@ -644,7 +642,7 @@ export type MemberCreateWithoutOrganizationInput = {
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
@@ -658,7 +656,7 @@ export type MemberUncheckedCreateWithoutOrganizationInput = {
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
@@ -698,7 +696,7 @@ export type MemberCreateWithoutOwnedContactsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
@@ -712,7 +710,7 @@ export type MemberUncheckedCreateWithoutOwnedContactsInput = {
   role?: string
   createdAt: Date | string
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
@@ -742,7 +740,7 @@ export type MemberUpdateWithoutOwnedContactsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
@@ -756,14 +754,14 @@ export type MemberUncheckedUpdateWithoutOwnedContactsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
   projectFilesUploaded?: Prisma.ProjectFileUncheckedUpdateManyWithoutUploadedByNestedInput
 }
 
-export type MemberCreateWithoutOwnedActivitiesInput = {
+export type MemberCreateWithoutActivityLogsInput = {
   id: string
   role?: string
   createdAt: Date | string
@@ -777,7 +775,7 @@ export type MemberCreateWithoutOwnedActivitiesInput = {
   projectFilesUploaded?: Prisma.ProjectFileCreateNestedManyWithoutUploadedByInput
 }
 
-export type MemberUncheckedCreateWithoutOwnedActivitiesInput = {
+export type MemberUncheckedCreateWithoutActivityLogsInput = {
   id: string
   organizationId: string
   userId: string
@@ -791,23 +789,23 @@ export type MemberUncheckedCreateWithoutOwnedActivitiesInput = {
   projectFilesUploaded?: Prisma.ProjectFileUncheckedCreateNestedManyWithoutUploadedByInput
 }
 
-export type MemberCreateOrConnectWithoutOwnedActivitiesInput = {
+export type MemberCreateOrConnectWithoutActivityLogsInput = {
   where: Prisma.MemberWhereUniqueInput
-  create: Prisma.XOR<Prisma.MemberCreateWithoutOwnedActivitiesInput, Prisma.MemberUncheckedCreateWithoutOwnedActivitiesInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutActivityLogsInput, Prisma.MemberUncheckedCreateWithoutActivityLogsInput>
 }
 
-export type MemberUpsertWithoutOwnedActivitiesInput = {
-  update: Prisma.XOR<Prisma.MemberUpdateWithoutOwnedActivitiesInput, Prisma.MemberUncheckedUpdateWithoutOwnedActivitiesInput>
-  create: Prisma.XOR<Prisma.MemberCreateWithoutOwnedActivitiesInput, Prisma.MemberUncheckedCreateWithoutOwnedActivitiesInput>
+export type MemberUpsertWithoutActivityLogsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutActivityLogsInput, Prisma.MemberUncheckedUpdateWithoutActivityLogsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutActivityLogsInput, Prisma.MemberUncheckedCreateWithoutActivityLogsInput>
   where?: Prisma.MemberWhereInput
 }
 
-export type MemberUpdateToOneWithWhereWithoutOwnedActivitiesInput = {
+export type MemberUpdateToOneWithWhereWithoutActivityLogsInput = {
   where?: Prisma.MemberWhereInput
-  data: Prisma.XOR<Prisma.MemberUpdateWithoutOwnedActivitiesInput, Prisma.MemberUncheckedUpdateWithoutOwnedActivitiesInput>
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutActivityLogsInput, Prisma.MemberUncheckedUpdateWithoutActivityLogsInput>
 }
 
-export type MemberUpdateWithoutOwnedActivitiesInput = {
+export type MemberUpdateWithoutActivityLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -821,7 +819,7 @@ export type MemberUpdateWithoutOwnedActivitiesInput = {
   projectFilesUploaded?: Prisma.ProjectFileUpdateManyWithoutUploadedByNestedInput
 }
 
-export type MemberUncheckedUpdateWithoutOwnedActivitiesInput = {
+export type MemberUncheckedUpdateWithoutActivityLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -842,7 +840,7 @@ export type MemberCreateWithoutOwnedDealsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
@@ -856,7 +854,7 @@ export type MemberUncheckedCreateWithoutOwnedDealsInput = {
   role?: string
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
@@ -886,7 +884,7 @@ export type MemberUpdateWithoutOwnedDealsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
@@ -900,7 +898,7 @@ export type MemberUncheckedUpdateWithoutOwnedDealsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
@@ -915,7 +913,7 @@ export type MemberCreateWithoutProjectMembersInput = {
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectFilesUploaded?: Prisma.ProjectFileCreateNestedManyWithoutUploadedByInput
@@ -929,7 +927,7 @@ export type MemberUncheckedCreateWithoutProjectMembersInput = {
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectFilesUploaded?: Prisma.ProjectFileUncheckedCreateNestedManyWithoutUploadedByInput
@@ -959,7 +957,7 @@ export type MemberUpdateWithoutProjectMembersInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectFilesUploaded?: Prisma.ProjectFileUpdateManyWithoutUploadedByNestedInput
@@ -973,7 +971,7 @@ export type MemberUncheckedUpdateWithoutProjectMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectFilesUploaded?: Prisma.ProjectFileUncheckedUpdateManyWithoutUploadedByNestedInput
@@ -987,7 +985,7 @@ export type MemberCreateWithoutProjectFilesUploadedInput = {
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
@@ -1001,7 +999,7 @@ export type MemberUncheckedCreateWithoutProjectFilesUploadedInput = {
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
@@ -1031,7 +1029,7 @@ export type MemberUpdateWithoutProjectFilesUploadedInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
@@ -1045,7 +1043,7 @@ export type MemberUncheckedUpdateWithoutProjectFilesUploadedInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
@@ -1059,7 +1057,7 @@ export type MemberCreateWithoutAssignedTasksInput = {
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
   projectFilesUploaded?: Prisma.ProjectFileCreateNestedManyWithoutUploadedByInput
@@ -1073,7 +1071,7 @@ export type MemberUncheckedCreateWithoutAssignedTasksInput = {
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
   projectFilesUploaded?: Prisma.ProjectFileUncheckedCreateNestedManyWithoutUploadedByInput
@@ -1092,7 +1090,7 @@ export type MemberCreateWithoutCreatedTasksInput = {
   user: Prisma.UserCreateNestedOneWithoutMembersInput
   ownedContacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
   projectFilesUploaded?: Prisma.ProjectFileCreateNestedManyWithoutUploadedByInput
@@ -1106,7 +1104,7 @@ export type MemberUncheckedCreateWithoutCreatedTasksInput = {
   createdAt: Date | string
   ownedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
   ownedDeals?: Prisma.DealUncheckedCreateNestedManyWithoutOwnerInput
-  ownedActivities?: Prisma.ActivityUncheckedCreateNestedManyWithoutOwnerInput
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
   assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
   projectFilesUploaded?: Prisma.ProjectFileUncheckedCreateNestedManyWithoutUploadedByInput
@@ -1136,7 +1134,7 @@ export type MemberUpdateWithoutAssignedTasksInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
   projectFilesUploaded?: Prisma.ProjectFileUpdateManyWithoutUploadedByNestedInput
@@ -1150,7 +1148,7 @@ export type MemberUncheckedUpdateWithoutAssignedTasksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
   projectFilesUploaded?: Prisma.ProjectFileUncheckedUpdateManyWithoutUploadedByNestedInput
@@ -1175,7 +1173,7 @@ export type MemberUpdateWithoutCreatedTasksInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
   projectFilesUploaded?: Prisma.ProjectFileUpdateManyWithoutUploadedByNestedInput
@@ -1189,7 +1187,7 @@ export type MemberUncheckedUpdateWithoutCreatedTasksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
   projectFilesUploaded?: Prisma.ProjectFileUncheckedUpdateManyWithoutUploadedByNestedInput
@@ -1209,7 +1207,7 @@ export type MemberUpdateWithoutUserInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
@@ -1223,7 +1221,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
@@ -1251,7 +1249,7 @@ export type MemberUpdateWithoutOrganizationInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
   ownedContacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
@@ -1265,7 +1263,7 @@ export type MemberUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedContacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   ownedDeals?: Prisma.DealUncheckedUpdateManyWithoutOwnerNestedInput
-  ownedActivities?: Prisma.ActivityUncheckedUpdateManyWithoutOwnerNestedInput
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
   assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
@@ -1287,7 +1285,7 @@ export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
 export type MemberCountOutputType = {
   ownedContacts: number
   ownedDeals: number
-  ownedActivities: number
+  activityLogs: number
   assignedTasks: number
   createdTasks: number
   projectMembers: number
@@ -1297,7 +1295,7 @@ export type MemberCountOutputType = {
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownedContacts?: boolean | MemberCountOutputTypeCountOwnedContactsArgs
   ownedDeals?: boolean | MemberCountOutputTypeCountOwnedDealsArgs
-  ownedActivities?: boolean | MemberCountOutputTypeCountOwnedActivitiesArgs
+  activityLogs?: boolean | MemberCountOutputTypeCountActivityLogsArgs
   assignedTasks?: boolean | MemberCountOutputTypeCountAssignedTasksArgs
   createdTasks?: boolean | MemberCountOutputTypeCountCreatedTasksArgs
   projectMembers?: boolean | MemberCountOutputTypeCountProjectMembersArgs
@@ -1331,7 +1329,7 @@ export type MemberCountOutputTypeCountOwnedDealsArgs<ExtArgs extends runtime.Typ
 /**
  * MemberCountOutputType without action
  */
-export type MemberCountOutputTypeCountOwnedActivitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type MemberCountOutputTypeCountActivityLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ActivityWhereInput
 }
 
@@ -1374,7 +1372,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ownedContacts?: boolean | Prisma.Member$ownedContactsArgs<ExtArgs>
   ownedDeals?: boolean | Prisma.Member$ownedDealsArgs<ExtArgs>
-  ownedActivities?: boolean | Prisma.Member$ownedActivitiesArgs<ExtArgs>
+  activityLogs?: boolean | Prisma.Member$activityLogsArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.Member$assignedTasksArgs<ExtArgs>
   createdTasks?: boolean | Prisma.Member$createdTasksArgs<ExtArgs>
   projectMembers?: boolean | Prisma.Member$projectMembersArgs<ExtArgs>
@@ -1416,7 +1414,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ownedContacts?: boolean | Prisma.Member$ownedContactsArgs<ExtArgs>
   ownedDeals?: boolean | Prisma.Member$ownedDealsArgs<ExtArgs>
-  ownedActivities?: boolean | Prisma.Member$ownedActivitiesArgs<ExtArgs>
+  activityLogs?: boolean | Prisma.Member$activityLogsArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.Member$assignedTasksArgs<ExtArgs>
   createdTasks?: boolean | Prisma.Member$createdTasksArgs<ExtArgs>
   projectMembers?: boolean | Prisma.Member$projectMembersArgs<ExtArgs>
@@ -1439,7 +1437,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     user: Prisma.$UserPayload<ExtArgs>
     ownedContacts: Prisma.$ContactPayload<ExtArgs>[]
     ownedDeals: Prisma.$DealPayload<ExtArgs>[]
-    ownedActivities: Prisma.$ActivityPayload<ExtArgs>[]
+    activityLogs: Prisma.$ActivityPayload<ExtArgs>[]
     assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
     createdTasks: Prisma.$TaskPayload<ExtArgs>[]
     projectMembers: Prisma.$ProjectMemberPayload<ExtArgs>[]
@@ -1849,7 +1847,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   ownedContacts<T extends Prisma.Member$ownedContactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$ownedContactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ownedDeals<T extends Prisma.Member$ownedDealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$ownedDealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  ownedActivities<T extends Prisma.Member$ownedActivitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$ownedActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  activityLogs<T extends Prisma.Member$activityLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedTasks<T extends Prisma.Member$assignedTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdTasks<T extends Prisma.Member$createdTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$createdTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projectMembers<T extends Prisma.Member$projectMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$projectMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2332,9 +2330,9 @@ export type Member$ownedDealsArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Member.ownedActivities
+ * Member.activityLogs
  */
-export type Member$ownedActivitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Member$activityLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Activity
    */

@@ -39,6 +39,7 @@ const schema = z.object({
   title: z.string().min(1, "Title is required"),
   value: z.string().optional(),
   currency: z.string().optional(),
+  pipelineId: z.string().optional(),
   stageId: z.string().optional(),
   contactId: z.string().optional().nullable(),
 });
@@ -48,15 +49,15 @@ type FormValues = z.infer<typeof schema>;
 export type AddDealModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultPipelineId?: string;
   defaultStageId?: string;
 };
 
-export function AddDealModal({ open, onOpenChange, defaultStageId }: AddDealModalProps) {
+export function AddDealModal({ open, onOpenChange, defaultPipelineId, defaultStageId }: AddDealModalProps) {
   const createDeal = useCreateDeal();
   const { data: pipelinesRes } = usePipelines();
-  const pipeline = pipelinesRes?.data?.[0] ?? null;
-  const stages = pipeline?.stages ?? [];
-  const firstStageId = stages[0]?.id;
+  const pipelines = pipelinesRes?.data ?? [];
+  const defaultPipeline = pipelines[0] ?? null;
 
   const { data: contactsRes } = useContactsPeopleList({
     page: 1,
@@ -77,13 +78,25 @@ export function AddDealModal({ open, onOpenChange, defaultStageId }: AddDealModa
       title: "",
       value: "",
       currency: "USD",
-      stageId: defaultStageId ?? firstStageId ?? "",
+      pipelineId: defaultPipelineId ?? defaultPipeline?.id ?? "",
+      stageId: defaultStageId ?? defaultPipeline?.stages?.[0]?.id ?? "",
       contactId: null,
     },
   });
 
+  const pipelineId = watch("pipelineId");
   const stageId = watch("stageId");
   const contactId = watch("contactId");
+  const selectedPipeline = pipelines.find((p) => p.id === pipelineId) ?? defaultPipeline ?? null;
+  const stages = selectedPipeline?.stages ?? [];
+  const firstStageId = stages[0]?.id;
+
+  const onPipelineChange = (newPipelineId: string) => {
+    setValue("pipelineId", newPipelineId);
+    const pipeline = pipelines.find((p) => p.id === newPipelineId);
+    const firstId = pipeline?.stages?.[0]?.id ?? "";
+    setValue("stageId", firstId);
+  };
 
   const onSubmit = (data: FormValues) => {
     const valueNum = data.value ? parseFloat(data.value) : undefined;
@@ -96,8 +109,8 @@ export function AddDealModal({ open, onOpenChange, defaultStageId }: AddDealModa
         title: data.title.trim(),
         value: valueNum,
         currency: data.currency || "USD",
-        stageId: data.stageId || undefined,
-        pipelineId: pipeline?.id,
+        pipelineId: data.pipelineId || selectedPipeline?.id,
+        stageId: data.stageId || firstStageId || undefined,
         contactId: data.contactId || null,
       },
       {
@@ -120,67 +133,95 @@ export function AddDealModal({ open, onOpenChange, defaultStageId }: AddDealModa
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FieldGroup>
-            <FieldLabel>Title *</FieldLabel>
-            <Input {...register("title")} placeholder="Deal title" />
-            <FieldError>{errors.title?.message}</FieldError>
+            <Field>
+              <FieldLabel>Title *</FieldLabel>
+              <Input {...register("title")} placeholder="Deal title" />
+              <FieldError>{errors.title?.message}</FieldError>
+            </Field>
           </FieldGroup>
           <FieldGroup>
-            <FieldLabel>Value</FieldLabel>
-            <div className="flex gap-2">
-              <Input {...register("value")} type="number" min={0} step="any" placeholder="0" />
-              <Select
-                value={watch("currency") || "USD"}
-                onValueChange={(v) => setValue("currency", v)}
-              >
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="TRY">TRY</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Field>
+              <FieldLabel>Value</FieldLabel>
+              <div className="flex gap-2">
+                <Input {...register("value")} type="number" min={0} step="any" placeholder="0" />
+                <Select
+                  value={watch("currency") || "USD"}
+                  onValueChange={(v) => setValue("currency", v)}
+                >
+                  <SelectTrigger className="w-[100px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                    <SelectItem value="TRY">TRY</SelectItem>
+                    <SelectItem value="GBP">GBP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </Field>
           </FieldGroup>
+          {pipelines.length > 0 && (
+            <FieldGroup>
+              <Field>
+                <FieldLabel>Pipeline</FieldLabel>
+                <Select
+                  value={(pipelineId || pipelines[0]?.id) ?? ""}
+                  onValueChange={onPipelineChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pipeline" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pipelines.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </FieldGroup>
+          )}
           {stages.length > 0 && (
             <FieldGroup>
-              <FieldLabel>Stage</FieldLabel>
-              <Select
-                value={stageId || "all"}
-                onValueChange={(v) => setValue("stageId", v === "all" ? firstStageId ?? "" : v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Stage" />
-                </SelectTrigger>
-                <SelectContent>
-                  {stages.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Field>
+                <FieldLabel>Stage</FieldLabel>
+                <Select
+                  value={(stageId || firstStageId) ?? ""}
+                  onValueChange={(v) => setValue("stageId", v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {stages.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
             </FieldGroup>
           )}
           <FieldGroup>
-            <FieldLabel>Contact</FieldLabel>
-            <Select
-              value={contactId ?? "none"}
-              onValueChange={(v) => setValue("contactId", v === "none" ? null : v)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select contact" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No contact</SelectItem>
-                {contacts.map((c) => {
-                  const name = [c.firstName, c.lastName].filter(Boolean).join(" ").trim() || c.companyName || c.email || c.id;
-                  return (
-                    <SelectItem key={c.id} value={c.id}>{name}</SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+            <Field>
+              <FieldLabel>Contact</FieldLabel>
+              <Select
+                value={contactId ?? "none"}
+                onValueChange={(v) => setValue("contactId", v === "none" ? null : v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select contact" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No contact</SelectItem>
+                  {contacts.map((c) => {
+                    const name = [c.firstName, c.lastName].filter(Boolean).join(" ").trim() || c.companyName || c.email || c.id;
+                    return (
+                      <SelectItem key={c.id} value={c.id}>{name}</SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </Field>
           </FieldGroup>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

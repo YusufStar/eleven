@@ -48,17 +48,6 @@ export interface DealListItem {
   owner: { id: string; user: { id: string; name: string } } | null;
 }
 
-export interface DealDetailActivity {
-  id: string;
-  type: string;
-  title: string;
-  description: string | null;
-  dueAt: string | null;
-  isDone: boolean;
-  completedAt: string | null;
-  createdAt: string;
-}
-
 export interface DealDetailTask {
   id: string;
   title: string;
@@ -70,7 +59,6 @@ export interface DealDetailTask {
 
 export interface DealDetail extends DealListItem {
   contact: DealContactRef | null;
-  activities: DealDetailActivity[];
   tasks: DealDetailTask[];
 }
 

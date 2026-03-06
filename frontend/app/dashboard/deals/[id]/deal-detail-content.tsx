@@ -14,14 +14,13 @@ import {
   UserIcon,
   MoneyReceive01Icon,
   PipelineIcon,
-  ActivityIcon,
   Task01Icon,
   Calendar03Icon,
   LinkSquare01Icon,
 } from "@hugeicons/core-free-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import type { DealDetailActivity, DealDetailTask } from "@/services/deals";
+import type { DealDetailTask } from "@/services/deals";
 
 function formatValue(value: string | null, currency: string) {
   if (value == null || value === "") return "—";
@@ -103,18 +102,14 @@ export function DealDetailContent() {
   const deal = data;
   const contactLink = deal.contact ? `/dashboard/contacts/people/${deal.contact.id}` : null;
   const timeline = useMemo(() => {
-    const items: { date: string; type: "activity" | "task"; item: DealDetailActivity | DealDetailTask }[] = [];
-    for (const a of deal.activities) {
-      const d = a.completedAt ?? a.createdAt ?? a.dueAt ?? "";
-      if (d) items.push({ date: d, type: "activity", item: a });
-    }
+    const items: { date: string; item: DealDetailTask }[] = [];
     for (const t of deal.tasks) {
       const d = (t as DealDetailTask & { createdAt?: string }).completedAt ?? (t as DealDetailTask & { createdAt?: string }).dueAt ?? "";
-      if (d) items.push({ date: d, type: "task", item: t });
+      if (d) items.push({ date: d, item: t });
     }
     items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return items.slice(0, 30);
-  }, [deal.activities, deal.tasks]);
+  }, [deal.tasks]);
 
   return (
     <div className="container mx-auto py-2 space-y-6">
@@ -182,29 +177,6 @@ export function DealDetailContent() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <HugeiconsIcon icon={ActivityIcon} className="size-4" strokeWidth={2} />
-              Activities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {deal.activities.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No activities yet.</p>
-            ) : (
-              <ul className="space-y-2">
-                {deal.activities.slice(0, 15).map((a) => (
-                  <li key={a.id} className="flex justify-between gap-2 text-sm border-b border-border/60 pb-2 last:border-0">
-                    <span className="font-medium truncate">{a.title}</span>
-                    <span className="text-muted-foreground shrink-0">{formatDateTime(a.createdAt)}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
               <HugeiconsIcon icon={Task01Icon} className="size-4" strokeWidth={2} />
               Tasks
             </CardTitle>
@@ -245,26 +217,18 @@ export function DealDetailContent() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {timeline.map(({ date, type, item }) => (
-                <li key={`${type}-${item.id}`} className="flex gap-3 text-sm">
+              {timeline.map(({ date, item }) => (
+                <li key={item.id} className="flex gap-3 text-sm">
                   <span className="text-muted-foreground shrink-0 w-32">{formatDateTime(date)}</span>
-                  <span className={cn("shrink-0", type === "activity" ? "text-blue-600" : "text-amber-600")}>
-                    {type === "activity" ? "Activity" : "Task"}
-                  </span>
-                  <span className="truncate">
-                    {type === "activity"
-                      ? (item as DealDetailActivity).title
-                      : (item as DealDetailTask).title}
-                  </span>
-                  {type === "task" && (
-                    <button
-                      type="button"
-                      onClick={() => openTaskModal((item as DealDetailTask).id)}
-                      className="text-primary hover:underline shrink-0"
-                    >
-                      Open
-                    </button>
-                  )}
+                  <span className="shrink-0 text-amber-600">Task</span>
+                  <span className="truncate">{(item as DealDetailTask).title}</span>
+                  <button
+                    type="button"
+                    onClick={() => openTaskModal((item as DealDetailTask).id)}
+                    className="text-primary hover:underline shrink-0"
+                  >
+                    Open
+                  </button>
                 </li>
               ))}
             </ul>

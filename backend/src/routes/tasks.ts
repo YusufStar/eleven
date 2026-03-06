@@ -1,6 +1,8 @@
 import { Elysia } from "elysia";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
+import { logActivity } from "../lib/activity-log";
+import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
 import { TaskStatus, TaskPriority } from "../../prisma/generated/prisma/enums";
 
 const orgScope = (activeOrganizationId: string) => ({ organizationId: activeOrganizationId });
@@ -67,6 +69,17 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           project: { select: { id: true, name: true, slug: true } },
         },
       });
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.CREATE,
+          entityType: ActivityEntityType.TASK,
+          entityId: created.id,
+          entityTitle: created.title,
+        });
+      }
       return created;
     },
     { requireAuth: true, requireActiveOrg: true }
@@ -143,7 +156,7 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
   )
   .get(
     "/:id",
-    async ({ activeOrganizationId, params }) => {
+    async ({ activeOrganizationId, activeMember, params }) => {
       const id = params?.id;
       if (!id || typeof id !== "string") {
         return new Response(JSON.stringify({ message: "Invalid task id" }), {
@@ -168,6 +181,17 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
         return new Response(JSON.stringify({ message: "Task not found" }), {
           status: 404,
           headers: { "Content-Type": "application/json" },
+        });
+      }
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.VIEW,
+          entityType: ActivityEntityType.TASK,
+          entityId: task.id,
+          entityTitle: task.title,
         });
       }
       return task;
@@ -233,13 +257,24 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           attachments: true,
         },
       });
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.UPDATE,
+          entityType: ActivityEntityType.TASK,
+          entityId: updated.id,
+          entityTitle: updated.title,
+        });
+      }
       return updated;
     },
     { requireAuth: true, requireActiveOrg: true }
   )
   .post(
     "/:id/attachments",
-    async ({ activeOrganizationId, params, body }) => {
+    async ({ activeOrganizationId, activeMember, params, body }) => {
       const id = params?.id;
       if (!id || typeof id !== "string") {
         return new Response(JSON.stringify({ message: "Invalid task id" }), {
@@ -274,6 +309,18 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           fileSize: typeof b.fileSize === "number" ? b.fileSize : null,
         },
       });
+      if (activeMember) {
+        await logActivity({
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember.id,
+          action: ActivityAction.CREATE,
+          entityType: ActivityEntityType.TASK_ATTACHMENT,
+          entityId: attachment.id,
+          entityTitle: attachment.fileName,
+          metadata: { taskId: id },
+        });
+      }
       return attachment;
     },
     { requireAuth: true, requireActiveOrg: true }

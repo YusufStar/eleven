@@ -246,17 +246,13 @@ export type ContactScalarFieldEnum = (typeof ContactScalarFieldEnum)[keyof typeo
 export const ActivityScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
-  type: 'type',
-  title: 'title',
-  description: 'description',
-  dueAt: 'dueAt',
-  completedAt: 'completedAt',
-  isDone: 'isDone',
-  contactId: 'contactId',
-  dealId: 'dealId',
-  ownerId: 'ownerId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  memberId: 'memberId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  entityTitle: 'entityTitle',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
 } as const
 
 export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]

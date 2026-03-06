@@ -57,17 +57,6 @@ export interface ContactDetailDeal {
   pipeline: { name: string };
 }
 
-export interface ContactDetailActivity {
-  id: string;
-  type: string;
-  title: string;
-  description: string | null;
-  dueAt: string | null;
-  isDone: boolean;
-  completedAt: string | null;
-  createdAt: string;
-}
-
 export interface ContactDetailTask {
   id: string;
   title: string;
@@ -101,7 +90,6 @@ export interface ContactPersonDetailResponse {
   contact: Contact;
   company: ContactDetailCompanyRef | null;
   deals: ContactDetailDeal[];
-  activities: ContactDetailActivity[];
   tasks: ContactDetailTask[];
 }
 
@@ -109,6 +97,5 @@ export interface ContactCompanyDetailResponse {
   contact: Contact;
   employees: ContactDetailEmployeeRef[];
   deals: ContactDetailDeal[];
-  activities: ContactDetailActivity[];
   tasks: ContactDetailTask[];
 }
