@@ -8,3 +8,4 @@ export { teamRoutes } from "./team";
 export { tasksRoutes } from "./tasks";
 export { uploadRoutes } from "./upload";
 export { activitiesRoutes } from "./activities";
+export { homeDataRoutes } from "./home-data";

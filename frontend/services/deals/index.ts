@@ -22,6 +22,7 @@ export {
   useDeleteStage,
   useDealsList,
   useDealDetail,
+  useDealDetailSuspense,
   useCreateDeal,
   useUpdateDeal,
   useDeleteDeal,

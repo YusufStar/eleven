@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react";
 import Loading from "@/components/loading";
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import {
@@ -78,7 +79,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                         {activeOrganization && <PlanDetailsCard organizationId={activeOrganization.id} />}
                                     </div>
                                 ) : (
-                                    children
+                                    <Suspense fallback={null}>
+                                        {children}
+                                    </Suspense>
                                 )}
                             </div>
                         </SidebarInset>

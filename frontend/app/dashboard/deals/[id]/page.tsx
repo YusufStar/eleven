@@ -1,8 +1,6 @@
-"use client";
-
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DealDetailContent } from "./deal-detail-content";
+import { DealDetailPageClient } from "./deal-detail-page-client";
 
 function DetailSkeleton() {
   return (
@@ -17,7 +15,7 @@ function DetailSkeleton() {
 export default function DealDetailPage() {
   return (
     <Suspense fallback={<DetailSkeleton />}>
-      <DealDetailContent />
+      <DealDetailPageClient />
     </Suspense>
   );
 }

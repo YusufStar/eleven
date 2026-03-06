@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useDealDetail } from "@/services/deals";
+import { useDealDetailSuspense } from "@/services/deals";
 import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
 import { TaskStatusBadge } from "@/components/tasks/task-status-badge";
 import { TaskPriorityBadge } from "@/components/tasks/task-priority-badge";
@@ -13,13 +12,10 @@ import {
   ArrowLeft01Icon,
   UserIcon,
   MoneyReceive01Icon,
-  PipelineIcon,
   Task01Icon,
   Calendar03Icon,
   LinkSquare01Icon,
 } from "@hugeicons/core-free-icons";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import type { DealDetailTask } from "@/services/deals";
 
 function formatValue(value: string | null, currency: string) {
@@ -58,17 +54,21 @@ function contactName(deal: { contact: { firstName?: string; lastName?: string | 
   return name || c.companyName || null;
 }
 
-export function DealDetailContent() {
-  const params = useParams();
-  const router = useRouter();
-  const id = typeof params.id === "string" ? params.id : null;
-  const { data, isPending, error } = useDealDetail(id);
+export function DealDetailContent({ dealId }: { dealId: string }) {
+  const { data, error } = useDealDetailSuspense(dealId);
   const [taskModalTaskId, setTaskModalTaskId] = useState<string | null>(null);
   const [taskModalOpen, setTaskModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (!id) router.replace("/dashboard/deals");
-  }, [id, router]);
+  const timeline = useMemo(() => {
+    if (!data?.tasks) return [];
+    const items: { date: string; item: DealDetailTask }[] = [];
+    for (const t of data.tasks) {
+      const d = (t as DealDetailTask & { createdAt?: string }).completedAt ?? (t as DealDetailTask & { createdAt?: string }).dueAt ?? "";
+      if (d) items.push({ date: d, item: t });
+    }
+    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return items.slice(0, 30);
+  }, [data?.tasks]);
 
   const openTaskModal = (taskId: string) => {
     setTaskModalTaskId(taskId);
@@ -87,29 +87,8 @@ export function DealDetailContent() {
     );
   }
 
-  if (!id) return null;
-
-  if (isPending || !data) {
-    return (
-      <div className="container mx-auto py-2 space-y-4">
-        <Skeleton className="h-5 w-48" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-48 w-full" />
-      </div>
-    );
-  }
-
   const deal = data;
   const contactLink = deal.contact ? `/dashboard/contacts/people/${deal.contact.id}` : null;
-  const timeline = useMemo(() => {
-    const items: { date: string; item: DealDetailTask }[] = [];
-    for (const t of deal.tasks) {
-      const d = (t as DealDetailTask & { createdAt?: string }).completedAt ?? (t as DealDetailTask & { createdAt?: string }).dueAt ?? "";
-      if (d) items.push({ date: d, item: t });
-    }
-    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return items.slice(0, 30);
-  }, [deal.tasks]);
 
   return (
     <div className="container mx-auto py-2 space-y-6">

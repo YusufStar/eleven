@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { dealsApi } from "./api";
 import { dealsQueryKeys } from "./query-keys";
 import type { DealsListParams } from "./types";
@@ -86,6 +86,13 @@ export function useDealDetail(id: string | null) {
     queryKey: dealsQueryKeys.detail(id ?? ""),
     queryFn: () => dealsApi.getDeal(id!),
     enabled: !!id,
+  });
+}
+
+export function useDealDetailSuspense(id: string) {
+  return useSuspenseQuery({
+    queryKey: dealsQueryKeys.detail(id),
+    queryFn: () => dealsApi.getDeal(id),
   });
 }
 
