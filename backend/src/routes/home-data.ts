@@ -44,7 +44,7 @@ export const homeDataRoutes = new Elysia()
         prisma.deal.findMany({
           where: orgScope(orgId),
           orderBy: { updatedAt: "desc" },
-          take: 5,
+          take: 3,
           include: {
             stage: { select: { name: true, color: true } },
             contact: { select: { firstName: true, lastName: true, companyName: true } },
@@ -53,7 +53,7 @@ export const homeDataRoutes = new Elysia()
         prisma.task.findMany({
           where: orgScope(orgId),
           orderBy: { updatedAt: "desc" },
-          take: 5,
+          take: 3,
           include: {
             assignee: { select: { user: { select: { name: true } } } },
             project: { select: { name: true, slug: true } },
