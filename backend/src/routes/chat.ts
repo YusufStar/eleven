@@ -148,7 +148,7 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
       if (!access.ok) {
         return jsonResponse({ message: access.message }, access.status);
       }
-      const limit = Math.min(50, Math.max(1, Number(query?.limit) || 20));
+      const limit = Math.min(100, Math.max(1, Number(query?.limit) || 100));
       const cursor = typeof query?.cursor === "string" && query.cursor.trim() !== "" ? query.cursor.trim() : undefined;
       const chat = await prisma.chat.findUnique({ where: { id: access.chatId } });
       if (!chat) {
@@ -164,9 +164,9 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
         take: limit + 1,
         ...(cursor
           ? {
-              cursor: { id: cursor },
-              skip: 1,
-            }
+            cursor: { id: cursor },
+            skip: 1,
+          }
           : {}),
       });
       const hasMore = messages.length > limit;
@@ -228,8 +228,8 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
           medias:
             medias.length > 0
               ? {
-                  create: medias.map((m) => ({ url: m.url, mimetype: m.mimetype, size: m.size })),
-                }
+                create: medias.map((m) => ({ url: m.url, mimetype: m.mimetype, size: m.size })),
+              }
               : undefined,
         },
         include: {

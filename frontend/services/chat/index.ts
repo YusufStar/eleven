@@ -13,4 +13,10 @@ export type {
 } from "./types";
 export { chatApi } from "./api";
 export { chatQueryKeys } from "./query-keys";
-export { useChat, useChatMessages, useSendMessage } from "./use-chat";
+export {
+  useChat,
+  useChatMessages,
+  useChatMessagesInfinite,
+  flattenChatMessagesInfinite,
+  useSendMessage,
+} from "./use-chat";

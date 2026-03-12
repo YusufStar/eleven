@@ -3,6 +3,8 @@
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { rehypeImageFromText } from "@/lib/rehype-image-from-text";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +15,16 @@ import { cn } from "@/lib/utils";
 function urlTransform(url: string): string {
   const t = url?.trim() ?? "";
   if (!t) return "";
+  if (/^https?:\/\//i.test(t)) return t;
+  if (t.startsWith("/") && !t.startsWith("//")) return t;
+  if (!t.includes(":")) return t;
+  return "";
+}
+
+/** Only allow safe URLs for img src (same as urlTransform). */
+function sanitizeImgSrc(src: string | undefined): string {
+  if (!src?.trim()) return "";
+  const t = src.trim();
   if (/^https?:\/\//i.test(t)) return t;
   if (t.startsWith("/") && !t.startsWith("//")) return t;
   if (!t.includes(":")) return t;
@@ -32,11 +44,79 @@ const components: Components = {
       {children}
     </a>
   ),
-  code: ({ children }) => (
-    <code className="rounded bg-muted px-1 py-0.5 text-sm font-mono">{children}</code>
+  code: ({ className, children, ...props }) => {
+    const match = /language-(\w+)/.exec(className ?? "");
+    const code = String(children).replace(/\n$/, "");
+    const lang = match ? match[1] : "text";
+    const isBlock = match || code.includes("\n");
+
+    if (isBlock && code.length > 0) {
+      return (
+        <div className="my-3 overflow-hidden rounded-lg border border-border bg-[#282c34]">
+          <div className="flex items-center justify-between border-b border-border bg-[#21252b] px-3 py-1.5">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{lang}</span>
+          </div>
+          <SyntaxHighlighter
+            language={lang}
+            style={oneDark}
+            customStyle={{
+              margin: 0,
+              padding: "0.75rem 1rem",
+              fontSize: "0.8125rem",
+              lineHeight: 1.6,
+              background: "transparent",
+            }}
+            codeTagProps={{ style: { fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" } }}
+            showLineNumbers={code.split("\n").length > 1}
+            lineNumberStyle={{ minWidth: "2.25em", paddingRight: "1em", color: "rgba(255,255,255,0.4)", userSelect: "none" }}
+            PreTag="div"
+          >
+            {code}
+          </SyntaxHighlighter>
+        </div>
+      );
+    }
+
+    return (
+      <code className={cn("rounded bg-muted px-1.5 py-0.5 text-sm font-mono text-foreground")} {...props}>
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children }) => <>{children}</>,
+  table: ({ children }) => (
+    <div className="my-3 w-full overflow-auto rounded-lg border border-border">
+      <table className="w-full min-w-[200px] border-collapse text-sm">{children}</table>
+    </div>
   ),
-  pre: ({ children }) => (
-    <pre className="my-3 overflow-x-auto rounded-lg bg-muted p-3 text-sm">{children}</pre>
+  thead: ({ children }) => <thead className="bg-muted/60">{children}</thead>,
+  tbody: ({ children }) => <tbody className="divide-y divide-border">{children}</tbody>,
+  tr: ({ children }) => <tr className="border-b border-border last:border-b-0">{children}</tr>,
+  th: ({ align, children, ...props }) => (
+    <th
+      align={align ?? undefined}
+      className={cn(
+        "border-border px-3 py-2 text-left font-semibold text-foreground",
+        align === "center" && "text-center",
+        align === "right" && "text-right"
+      )}
+      {...props}
+    >
+      {children}
+    </th>
+  ),
+  td: ({ align, children, ...props }) => (
+    <td
+      align={align ?? undefined}
+      className={cn(
+        "border-border px-3 py-2 text-left text-foreground",
+        align === "center" && "text-center",
+        align === "right" && "text-right"
+      )}
+      {...props}
+    >
+      {children}
+    </td>
   ),
   blockquote: ({ children }) => (
     <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-2">
@@ -44,16 +124,22 @@ const components: Components = {
     </blockquote>
   ),
   img: ({ src, alt, ...rest }) => {
-    if (!src) return null;
+    const safeSrc = sanitizeImgSrc(typeof src === "string" ? src : undefined);
+    if (!safeSrc) return null;
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt={alt ?? ""}
-        className={cn("my-2 max-w-full rounded-md h-auto", rest.className)}
-        loading="lazy"
-        {...rest}
-      />
+      <span className="my-2 block overflow-hidden rounded-lg border border-border bg-muted/30">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={safeSrc}
+          alt={alt ?? ""}
+          className={cn("max-w-full h-auto object-contain", rest.className)}
+          loading="lazy"
+          {...rest}
+        />
+        {alt && String(alt).trim() ? (
+          <span className="block border-t border-border px-2 py-1.5 text-xs text-muted-foreground">{String(alt)}</span>
+        ) : null}
+      </span>
     );
   },
 };
@@ -64,11 +150,8 @@ export type MarkdownViewProps = {
 };
 
 /**
- * Renders markdown using react-markdown with remark-gfm and a rehype plugin
- * that turns raw image syntax in text nodes into images.
- *
- * @see https://github.com/remarkjs/react-markdown
- * @see https://www.npmjs.com/package/react-markdown
+ * Renders markdown with react-markdown, remark-gfm, syntax-highlighted code blocks,
+ * and safe image rendering.
  */
 export function MarkdownView({ content, className }: MarkdownViewProps) {
   if (!content?.trim()) {

@@ -1,9 +1,11 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { chatApi } from "./api";
 import { chatQueryKeys } from "./query-keys";
-import type { ChatMessagesParams, SendMessagePayload } from "./types";
+import type { ChatMessagesParams, Message, SendMessagePayload } from "./types";
+
+const DEFAULT_PAGE_SIZE = 100;
 
 export function useChat(chatId: string | null) {
   return useQuery({
@@ -14,6 +16,28 @@ export function useChat(chatId: string | null) {
 }
 
 const DEFAULT_POLL_INTERVAL_MS = 5000;
+
+export function useChatMessagesInfinite(
+  chatId: string | null,
+  options?: { pageSize?: number; refetchIntervalMs?: number }
+) {
+  const pageSize = options?.pageSize ?? DEFAULT_PAGE_SIZE;
+  const refetchIntervalMs = options?.refetchIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
+  return useInfiniteQuery({
+    queryKey: [...chatQueryKeys.messages(chatId ?? ""), "infinite", pageSize],
+    queryFn: ({ pageParam }) =>
+      chatApi.getMessages(chatId!, { limit: pageSize, cursor: pageParam ?? undefined }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    initialPageParam: undefined as string | undefined,
+    enabled: !!chatId,
+    refetchInterval: refetchIntervalMs,
+  });
+}
+
+/** Chronological list (oldest first) from infinite query. */
+export function flattenChatMessagesInfinite(data: { pages: { data: Message[] }[] }): Message[] {
+  return [...data.pages].reverse().flatMap((p) => p.data);
+}
 
 export function useChatMessages(
   chatId: string | null,

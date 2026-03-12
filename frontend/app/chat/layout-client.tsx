@@ -9,9 +9,13 @@ export function ChatLayoutClient({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <ChatSidebar />
-      <SidebarInset>{children}</SidebarInset>
-    </SidebarProvider>
+    <div className="flex h-svh overflow-hidden">
+      <SidebarProvider className="h-full min-h-0 w-full">
+        <ChatSidebar />
+        <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }
