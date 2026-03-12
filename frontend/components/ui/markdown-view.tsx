@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -7,6 +8,31 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { rehypeImageFromText } from "@/lib/rehype-image-from-text";
 import { cn } from "@/lib/utils";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import { Button } from "@/components/ui/button";
+
+function CodeBlockCopyButton({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    void navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="h-7 w-7 shrink-0 text-muted-foreground hover:text-foreground"
+      onClick={copy}
+      aria-label={copied ? "Copied" : "Copy code"}
+    >
+      <HugeiconsIcon icon={copied ? Tick02Icon : Copy01Icon} className="h-3.5 w-3.5" strokeWidth={2} />
+    </Button>
+  );
+}
 
 /**
  * Only allow safe URLs (https, http, relative). Blocks javascript:, data:, etc.
@@ -21,14 +47,11 @@ function urlTransform(url: string): string {
   return "";
 }
 
-/** Only allow safe URLs for img src (same as urlTransform). */
+/** Only allow http/https URLs for img src. Reject file paths like /image/.... */
 function sanitizeImgSrc(src: string | undefined): string {
   if (!src?.trim()) return "";
   const t = src.trim();
-  if (/^https?:\/\//i.test(t)) return t;
-  if (t.startsWith("/") && !t.startsWith("//")) return t;
-  if (!t.includes(":")) return t;
-  return "";
+  return /^https?:\/\//i.test(t) ? t : "";
 }
 
 const components: Components = {
@@ -55,6 +78,7 @@ const components: Components = {
         <div className="my-3 overflow-hidden rounded-lg border border-border bg-[#282c34]">
           <div className="flex items-center justify-between border-b border-border bg-[#21252b] px-3 py-1.5">
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{lang}</span>
+            <CodeBlockCopyButton code={code} />
           </div>
           <SyntaxHighlighter
             language={lang}
