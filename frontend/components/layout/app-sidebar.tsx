@@ -26,9 +26,25 @@ import {
   CreditCardIcon,
   Folder01Icon,
   File02Icon,
+  BubbleChatQuestionIcon,
+  AiVideoIcon,
 } from "@hugeicons/core-free-icons"
 
 const navMain = [
+  {
+    title: "Chat",
+    url: "/chat",
+    icon: <HugeiconsIcon icon={BubbleChatQuestionIcon} strokeWidth={2} />,
+    openInNewTab: true,
+    items: [{ title: "Open Chat", url: "/chat" }],
+  },
+  {
+    title: "Meet",
+    url: "/meet",
+    icon: <HugeiconsIcon icon={AiVideoIcon} strokeWidth={2} />,
+    openInNewTab: true,
+    items: [{ title: "Open Meet", url: "/meet" }],
+  },
   {
     title: "Dashboard",
     url: "/dashboard",

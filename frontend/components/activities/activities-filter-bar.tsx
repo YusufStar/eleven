@@ -1,10 +1,17 @@
 "use client";
 
-import * as React from "react";
+import { format, parse, isValid } from "date-fns";
+import type { DateRange } from "react-day-picker";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Search01Icon } from "@hugeicons/core-free-icons";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -14,6 +21,21 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { ActivityAction, ActivityEntityType } from "@/services/activities";
+
+const DATE_FORMAT = "yyyy-MM-dd";
+
+function parseDate(s: string): Date | undefined {
+  if (!s) return undefined;
+  const d = parse(s, DATE_FORMAT, new Date());
+  return isValid(d) ? d : undefined;
+}
+
+function toDateRange(from: string, to: string): DateRange | undefined {
+  const fromDate = parseDate(from);
+  const toDate = parseDate(to);
+  if (!fromDate && !toDate) return undefined;
+  return { from: fromDate, to: toDate };
+}
 
 const ACTIONS: ActivityAction[] = ["CREATE", "UPDATE", "DELETE", "VIEW"];
 const ACTION_LABELS: Record<ActivityAction, string> = {
@@ -127,20 +149,40 @@ export function ActivitiesFilterBar({
             ))}
           </SelectContent>
         </Select>
-        <Input
-          type="date"
-          placeholder="From"
-          value={dateFrom}
-          onChange={(e) => onDateFromChange(e.target.value)}
-          className="h-8 w-[140px]"
-        />
-        <Input
-          type="date"
-          placeholder="To"
-          value={dateTo}
-          onChange={(e) => onDateToChange(e.target.value)}
-          className="h-8 w-[140px]"
-        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "h-8 min-w-[240px] justify-start text-left font-normal",
+                !dateFrom && !dateTo && "text-muted-foreground"
+              )}
+            >
+              <HugeiconsIcon icon={Calendar03Icon} className="size-4" strokeWidth={2} />
+              {(() => {
+                const range = toDateRange(dateFrom, dateTo);
+                if (!range?.from) return "Pick a date range";
+                if (range.to) {
+                  return `${format(range.from, "LLL dd, y")} - ${format(range.to, "LLL dd, y")}`;
+                }
+                return format(range.from, "LLL dd, y");
+              })()}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              defaultMonth={parseDate(dateFrom) ?? parseDate(dateTo) ?? new Date()}
+              selected={toDateRange(dateFrom, dateTo)}
+              onSelect={(range) => {
+                onDateFromChange(range?.from ? format(range.from, DATE_FORMAT) : "");
+                onDateToChange(range?.to ? format(range.to, DATE_FORMAT) : "");
+              }}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+        </Popover>
         {hasActiveFilters && (
           <Button
             variant="ghost"

@@ -53,10 +53,7 @@ CRM and project management app. CRUD is done for core entities; next phase is **
 
 ### 4. Activities
 
-- [ ] `/dashboard/activities` — list/filter (type, contact, deal).
-- [ ] `/dashboard/activities/calendar` — calendar view.
-- [ ] `/dashboard/activities/log` — timeline/log view.
-- [ ] Create/edit activity from contact or deal detail.
+- [x] `/dashboard/activities` — list/filter (type, contact, deal).
 
 ### 5. Reports
 

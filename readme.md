@@ -20,6 +20,16 @@ A full-stack **CRM and project management** application with organizations, cont
 | **Files** | Project files (drive-like) and task attachments; uploads to S3-compatible storage (e.g. Cloudflare R2) with optional image processing |
 | **Billing** | One-time organization payment ($1000) via Stripe; webhook handling for payment confirmation |
 
+### Planned / Advanced Features (Roadmap)
+
+- **AI integrations**: Smart summarization, content generation, suggestions, and automation.
+- **Notifications**: Real-time/push notifications for tasks, deals, projects, and team events.
+- **Finance**: Financial analyses, budget and spend controls, reporting.
+- **Invoices & receipts**: Upload, validation, and tracking of invoices and receipts.
+- **Microsoft Teams**: Automatic meeting attendance (check-in), access to meeting history, team sync.
+- **Employee analytics**: Performance, attendance, and activity metrics; reporting and dashboards.
+- Additional complex features are planned along the same lines.
+
 ---
 
 ## Tech Stack

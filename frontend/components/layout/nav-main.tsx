@@ -42,6 +42,7 @@ export function NavMain({
     url: string
     icon?: React.ReactNode
     isActive?: boolean
+    openInNewTab?: boolean
     items?: { title: string; url: string }[]
   }[]
 }) {
@@ -71,6 +72,27 @@ export function NavMain({
               item.items?.some((sub) => isPathActive(pathname, sub.url))) ??
             false
           const isOpen = openSections.has(item.title)
+          const isNewTabLink =
+            item.openInNewTab && item.items?.length === 1
+          const newTabUrl = isNewTabLink ? item.items![0].url : null
+
+          if (isNewTabLink && newTabUrl) {
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title} isActive={false}>
+                  <a
+                    href={newTabUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full"
+                  >
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          }
 
           if (isCollapsed) {
             return (
@@ -85,7 +107,17 @@ export function NavMain({
                   <DropdownMenuContent side="right" align="start" sideOffset={8}>
                     {item.items?.map((subItem) => (
                       <DropdownMenuItem key={subItem.title} asChild>
-                        <Link href={subItem.url}>{subItem.title}</Link>
+                        {item.openInNewTab ? (
+                          <a
+                            href={subItem.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {subItem.title}
+                          </a>
+                        ) : (
+                          <Link href={subItem.url}>{subItem.title}</Link>
+                        )}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -124,9 +156,20 @@ export function NavMain({
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild isActive={isSubActive}>
-                            <Link href={subItem.url} className="w-full">
-                              <span>{subItem.title}</span>
-                            </Link>
+                            {item.openInNewTab ? (
+                              <a
+                                href={subItem.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full"
+                              >
+                                <span>{subItem.title}</span>
+                              </a>
+                            ) : (
+                              <Link href={subItem.url} className="w-full">
+                                <span>{subItem.title}</span>
+                              </Link>
+                            )}
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       )

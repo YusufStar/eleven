@@ -118,7 +118,6 @@ export function ActivitiesDataTable<TData, TValue>({
       <div
         className={cn(
           "overflow-hidden rounded-lg border bg-card relative",
-          fetching && "opacity-60 pointer-events-none"
         )}
       >
         <Table>
