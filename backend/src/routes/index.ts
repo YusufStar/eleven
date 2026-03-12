@@ -1,3 +1,4 @@
+export { chatRoutes } from "./chat";
 export { contactsRoutes } from "./contacts";
 export { dealsRoutes } from "./deals";
 export { paymentsRoutes, stripeWebhookApp } from "./payments";

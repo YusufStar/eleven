@@ -112,3 +112,18 @@ export type Task = Prisma.TaskModel
  * 
  */
 export type TaskAttachment = Prisma.TaskAttachmentModel
+/**
+ * Model Chat
+ * 
+ */
+export type Chat = Prisma.ChatModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
+/**
+ * Model MessageMedia
+ * 
+ */
+export type MessageMedia = Prisma.MessageMediaModel

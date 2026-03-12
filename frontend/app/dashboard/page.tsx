@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import {
@@ -106,7 +107,34 @@ const entityLabel: Record<string, string> = {
   PROJECT_MEMBER: "Member",
 };
 
-export default async function DashboardPage() {
+function DashboardSkeleton() {
+  return (
+    <div className="container mx-auto py-4 space-y-6">
+      <div>
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} size="sm">
+            <CardHeader className="pb-2"><Skeleton className="h-4 w-24" /></CardHeader>
+            <CardContent><Skeleton className="h-8 w-16" /></CardContent>
+          </Card>
+        ))}
+      </div>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} size="sm">
+            <CardHeader className="pb-2"><Skeleton className="h-5 w-32" /><Skeleton className="h-4 w-48 mt-1" /></CardHeader>
+            <CardContent><Skeleton className="h-24 w-full" /></CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function DashboardContent() {
   const data = await fetchHomeData();
 
   if (!data) {
@@ -302,5 +330,13 @@ export default async function DashboardPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent />
+    </Suspense>
   );
 }

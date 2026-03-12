@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const ChatType = {
+  ORG: 'ORG',
+  DM: 'DM'
+} as const
+
+export type ChatType = (typeof ChatType)[keyof typeof ChatType]
+
+
 export const ContactType = {
   PERSON: 'PERSON',
   COMPANY: 'COMPANY'

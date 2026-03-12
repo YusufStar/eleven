@@ -26,15 +26,28 @@ import { useTeamMembersList } from "@/services/team";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { initials } from "@/lib/string";
 import { Skeleton } from "@/components/ui/skeleton";
+import { authClient } from "@/lib/auth-client";
+
+/** DM chat id: sorted [myId, otherId] joined by "-" so both users share the same URL. */
+function buildDmChatId(myUserId: string, otherUserId: string): string {
+  return [myUserId, otherUserId].sort().join("-");
+}
 
 export function ChatSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const isOrgChat = pathname === "/chat";
+  const { data: session } = authClient.useSession();
+  const { data: activeOrganization } = authClient.useActiveOrganization();
+  const currentUserId = session?.user?.id ?? null;
+  const activeOrgId = activeOrganization?.id ?? null;
 
   const { data: membersData, isPending: membersPending } = useTeamMembersList({
     pageSize: 100,
   });
   const members = membersData?.data ?? [];
+
+  const chatSegment = pathname === "/chat" ? null : pathname.replace(/^\/chat\/?/, "").split("/")[0] ?? null;
+  const isOrgChat = activeOrgId != null && chatSegment === activeOrgId;
+  const orgChatHref = activeOrgId ? `/chat/${activeOrgId}` : "/chat";
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -48,7 +61,7 @@ export function ChatSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isOrgChat} tooltip="Organization chat">
-                  <Link href="/chat" className="flex items-center gap-2">
+                  <Link href={orgChatHref} className="flex items-center gap-2">
                     <HugeiconsIcon icon={BubbleChatQuestionIcon} strokeWidth={2} />
                     <span>Organization chat</span>
                   </Link>
@@ -73,30 +86,36 @@ export function ChatSidebar(props: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenu>
             ) : (
               <SidebarMenu className="gap-1">
-                {members.map((m) => (
-                  <SidebarMenuItem key={m.id}>
-                    <SidebarMenuButton
-                      className="flex items-center font-normal"
-                      tooltip={m.user.name ?? m.user.email}
-                      onClick={() => {
-                        // TODO: open DM with m.userId
-                      }}
-                    >
-                      <Avatar className="size-6 shrink-0 rounded-full">
-                        <AvatarImage
-                          src={m.user.image ?? m.user.githubProfile?.avatarUrl ?? undefined}
-                          alt=""
-                        />
-                        <AvatarFallback className="text-xs">
-                          {initials(m.user.name ?? m.user.email)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="truncate text-sm">
-                        {m.user.name || m.user.email || "Member"}
-                      </span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {members.map((m) => {
+                  const dmChatId = currentUserId ? buildDmChatId(currentUserId, m.userId) : null;
+                  const href = dmChatId ? `/chat/${dmChatId}` : "/chat";
+                  const isActive = chatSegment === dmChatId;
+                  return (
+                    <SidebarMenuItem key={m.id}>
+                      <SidebarMenuButton
+                        asChild
+                        className="flex items-center font-normal"
+                        tooltip={m.user.name ?? m.user.email}
+                        isActive={isActive}
+                      >
+                        <Link href={href}>
+                          <Avatar className="size-6 shrink-0 rounded-full">
+                            <AvatarImage
+                              src={m.user.image ?? m.user.githubProfile?.avatarUrl ?? undefined}
+                              alt=""
+                            />
+                            <AvatarFallback className="text-xs">
+                              {initials(m.user.name ?? m.user.email)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="truncate text-sm">
+                            {m.user.name || m.user.email || "Member"}
+                          </span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
                 {members.length === 0 && (
                   <SidebarMenuItem>
                     <p className="px-2 py-1.5 text-muted-foreground text-sm">

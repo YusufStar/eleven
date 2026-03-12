@@ -69,7 +69,10 @@ export const ModelName = {
   ProjectMember: 'ProjectMember',
   ProjectFile: 'ProjectFile',
   Task: 'Task',
-  TaskAttachment: 'TaskAttachment'
+  TaskAttachment: 'TaskAttachment',
+  Chat: 'Chat',
+  Message: 'Message',
+  MessageMedia: 'MessageMedia'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -377,6 +380,40 @@ export const TaskAttachmentScalarFieldEnum = {
 } as const
 
 export type TaskAttachmentScalarFieldEnum = (typeof TaskAttachmentScalarFieldEnum)[keyof typeof TaskAttachmentScalarFieldEnum]
+
+
+export const ChatScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  organizationId: 'organizationId',
+  participant1Id: 'participant1Id',
+  participant2Id: 'participant2Id',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatScalarFieldEnum = (typeof ChatScalarFieldEnum)[keyof typeof ChatScalarFieldEnum]
+
+
+export const MessageScalarFieldEnum = {
+  id: 'id',
+  chatId: 'chatId',
+  senderUserId: 'senderUserId',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const MessageMediaScalarFieldEnum = {
+  id: 'id',
+  messageId: 'messageId',
+  url: 'url',
+  mimetype: 'mimetype',
+  size: 'size'
+} as const
+
+export type MessageMediaScalarFieldEnum = (typeof MessageMediaScalarFieldEnum)[keyof typeof MessageMediaScalarFieldEnum]
 
 
 export const SortOrder = {

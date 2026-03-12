@@ -20,6 +20,9 @@ model User {
   members       Member[]
   invitations   Invitation[]
   githubProfile UserGithubProfile?
+  dmChatsAsParticipant1 Chat[] @relation("DMParticipant1")
+  dmChatsAsParticipant2 Chat[] @relation("DMParticipant2")
+  messagesSent Message[]
 
   @@unique([email])
   @@map("user")
@@ -105,6 +108,7 @@ model Organization {
   activities Activity[]
   projects   Project[]
   tasks      Task[]
+  orgChat    Chat?      @relation("OrgChat")
 
   githubConnection OrganizationGithubConnection?
 
@@ -438,7 +442,60 @@ model TaskAttachment {
   @@map("task_attachments")
 }
 
+// ─── Chat ───────────────────────────────────────
+// Chat id in URL: for org = organizationId, for DM = "participant1Id-participant2Id" (sorted)
+model Chat {
+  id             String   @id // URL slug: orgId or "userId1-userId2"
+  type           ChatType
+  organizationId String?  @unique
+  organization   Organization? @relation("OrgChat", fields: [organizationId], references: [id], onDelete: Cascade)
+  participant1Id String?
+  participant2Id String?
+  participant1   User?    @relation("DMParticipant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2   User?    @relation("DMParticipant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages       Message[]
+  createdAt      DateTime @default(now())
+
+  @@index([type])
+  @@index([organizationId])
+  @@index([participant1Id, participant2Id])
+  @@map("chats")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  chatId      String
+  chat        Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderUserId String
+  sender      User     @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
+  content     String?  // optional when message is media-only
+  medias      MessageMedia[]
+  createdAt   DateTime @default(now())
+
+  @@index([chatId])
+  @@index([chatId, createdAt])
+  @@index([senderUserId])
+  @@map("messages")
+}
+
+model MessageMedia {
+  id        String  @id @default(cuid())
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  url       String  // media link (e.g. S3/R2)
+  mimetype  String  // e.g. image/png, video/mp4, application/pdf
+  size      Int     // bytes
+
+  @@index([messageId])
+  @@map("message_medias")
+}
+
 // ─── Enums ───────────────────────────────────────
+
+enum ChatType {
+  ORG
+  DM
+}
 
 enum ContactType {
   PERSON

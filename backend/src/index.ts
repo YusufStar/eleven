@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { auth } from "./auth/auth";
 import { authPlugin } from "./plugins/auth.plugin";
-import { contactsRoutes, dealsRoutes, paymentsRoutes, stripeWebhookApp, projectsRoutes, profileRoutes, teamRoutes, tasksRoutes, uploadRoutes, settingsRoutes, activitiesRoutes, homeDataRoutes, metricsRoutes } from "./routes";
+import { chatRoutes, contactsRoutes, dealsRoutes, paymentsRoutes, stripeWebhookApp, projectsRoutes, profileRoutes, teamRoutes, tasksRoutes, uploadRoutes, settingsRoutes, activitiesRoutes, homeDataRoutes, metricsRoutes } from "./routes";
 import { createDummyData } from "./dummy/create-dummy-data";
 
 const app = new Elysia()
@@ -15,6 +15,7 @@ const app = new Elysia()
   .mount(auth.handler)
   .use(authPlugin)
   .use(stripeWebhookApp)
+  .use(chatRoutes)
   .use(contactsRoutes)
   .use(dealsRoutes)
   .use(paymentsRoutes)
