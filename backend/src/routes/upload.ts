@@ -93,6 +93,7 @@ export const uploadRoutes = new Elysia()
     const fileSize = body instanceof Buffer ? body.length : body.byteLength;
     return { url, fileName: name, fileType: contentType, fileSize };
   }, { requireAuth: true })
+  /** Accepts any file (images, videos, documents). Video mimetypes are preserved for frontend video player. */
   .post("/upload-file", async ({ request, user }) => {
     const formData = await request.formData();
     const file = formData.get("file");
