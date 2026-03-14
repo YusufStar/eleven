@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Eleven — Proje Sunumu</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #d4d4d4;
+        font-family: "Inter", sans-serif;
+        color: #111;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .page {
+        width: 297mm;
+        min-height: 210mm;
+        background: #fff;
+        margin: 10mm auto;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.18);
+      }
+
+      /* COVER */
+      .cover {
+        flex-direction: row;
+        min-height: 210mm;
+      }
+      .cover-left {
+        width: 52%;
+        background: #0a0a0a;
+        padding: 16mm 14mm 14mm 16mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .cover-right {
+        width: 48%;
+        background: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 14mm;
+        position: relative;
+      }
+      .cover-right-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60%;
+        background: #ebebeb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 120px;
+        font-weight: 800;
+        color: #d8d8d8;
+        letter-spacing: -0.04em;
+        border-bottom: 1px solid #ddd;
+      }
+      .cover-right-meta {
+        position: relative;
+        z-index: 2;
+        padding-top: 6mm;
+      }
+      .cover-eyebrow {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 12mm;
+      }
+      .cover h1 {
+        font-size: 72px;
+        font-weight: 800;
+        line-height: 1;
+        color: #fff;
+        letter-spacing: -0.02em;
+      }
+      .cover-desc {
+        font-size: 14px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.5);
+        line-height: 1.6;
+        margin-top: 5mm;
+        max-width: 240px;
+      }
+      .cover-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 10mm;
+      }
+      .cover-tag {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.4);
+        border-radius: 3px;
+        padding: 4px 10px;
+        font-size: 10.5px;
+        font-weight: 500;
+      }
+      .cover-date {
+        font-size: 10.5px;
+        color: rgba(255, 255, 255, 0.18);
+        letter-spacing: 0.06em;
+      }
+      .cover-stack-label {
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 3mm;
+      }
+      .cover-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .cover-stack-pill {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        padding: 3px 9px;
+        font-size: 11px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      /* SLIDE */
+      .slide {
+        padding: 12mm 14mm 10mm;
+        display: flex;
+        flex-direction: column;
+        gap: 7mm;
+        min-height: 210mm;
+      }
+      .slide-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        border-bottom: 1.5px solid #111;
+        padding-bottom: 4mm;
+      }
+      .slide-num {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        color: #bbb;
+        text-transform: uppercase;
+      }
+      .kicker {
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #888;
+        margin-bottom: 2mm;
+      }
+      .slide-title {
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #0a0a0a;
+        letter-spacing: -0.01em;
+      }
+      .slide-lead {
+        font-size: 13.5px;
+        font-weight: 300;
+        color: #555;
+        line-height: 1.65;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5mm;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 4mm;
+      }
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4mm;
+      }
+
+      .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 5mm;
+      }
+      .card-dark {
+        background: #0a0a0a;
+        border-color: #0a0a0a;
+      }
+      .card-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 3mm;
+        letter-spacing: 0.01em;
+      }
+      .card-dark .card-title {
+        color: #fff;
+      }
+      .card ul {
+        padding-left: 14px;
+        display: grid;
+        gap: 4px;
+      }
+      .card li {
+        font-size: 12.5px;
+        color: #555;
+        line-height: 1.5;
+      }
+      .card-dark li {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .stat {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 4mm 5mm;
+        display: flex;
+        flex-direction: column;
+        gap: 2mm;
+      }
+      .stat-label {
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #aaa;
+      }
+      .stat-value {
+        font-size: 17px;
+        font-weight: 700;
+        color: #0a0a0a;
+        line-height: 1;
+      }
+
+      .features {
+        display: flex;
+        flex-direction: column;
+      }
+      .feat {
+        display: flex;
+        align-items: flex-start;
+        gap: 4mm;
+        border-bottom: 1px solid #ebebeb;
+        padding: 3.5mm 0;
+      }
+      .feat:first-child {
+        padding-top: 0;
+      }
+      .feat:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .feat-num {
+        font-size: 10px;
+        font-weight: 700;
+        color: #bbb;
+        width: 18px;
+        flex-shrink: 0;
+        padding-top: 1px;
+      }
+      .feat-title {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #111;
+        margin-bottom: 1mm;
+      }
+      .feat-desc {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.5;
+      }
+
+      .sales-media {
+        display: flex;
+        flex-direction: column;
+        gap: 3mm;
+      }
+      .sales-media .img-box img {
+        max-height: 46mm;
+      }
+      .sales-media .img-caption {
+        font-size: 9.5px;
+        line-height: 1.3;
+        padding: 1.8mm 3mm;
+      }
+
+      .img-box {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .img-box img {
+        width: 100%;
+        aspect-ratio: 3086 / 2092;
+        height: auto;
+        object-fit: contain;
+        object-position: center;
+        background: #f5f5f5;
+        display: block;
+      }
+      .img-box-ph {
+        aspect-ratio: 16/9;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11.5px;
+        color: #bbb;
+        font-style: italic;
+      }
+      .img-caption {
+        font-size: 10.5px;
+        color: #888;
+        padding: 2.5mm 4mm;
+        border-top: 1px solid #ebebeb;
+      }
+
+      .callout {
+        border-left: 3px solid #111;
+        padding: 4mm 5mm;
+        background: #f8f8f8;
+      }
+      .callout p {
+        font-size: 13px;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .pill {
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        padding: 2.5px 9px;
+        font-size: 11px;
+        font-weight: 500;
+        color: #444;
+      }
+      .pill-dark {
+        background: #0a0a0a;
+        border-color: #0a0a0a;
+        color: #fff;
+      }
+
+      .tl {
+        display: flex;
+        flex-direction: column;
+      }
+      .tl-item {
+        display: flex;
+        gap: 4mm;
+        align-items: flex-start;
+      }
+      .tl-aside {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+        width: 10px;
+      }
+      .tl-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #0a0a0a;
+        flex-shrink: 0;
+        margin-top: 3px;
+      }
+      .tl-line {
+        width: 1px;
+        flex: 1;
+        background: #ddd;
+        min-height: 10mm;
+      }
+      .tl-item:last-child .tl-line {
+        display: none;
+      }
+      .tl-body {
+        padding-bottom: 5mm;
+      }
+      .tl-head {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #111;
+      }
+      .tl-text {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.5;
+        margin-top: 1mm;
+      }
+
+      .slide-footer {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 3mm;
+        border-top: 1px solid #e8e8e8;
+        font-size: 9.5px;
+        color: #ccc;
+        letter-spacing: 0.04em;
+      }
+      .footer-logo {
+        font-weight: 700;
+        font-size: 10px;
+        color: #999;
+      }
+
+      .back {
+        background: #0a0a0a;
+        min-height: 210mm;
+        align-items: center;
+        justify-content: center;
+        gap: 5mm;
+      }
+      .back-title {
+        font-size: 64px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+      .back-rule {
+        width: 32mm;
+        height: 1.5px;
+        background: #fff;
+      }
+      .back-sub {
+        font-size: 13px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.35);
+        text-align: center;
+        line-height: 1.8;
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+      @media print {
+        html,
+        body {
+          width: 297mm;
+          margin: 0;
+          padding: 0;
+          overflow: visible;
+        }
+        body {
+          background: #fff;
+        }
+        .page {
+          width: 297mm;
+          height: 210mm;
+          min-height: 210mm;
+          max-height: 210mm;
+          margin: 0;
+          box-shadow: none;
+          overflow: hidden;
+          page-break-inside: avoid;
+          break-inside: avoid;
+          page-break-after: always;
+          break-after: page;
+        }
+        .cover,
+        .slide,
+        .back {
+          height: 210mm;
+          min-height: 210mm;
+          max-height: 210mm;
+          overflow: hidden;
+        }
+        .img-box,
+        .card,
+        .grid-2,
+        .grid-3,
+        .grid-4,
+        .features,
+        .tl,
+        .sales-media {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        .sales-media .img-box img {
+          max-height: 40mm;
+        }
+        .page:last-child {
+          page-break-after: auto;
+          break-after: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1 · COVER -->
+    <div class="page cover">
+      <div class="cover-left">
+        <div class="cover-eyebrow">
+          Ürün Tanıtım Sunumu &nbsp;·&nbsp; Mart 2026
+        </div>
+        <div>
+          <h1>Eleven</h1>
+          <p class="cover-desc">
+            CRM, satış süreçleri, proje ve görev yönetimini tek platformda
+            birleştiren full-stack SaaS çözümü.
+          </p>
+          <div class="cover-tags">
+            <span class="cover-tag">SaaS</span>
+            <span class="cover-tag">Multi-tenant</span>
+            <span class="cover-tag">Full-stack</span>
+            <span class="cover-tag">TypeScript</span>
+          </div>
+        </div>
+        <p class="cover-date">© 2026 Eleven</p>
+      </div>
+      <div class="cover-right">
+        <div class="cover-right-top">11</div>
+        <div class="cover-right-meta">
+          <div class="cover-stack-label">Teknoloji Yığını</div>
+          <div class="cover-stack">
+            <span class="cover-stack-pill">Next.js 16</span>
+            <span class="cover-stack-pill">Bun + Elysia</span>
+            <span class="cover-stack-pill">PostgreSQL</span>
+            <span class="cover-stack-pill">Prisma</span>
+            <span class="cover-stack-pill">Better Auth</span>
+            <span class="cover-stack-pill">Stripe</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · PROBLEM & ÇÖZÜM -->
+    <div class="page slide">
+      <div class="slide-header">
+        <div>
+          <div class="kicker">Problem &amp; Değer Önerisi</div>
+          <h2 class="slide-title">Neden Eleven?</h2>
+        </div>
+        <span class="slide-num">01 / 07</span>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Mevcut Problem</div>
+          <ul>
+            <li>CRM, görev ve proje araçları farklı uygulamalara bölünüyor</li>
+            <li>Veri parçalanması ekipler arası görünürlüğü düşürüyor</li>
+            <li>Satıştan teslimata geçişte takip kaybı yaşanıyor</li>
+            <li>Dosya ve iletişim akışları merkezi bir yerde toplanamıyor</li>
+          </ul>
+        </div>
+        <div class="card card-dark">
+          <div class="card-title">Eleven'ın Çözümü</div>
+          <ul>
+            <li>Multi-tenant mimari: her organizasyon izole ve güvenli</li>
+            <li>Kişi, şirket, fırsat, proje, görev ve dosya tek panelden</li>
+            <li>Aktivite logu ile tüm işlem geçmişi şeffaf biçimde izlenir</li>
+            <li>Modern stack: Bun, Next.js 16, Prisma, Better Auth</li>
+          </ul>
+        </div>
+      </div>
+      <div class="img-box">
+        <img src="./eleven-dashboard.png" alt="Dashboard ekranı" />
+        <div class="img-caption">
+          Dashboard — organizasyonun anlık durumu tek ekranda
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span class="footer-logo">ELEVEN</span>
+        <span>Ürün Tanıtım Sunumu · Mart 2026</span>
+      </div>
+    </div>
+
+    <!-- 3 · TEKNİK MİMARİ -->
+    <div class="page slide">
+      <div class="slide-header">
+        <div>
+          <div class="kicker">Teknik Mimari</div>
+          <h2 class="slide-title">Uçtan Uca Teknoloji Yığını</h2>
+        </div>
+        <span class="slide-num">02 / 07</span>
+      </div>
+      <div class="grid-4">
+        <div class="stat">
+          <div class="stat-label">Frontend</div>
+          <div class="stat-value">Next.js 16</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Backend Runtime</div>
+          <div class="stat-value">Bun + Elysia</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Veritabanı</div>
+          <div class="stat-value">PostgreSQL</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Auth</div>
+          <div class="stat-value">Better Auth</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Backend</div>
+          <ul>
+            <li><strong>Bun + Elysia</strong> — hızlı REST API katmanı</li>
+            <li>
+              <strong>Prisma + PostgreSQL</strong> — güvenli veri modeli ve
+              migration yönetimi
+            </li>
+            <li>
+              <strong>Better Auth</strong> — oturum, organizasyon ve davet
+              akışları
+            </li>
+            <li>
+              <strong>Stripe</strong> — organizasyon yükseltme ve ödeme
+              işlemleri
+            </li>
+            <li><strong>S3 / R2 uyumlu</strong> — dosya depolama ve yükleme</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Frontend</div>
+          <ul>
+            <li>
+              <strong>Next.js 16 App Router</strong> — modüler sayfa yapısı
+            </li>
+            <li>
+              <strong>shadcn/ui + Tailwind</strong> — tutarlı arayüz sistemi
+            </li>
+            <li><strong>TanStack Query</strong> — sunucu durum yönetimi</li>
+            <li>
+              <strong>React Hook Form + Zod</strong> — güçlü form doğrulama
+            </li>
+            <li>
+              <strong>Recharts</strong> — metrik ve performans görselleştirme
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="pill pill-dark">TypeScript</span>
+        <span class="pill pill-dark">Bun</span>
+        <span class="pill">Next.js 16</span>
+        <span class="pill">Elysia</span>
+        <span class="pill">Prisma</span>
+        <span class="pill">PostgreSQL</span>
+        <span class="pill">Tailwind CSS</span>
+        <span class="pill">shadcn/ui</span>
+        <span class="pill">TanStack Query</span>
+        <span class="pill">Zod</span>
+        <span class="pill">Recharts</span>
+        <span class="pill">Stripe</span>
+        <span class="pill">S3 / R2</span>
+      </div>
+      <div class="slide-footer">
+        <span class="footer-logo">ELEVEN</span>
+        <span>Ürün Tanıtım Sunumu · Mart 2026</span>
+      </div>
+    </div>
+
+    <!-- 4 · CRM -->
+    <div class="page slide">
+      <div class="slide-header">
+        <div>
+          <div class="kicker">CRM Modülü</div>
+          <h2 class="slide-title">Kişi &amp; Şirket Yönetimi</h2>
+        </div>
+        <span class="slide-num">03 / 07</span>
+      </div>
+      <p class="slide-lead">
+        Kişiler ve şirketler arasında ilişki kurulabilir; müşteri yaşam döngüsü
+        <strong>Lead → Prospect → Customer</strong> statüleriyle izlenir.
+      </p>
+      <div class="grid-3">
+        <div class="img-box">
+          <img src="./eleven-people.png" alt="Contacts - People listesi" />
+          <div class="img-caption">Contacts — People listesi</div>
+        </div>
+        <div class="img-box">
+          <img
+            src="./eleven-companies.png"
+            alt="Contacts - Companies listesi"
+          />
+          <div class="img-caption">Contacts — Companies listesi</div>
+        </div>
+        <div class="img-box">
+          <img src="./eleven-people-detail.png" alt="People detay ekranı" />
+          <div class="img-caption">
+            Detay — şirket, görev ve fırsat ilişkileri
+          </div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Kişi Yönetimi</div>
+          <ul>
+            <li>Durum bazlı segmentasyon: Lead, Prospect, Customer</li>
+            <li>
+              Şirketle ilişkilendirme ve organizasyon genelinde görünürlük
+            </li>
+            <li>Kişiye bağlı görevler, fırsatlar ve notlar</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Şirket Yönetimi</div>
+          <ul>
+            <li>
+              İlgili kişiler, aktif fırsatlar ve devam eden projeler tek kartta
+            </li>
+            <li>Şirket bazında tüm aktivite geçmişi</li>
+            <li>Ekip genelinde paylaşılan ortak veri kaynağı</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span class="footer-logo">ELEVEN</span>
+        <span>Ürün Tanıtım Sunumu · Mart 2026</span>
+      </div>
+    </div>
+
+    <!-- 5 · SATIŞ -->
+    <div class="page slide">
+      <div class="slide-header">
+        <div>
+          <div class="kicker">Satış Yönetimi</div>
+          <h2 class="slide-title">Pipeline &amp; Deal Süreçleri</h2>
+        </div>
+        <span class="slide-num">04 / 07</span>
+      </div>
+      <div class="grid-2">
+        <div class="features">
+          <div class="feat">
+            <div class="feat-num">01</div>
+            <div class="feat-body">
+              <div class="feat-title">Çoklu Pipeline Desteği</div>
+              <div class="feat-desc">
+                Sales, Partnership gibi farklı satış süreçleri ayrı
+                pipeline'larda yönetilir.
+              </div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-num">02</div>
+            <div class="feat-body">
+              <div class="feat-title">Aşama Bazlı İlerleme</div>
+              <div class="feat-desc">
+                Qualification → Proposal → Negotiation → Closed Won/Lost akışı
+                özelleştirilebilir.
+              </div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-num">03</div>
+            <div class="feat-body">
+              <div class="feat-title">Fırsat Görünürlüğü</div>
+              <div class="feat-desc">
+                Değer, durum ve sahip bilgisiyle her fırsatın anlık takibi
+                sağlanır.
+              </div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-num">04</div>
+            <div class="feat-body">
+              <div class="feat-title">Uçtan Uca Takip</div>
+              <div class="feat-desc">
+                Kazanılan fırsat anında projeye dönüştürülebilir; kişi ve şirket
+                ilişkisi korunur.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sales-media">
+          <div class="img-box">
+            <img src="./eleven-deals.png" alt="Deals listesi" />
+            <div class="img-caption">
+              Deal listesi — satış fırsatları tablo halinde yönetilir
+            </div>
+          </div>
+          <div class="img-box">
+            <img src="./eleven-stages.png" alt="Stages yönetimi" />
+            <div class="img-caption">
+              Stage yönetimi — pipeline aşama konfigürasyonu
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span class="footer-logo">ELEVEN</span>
+        <span>Ürün Tanıtım Sunumu · Mart 2026</span>
+      </div>
+    </div>
+
+    <!-- 6 · PROJE & GÖREV -->
+    <div class="page slide">
+      <div class="slide-header">
+        <div>
+          <div class="kicker">Proje &amp; Görev Yönetimi</div>
+          <h2 class="slide-title">Operasyonun Teslimat Tarafı</h2>
+        </div>
+        <span class="slide-num">05 / 07</span>
+      </div>
+      <div class="grid-3">
+        <div class="img-box">
+          <img
+            src="./eleven-tasks-calendar.png"
+            alt="Tasks calendar görünümü"
+          />
+          <div class="img-caption">Calendar görünümü</div>
+        </div>
+        <div class="img-box">
+          <img src="./eleven-tasks-kanban.png" alt="Tasks kanban görünümü" />
+          <div class="img-caption">Kanban görünümü</div>
+        </div>
+        <div class="img-box">
+          <img src="./eleven-tasks-table.png" alt="Tasks tablo görünümü" />
+          <div class="img-caption">Tablo görünümü</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Proje Modülü</div>
+          <ul>
+            <li>
+              Slug, Figma ve GitHub bağlantıları, görev ve dosya entegrasyonu
+            </li>
+            <li>Kazanılan fırsatlardan direkt proje oluşturma</li>
+            <li>Proje ↔ görev ↔ dosya ilişkileri uçtan uca korunur</li>
+            <li>Tüm ekip aynı doküman kaynağını kullanır</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Görev Modülü</div>
+          <ul>
+            <li>Aynı veri üç görünümde: Calendar, Kanban, Table</li>
+            <li>Durum ve öncelik bazlı filtreleme</li>
+            <li>Proje, kişi veya fırsata görev bağlama</li>
+            <li>Markdown açıklama, atanan kişi, son tarih, ek dosya</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span class="footer-logo">ELEVEN</span>
+        <span>Ürün Tanıtım Sunumu · Mart 2026</span>
+      </div>
+    </div>
+
+    <!-- 7 · EKİP & GÜVENLİK -->
+    <div class="page slide">
+      <div class="slide-header">
+        <div>
+          <div class="kicker">Ekip &amp; Organizasyon</div>
+          <h2 class="slide-title">Multi-tenant Yapı &amp; Erişim Yönetimi</h2>
+        </div>
+        <span class="slide-num">06 / 07</span>
+      </div>
+      <div class="grid-2">
+        <div class="features">
+          <div class="feat">
+            <div class="feat-num">01</div>
+            <div class="feat-body">
+              <div class="feat-title">Organizasyon Bazlı Veri İzolasyonu</div>
+              <div class="feat-desc">
+                Her organizasyon tamamen izole; çapraz veri erişimi mimari
+                düzeyde engelleniyor.
+              </div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-num">02</div>
+            <div class="feat-body">
+              <div class="feat-title">Rol Bazlı Yetki Sistemi</div>
+              <div class="feat-desc">
+                Owner / Admin / Member yapısı. Ekran ve API erişimleri role göre
+                kontrollü.
+              </div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-num">03</div>
+            <div class="feat-body">
+              <div class="feat-title">E-posta ile Davet Akışı</div>
+              <div class="feat-desc">
+                Davet linki üzerinden hızlı onboarding; üyeler anında
+                organizasyona katılabilir.
+              </div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-num">04</div>
+            <div class="feat-body">
+              <div class="feat-title">Aktivite Logu</div>
+              <div class="feat-desc">
+                Kim, ne zaman, hangi varlıkta işlem yaptı? Tüm aktiviteler kayıt
+                altında.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4mm">
+          <div class="img-box">
+            <img src="./eleven-invite-member.png" alt="Üye davet ekranı" />
+            <div class="img-caption">Ekip daveti — e-posta ile onboarding</div>
+          </div>
+          <div class="img-box">
+            <img
+              src="./eleven-create-team.png"
+              alt="Organizasyon oluşturma ekranı"
+            />
+            <div class="img-caption">
+              Organizasyon oluşturma — tenant başlangıç akışı
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span class="footer-logo">ELEVEN</span>
+        <span>Ürün Tanıtım Sunumu · Mart 2026</span>
+      </div>
+    </div>
+
+    <!-- 8 · YOL HARİTASI -->
+    <div class="page slide">
+      <div class="slide-header">
+        <div>
+          <div class="kicker">Yol Haritası</div>
+          <h2 class="slide-title">Sonraki Fazda Neler Var?</h2>
+        </div>
+        <span class="slide-num">07 / 07</span>
+      </div>
+      <div class="grid-2">
+        <div class="tl">
+          <div class="tl-item">
+            <div class="tl-aside">
+              <div class="tl-dot"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-body">
+              <div class="tl-head">Yapay Zekâ Entegrasyonu</div>
+              <div class="tl-text">
+                Özetleme, öneri motoru ve iş akışı otomasyonu.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-aside">
+              <div class="tl-dot"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-body">
+              <div class="tl-head">Gerçek Zamanlı Bildirimler</div>
+              <div class="tl-text">
+                WebSocket tabanlı anlık bildirim sistemi.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-aside">
+              <div class="tl-dot"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-body">
+              <div class="tl-head">Finans &amp; Raporlama Modülleri</div>
+              <div class="tl-text">
+                Bütçe takibi, fatura ve makbuz yükleme, doğrulama akışları.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-aside">
+              <div class="tl-dot"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-body">
+              <div class="tl-head">Microsoft Teams Entegrasyonu</div>
+              <div class="tl-text">
+                Toplantı senaryoları ve Teams üzerinden görev akışları.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-aside">
+              <div class="tl-dot"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-body">
+              <div class="tl-head">Performans Analizleri</div>
+              <div class="tl-text">
+                Çalışan aktivite raporları ve ekip bazlı metrikler.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4mm">
+          <div class="card card-dark" style="padding: 6mm; flex: 1">
+            <div class="card-title" style="font-size: 14px; margin-bottom: 4mm">
+              Kapanış
+            </div>
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 13px;
+                line-height: 1.7;
+              "
+            >
+              Eleven; satıştan teslimata tüm iş akışını tek üründe birleştirerek
+              ekiplerin
+              <strong style="color: #fff">hızını</strong>,
+              <strong style="color: #fff">görünürlüğünü</strong> ve
+              <strong style="color: #fff">karar kalitesini</strong> artırmayı
+              hedefler.
+            </p>
+          </div>
+          <div class="img-box">
+            <img src="./eleven-metrics.png" alt="Metrikler ekranı" />
+            <div class="img-caption">
+              Pipeline &amp; satış performansı metrikleri
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span class="footer-logo">ELEVEN</span>
+        <span>Ürün Tanıtım Sunumu · Mart 2026</span>
+      </div>
+    </div>
+
+    <!-- 9 · BACK COVER -->
+    <div class="page back">
+      <div class="back-title">Eleven</div>
+      <div class="back-rule"></div>
+      <p class="back-sub">
+        CRM · Satış · Proje · Görev · Dosya<br />Tek Platform. Sıfır Parçalanma.
+      </p>
+      <p class="back-sub" style="font-size: 11px; margin-top: 3mm">
+        Mart 2026 &nbsp;·&nbsp; Next.js 16 · Bun · PostgreSQL · Prisma
+      </p>
+    </div>
+  </body>
+</html>
