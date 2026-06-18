@@ -26,6 +26,14 @@ import { useActiveOrgPaymentStatus } from "@/services/payments";
 import { PlanDetailsCard } from "@/components/payment";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <Suspense fallback={<Loading key="layout-loading" />}>
+            <DashboardLayoutContent>{children}</DashboardLayoutContent>
+        </Suspense>
+    );
+}
+
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     const { isPending: isSessionPending } = authClient.useSession();
     const { isPending: isOrganizationsPending, data: organizations } = authClient.useListOrganizations();
     const { data: activeOrganization, isPending: isActiveOrganizationPending } = authClient.useActiveOrganization();

@@ -165,7 +165,7 @@ export type UserGithubProfileGroupByOutputType = {
   _max: UserGithubProfileMaxAggregateOutputType | null
 }
 
-type GetUserGithubProfileGroupByPayload<T extends UserGithubProfileGroupByArgs> = Prisma.PrismaPromise<
+export type GetUserGithubProfileGroupByPayload<T extends UserGithubProfileGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserGithubProfileGroupByOutputType, T['by']> &
       {
@@ -1104,6 +1104,11 @@ export type UserGithubProfileFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Skip the first `n` UserGithubProfiles.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of UserGithubProfiles.
+   */
   distinct?: Prisma.UserGithubProfileScalarFieldEnum | Prisma.UserGithubProfileScalarFieldEnum[]
 }
 

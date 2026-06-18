@@ -92,7 +92,7 @@ export function DateTimePicker({
               mode="single"
               selected={date}
               onSelect={handleDateSelect}
-              initialFocus
+              autoFocus
             />
             <div className="flex flex-col divide-y sm:flex-row sm:h-[300px] sm:divide-y-0 sm:divide-x">
               <ScrollArea className="w-64 sm:w-auto">

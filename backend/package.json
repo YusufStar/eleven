@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir dist",
+    "build": "bun build src/index.ts --outdir dist --target bun",
     "start": "bun dist/index.js",
     "db:migrate": "bunx prisma migrate dev",
     "db:generate": "bunx prisma generate",
@@ -13,31 +13,31 @@
   },
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest",
-    "@types/multer": "^2.0.0",
-    "@types/nodemailer": "^7.0.10",
-    "@types/pg": "^8.16.0",
-    "prisma": "7.4.1"
+    "@types/bun": "^1.3.14",
+    "@types/multer": "^2.1.0",
+    "@types/nodemailer": "^8.0.1",
+    "@types/pg": "^8.20.0",
+    "prisma": "7.8.0"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.994.0",
-    "@elysiajs/bearer": "^1.4.3",
-    "@elysiajs/cors": "^1.4.1",
+    "@aws-sdk/client-s3": "^3.1071.0",
+    "@elysiajs/bearer": "^1.4.4",
+    "@elysiajs/cors": "^1.4.2",
     "@elysiajs/swagger": "^1.3.1",
-    "@faker-js/faker": "^10.3.0",
-    "@prisma/adapter-pg": "^7.4.1",
-    "@prisma/client": "7.4.1",
+    "@faker-js/faker": "^10.5.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "7.8.0",
     "@types/minio": "^7.1.1",
-    "better-auth": "^1.4.18",
-    "elysia": "^1.4.25",
+    "better-auth": "^1.6.19",
+    "elysia": "^1.4.29",
     "minio": "^8.0.7",
-    "multer": "^2.0.2",
-    "nodemailer": "^8.0.1",
-    "pg": "^8.18.0",
-    "sharp": "^0.34.5",
-    "stripe": "^20.3.1"
+    "multer": "^2.2.0",
+    "nodemailer": "^9.0.1",
+    "pg": "^8.21.0",
+    "sharp": "^0.35.1",
+    "stripe": "^22.2.1"
   }
 }

@@ -179,7 +179,7 @@ export type OrganizationGithubConnectionGroupByOutputType = {
   _max: OrganizationGithubConnectionMaxAggregateOutputType | null
 }
 
-type GetOrganizationGithubConnectionGroupByPayload<T extends OrganizationGithubConnectionGroupByArgs> = Prisma.PrismaPromise<
+export type GetOrganizationGithubConnectionGroupByPayload<T extends OrganizationGithubConnectionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<OrganizationGithubConnectionGroupByOutputType, T['by']> &
       {
@@ -1168,6 +1168,11 @@ export type OrganizationGithubConnectionFindManyArgs<ExtArgs extends runtime.Typ
    * Skip the first `n` OrganizationGithubConnections.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of OrganizationGithubConnections.
+   */
   distinct?: Prisma.OrganizationGithubConnectionScalarFieldEnum | Prisma.OrganizationGithubConnectionScalarFieldEnum[]
 }
 

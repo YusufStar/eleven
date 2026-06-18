@@ -192,7 +192,7 @@ export type MessageMediaGroupByOutputType = {
   _max: MessageMediaMaxAggregateOutputType | null
 }
 
-type GetMessageMediaGroupByPayload<T extends MessageMediaGroupByArgs> = Prisma.PrismaPromise<
+export type GetMessageMediaGroupByPayload<T extends MessageMediaGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<MessageMediaGroupByOutputType, T['by']> &
       {
@@ -1166,6 +1166,11 @@ export type MessageMediaFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` MessageMedias.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of MessageMedias.
+   */
   distinct?: Prisma.MessageMediaScalarFieldEnum | Prisma.MessageMediaScalarFieldEnum[]
 }
 
