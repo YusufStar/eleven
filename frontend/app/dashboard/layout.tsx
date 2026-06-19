@@ -24,6 +24,7 @@ import { authClient } from "@/lib/auth-client";
 import { FirstOrgCreate } from "@/components/auth/first-org-create";
 import { useActiveOrgPaymentStatus } from "@/services/payments";
 import { PlanDetailsCard } from "@/components/payment";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -55,7 +56,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     <SidebarProvider>
                         <AppSidebar />
                         <SidebarInset>
-                            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                            <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                                 <div className="flex items-center gap-2 px-4">
                                     <SidebarTrigger className="-ml-1" />
                                     <Separator
@@ -79,6 +80,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                                             })}
                                         </BreadcrumbList>
                                     </Breadcrumb>
+                                </div>
+                                <div className="flex items-center gap-2 px-4">
+                                    <ThemeToggle />
                                 </div>
                             </header>
                             <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">

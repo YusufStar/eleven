@@ -1,9 +1,10 @@
-"use client";
-
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Add01Icon } from "@hugeicons/core-free-icons";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { Reveal } from "./reveal";
 
 const faqs = [
@@ -30,60 +31,37 @@ const faqs = [
 ];
 
 export function LandingFaq() {
-  const [open, setOpen] = useState<number | null>(0);
-
   return (
     <section id="faq" className="relative scroll-mt-24 py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-6">
         <Reveal className="text-center">
-          <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-medium text-violet-300">
+          <Badge variant="secondary" className="rounded-full text-primary">
             FAQ
-          </span>
-          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          </Badge>
+          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Questions, answered
           </h2>
         </Reveal>
 
-        <div className="mt-12 divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
-          {faqs.map((item, i) => {
-            const isOpen = open === i;
-            return (
-              <div key={item.q}>
-                <button
-                  type="button"
-                  onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-white/[0.02] sm:px-6"
-                >
-                  <span className="text-[15px] font-medium text-white">
-                    {item.q}
-                  </span>
-                  <span
-                    className={`grid size-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-zinc-300 transition-transform duration-300 ${
-                      isOpen ? "rotate-45 text-violet-300" : ""
-                    }`}
-                  >
-                    <HugeiconsIcon icon={Add01Icon} className="size-4" />
-                  </span>
-                </button>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <p className="px-5 pb-5 text-sm leading-relaxed text-zinc-400 sm:px-6">
-                        {item.a}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
-        </div>
+        <Reveal delay={0.05}>
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="faq-0"
+            className="mt-12 overflow-hidden rounded-2xl border bg-card px-5 sm:px-6"
+          >
+            {faqs.map((item, i) => (
+              <AccordionItem key={item.q} value={`faq-${i}`}>
+                <AccordionTrigger className="py-5 text-[15px] text-foreground hover:no-underline">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="pb-5 text-sm leading-relaxed text-muted-foreground">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </Reveal>
       </div>
     </section>
   );

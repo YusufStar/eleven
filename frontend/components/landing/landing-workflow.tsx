@@ -4,6 +4,7 @@ import {
   WorkflowSquare03Icon,
   RocketIcon,
 } from "@hugeicons/core-free-icons";
+import { Badge } from "@/components/ui/badge";
 import { Reveal } from "./reveal";
 
 const steps = [
@@ -31,17 +32,17 @@ export function LandingWorkflow() {
   return (
     <section
       id="workflow"
-      className="relative scroll-mt-24 border-t border-white/5 py-24 sm:py-32"
+      className="relative scroll-mt-24 border-t py-24 sm:py-32"
     >
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-medium text-violet-300">
+          <Badge variant="secondary" className="rounded-full text-primary">
             How it works
-          </span>
-          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          </Badge>
+          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             From first contact to closed-won
           </h2>
-          <p className="mt-4 text-pretty text-base leading-relaxed text-zinc-400">
+          <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground">
             Three steps to a single source of truth for your customers and your
             work.
           </p>
@@ -49,26 +50,26 @@ export function LandingWorkflow() {
 
         <div className="relative mt-16 grid gap-6 md:grid-cols-3">
           {/* connecting line */}
-          <div className="pointer-events-none absolute inset-x-0 top-7 hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent md:block" />
+          <div className="pointer-events-none absolute inset-x-0 top-7 hidden h-px bg-gradient-to-r from-transparent via-border to-transparent md:block" />
 
           {steps.map((s, i) => (
             <Reveal key={s.step} delay={i * 0.08} className="relative">
               <div className="flex flex-col items-center text-center md:items-start md:text-left">
-                <span className="relative grid size-14 place-items-center rounded-2xl border border-white/10 bg-zinc-950 shadow-lg shadow-black/40">
-                  <span className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/10" />
+                <span className="relative grid size-14 place-items-center overflow-hidden rounded-2xl border bg-card shadow-lg">
+                  <span className="absolute inset-0 bg-primary/10" />
                   <HugeiconsIcon
                     icon={s.icon}
-                    className="relative size-6 text-violet-200"
+                    className="relative size-6 text-primary"
                     strokeWidth={1.8}
                   />
                 </span>
-                <span className="mt-5 text-xs font-semibold tracking-widest text-violet-400/80">
+                <span className="mt-5 text-xs font-semibold tracking-widest text-primary/80">
                   {s.step}
                 </span>
-                <h3 className="mt-2 text-lg font-semibold text-white">
+                <h3 className="mt-2 text-lg font-semibold text-foreground">
                   {s.title}
                 </h3>
-                <p className="mt-2 max-w-xs text-sm leading-relaxed text-zinc-400">
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">
                   {s.desc}
                 </p>
               </div>

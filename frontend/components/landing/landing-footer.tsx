@@ -35,19 +35,17 @@ const columns = [
 
 export function LandingFooter() {
   return (
-    <footer className="relative border-t border-white/10 bg-zinc-950">
+    <footer className="relative border-t bg-card">
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="flex items-center gap-2.5">
-              <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600">
-                <ElevenLogo className="size-6 [&_path:first-child]:fill-white/0 [&_path:not(:first-child)]:fill-white" />
-              </span>
-              <span className="text-[17px] font-semibold tracking-tight text-white">
+              <ElevenLogo className="size-9" />
+              <span className="text-[17px] font-semibold tracking-tight text-foreground">
                 Eleven
               </span>
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-500">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               The CRM and project management workspace where your customers and
               your work finally live together.
             </p>
@@ -55,7 +53,7 @@ export function LandingFooter() {
 
           {columns.map((col) => (
             <div key={col.title}>
-              <h4 className="text-[13px] font-semibold text-zinc-300">
+              <h4 className="text-[13px] font-semibold text-foreground">
                 {col.title}
               </h4>
               <ul className="mt-4 space-y-2.5">
@@ -63,7 +61,7 @@ export function LandingFooter() {
                   <li key={l.label}>
                     <Link
                       href={l.href}
-                      className="text-sm text-zinc-500 transition-colors hover:text-white"
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {l.label}
                     </Link>
@@ -74,12 +72,12 @@ export function LandingFooter() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-7 sm:flex-row">
-          <p className="text-[13px] text-zinc-600">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-7 sm:flex-row">
+          <p className="text-[13px] text-muted-foreground">
             © {currentYear} Eleven. All rights reserved.
           </p>
-          <div className="flex items-center gap-2 text-[13px] text-zinc-600">
-            <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
+            <span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
             All systems operational
           </div>
         </div>

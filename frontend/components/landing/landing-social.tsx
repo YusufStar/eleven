@@ -20,10 +20,10 @@ const stats = [
 
 export function LandingSocial() {
   return (
-    <section className="relative border-y border-white/5 py-14">
+    <section className="relative border-y py-14">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal>
-          <p className="text-center text-[13px] font-medium uppercase tracking-widest text-zinc-600">
+          <p className="text-center text-[13px] font-medium uppercase tracking-widest text-muted-foreground">
             Trusted by teams that move fast
           </p>
         </Reveal>
@@ -34,7 +34,7 @@ export function LandingSocial() {
             {[...logos, ...logos].map((name, i) => (
               <span
                 key={`${name}-${i}`}
-                className="text-xl font-semibold tracking-tight text-zinc-600 transition-colors hover:text-zinc-300"
+                className="text-xl font-semibold tracking-tight text-muted-foreground/60 transition-colors hover:text-foreground"
               >
                 {name}
               </span>
@@ -44,16 +44,13 @@ export function LandingSocial() {
 
         {/* stats */}
         <Reveal delay={0.1}>
-          <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] sm:grid-cols-4">
+          <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-4">
             {stats.map((s) => (
-              <div
-                key={s.label}
-                className="bg-zinc-950/40 p-6 text-center"
-              >
-                <p className="bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
+              <div key={s.label} className="bg-card p-6 text-center">
+                <p className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                   {s.value}
                 </p>
-                <p className="mt-1.5 text-[13px] text-zinc-500">{s.label}</p>
+                <p className="mt-1.5 text-[13px] text-muted-foreground">{s.label}</p>
               </div>
             ))}
           </div>
