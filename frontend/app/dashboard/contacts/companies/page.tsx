@@ -7,6 +7,7 @@ import type { ContactStatus } from "@/services/contacts";
 import { CompaniesDataTable } from "@/components/contacts/companies/data-table";
 import { companiesColumns } from "@/components/contacts/companies/columns";
 import { AddContactCompanyModal } from "@/components/contacts/companies/add-contact-company-modal";
+import { ImportContactsModal } from "@/components/contacts/import-contacts-modal";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
@@ -52,6 +53,7 @@ export default function CompaniesPage() {
   );
 
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(search);
   useEffect(() => setSearchInput(search), [search]);
 
@@ -79,11 +81,11 @@ export default function CompaniesPage() {
           <p className="text-muted-foreground text-sm">Your organization's company directory.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setImportModalOpen(true)}>
             <HugeiconsIcon icon={Xls01Icon} className="size-4" strokeWidth={2} />
             Import Excel
           </Button>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setImportModalOpen(true)}>
             <HugeiconsIcon icon={Csv01Icon} className="size-4" strokeWidth={2} />
             Import CSV
           </Button>
@@ -94,6 +96,7 @@ export default function CompaniesPage() {
         </div>
       </div>
       <AddContactCompanyModal open={addModalOpen} onOpenChange={setAddModalOpen} />
+      <ImportContactsModal open={importModalOpen} onOpenChange={setImportModalOpen} />
       <CompaniesDataTable
         columns={companiesColumns}
         data={contacts}
