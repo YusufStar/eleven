@@ -25,6 +25,7 @@ import { FirstOrgCreate } from "@/components/auth/first-org-create";
 import { useActiveOrgPaymentStatus } from "@/services/payments";
 import { PlanDetailsCard } from "@/components/payment";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -82,6 +83,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                                     </Breadcrumb>
                                 </div>
                                 <div className="flex items-center gap-2 px-4">
+                                    <NotificationBell />
                                     <ThemeToggle />
                                 </div>
                             </header>

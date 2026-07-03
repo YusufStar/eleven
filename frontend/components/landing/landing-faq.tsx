@@ -4,64 +4,60 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Reveal } from "./reveal";
 
 const faqs = [
   {
-    q: "Is Eleven really a CRM and a project tool in one?",
-    a: "Yes. Contacts, companies, deals, and pipelines live alongside projects, tasks, and files — all linked, so your customer data and your delivery work share one source of truth.",
+    q: "Is Eleven a CRM or a project management tool?",
+    a: "Both, deliberately. Deals live next to the projects they become — a won deal turns into a project with its contacts, files, and history intact. No handoff, no re-entry.",
   },
   {
-    q: "What does the free plan include?",
-    a: "Create an organization, invite your team, and use contacts, deals, pipelines, projects, and tasks — no credit card required. It's a real working plan, not a trial.",
+    q: "Can I import my data from another tool?",
+    a: "Yes. Contacts, companies, and deals import from CSV in minutes, and field mapping is done for you where the columns are obvious.",
   },
   {
-    q: "How does the one-time payment work?",
-    a: "Professional is a single one-time upgrade per organization that unlocks full access for your whole team. No monthly subscription and no per-seat renewals — pay once, use forever.",
+    q: "How does the free plan differ from Pro?",
+    a: "Starter is fully functional for two seats, 500 contacts, and one pipeline. Pro removes the limits and adds metrics, chat, meetings, and file storage.",
   },
   {
-    q: "Can I invite my whole team?",
-    a: "Absolutely. Eleven is multi-tenant with organizations, roles, and invitations built in, so the entire team works in the same shared workspace.",
+    q: "Do you support teams and roles?",
+    a: "Yes. Invite teammates, set roles per workspace, and control who sees which pipelines and projects.",
   },
   {
-    q: "Is my data secure?",
-    a: "Your data is scoped to your organization and stored securely. Each workspace is isolated, and access is controlled by member roles.",
+    q: "Can I cancel anytime?",
+    a: "Anytime, from settings, without talking to anyone. Your data stays exportable before and after.",
   },
 ];
 
 export function LandingFaq() {
   return (
-    <section id="faq" className="relative scroll-mt-24 py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6">
-        <Reveal className="text-center">
-          <Badge variant="secondary" className="rounded-full text-primary">
-            FAQ
-          </Badge>
-          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Questions, answered
-          </h2>
-        </Reveal>
+    <section id="questions" className="scroll-mt-16 border-b">
+      <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
+          <Reveal>
+            <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground">
+              05 — Questions
+            </p>
+            <h2 className="mt-4 font-serif text-4xl tracking-tight md:text-5xl">
+              Asked, <em>answered.</em>
+            </h2>
+          </Reveal>
 
-        <Reveal delay={0.05}>
-          <Accordion
-            type="single"
-            collapsible
-            defaultValue="faq-0"
-            className="mt-12 overflow-hidden rounded-2xl border bg-card px-5 sm:px-6"
-          >
-            {faqs.map((item, i) => (
-              <AccordionItem key={item.q} value={`faq-${i}`}>
-                <AccordionTrigger className="py-5 text-[15px] text-foreground hover:no-underline">
-                  {item.q}
-                </AccordionTrigger>
-                <AccordionContent className="pb-5 text-sm leading-relaxed text-muted-foreground">
-                  {item.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </Reveal>
+          <Reveal delay={0.1}>
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((f, i) => (
+                <AccordionItem key={f.q} value={`item-${i}`}>
+                  <AccordionTrigger className="py-6 text-left text-[15px] font-medium hover:no-underline">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

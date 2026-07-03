@@ -151,3 +151,18 @@ export type Message = Prisma.MessageModel
  * 
  */
 export type MessageMedia = Prisma.MessageMediaModel
+/**
+ * Model Meeting
+ * 
+ */
+export type Meeting = Prisma.MeetingModel
+/**
+ * Model MeetingParticipant
+ * 
+ */
+export type MeetingParticipant = Prisma.MeetingParticipantModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

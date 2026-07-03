@@ -3,6 +3,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 import { logActivity } from "../lib/activity-log";
+import { notify } from "../lib/notify";
 import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
 
 const orgScope = (activeOrganizationId: string) => ({ organizationId: activeOrganizationId });
@@ -355,6 +356,20 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         entityId: pm.id,
         entityTitle: null,
         metadata: { projectId: params.id, memberId },
+      });
+      const project = await prisma.project.findUnique({
+        where: { id: params.id },
+        select: { name: true, slug: true },
+      });
+      await notify({
+        prisma,
+        organizationId: activeOrganizationId!,
+        recipientIds: [memberId],
+        actorId: activeMember!.id,
+        type: "PROJECT_MEMBER_ADDED",
+        title: "You were added to a project",
+        body: project?.name ?? null,
+        link: project ? `/dashboard/projects/${project.slug}` : "/dashboard/projects",
       });
       return pm;
     },

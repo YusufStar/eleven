@@ -1,177 +1,95 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  DashboardSquare01Icon,
-  UserGroupIcon,
-  SaleTag02Icon,
-  FolderLibraryIcon,
-  CheckmarkSquare02Icon,
-  Calendar03Icon,
-  AnalyticsUpIcon,
-  Search01Icon,
-  Notification03Icon,
-} from "@hugeicons/core-free-icons";
-
-const navItems = [
-  { icon: DashboardSquare01Icon, label: "Overview", active: true },
-  { icon: UserGroupIcon, label: "Contacts" },
-  { icon: SaleTag02Icon, label: "Pipeline" },
-  { icon: FolderLibraryIcon, label: "Projects" },
-  { icon: CheckmarkSquare02Icon, label: "Tasks" },
-  { icon: Calendar03Icon, label: "Activities" },
-  { icon: AnalyticsUpIcon, label: "Reports" },
-];
-
-const stats = [
-  { label: "Open deals", value: "$284k", trend: "+12.4%", up: true },
-  { label: "Win rate", value: "68%", trend: "+4.1%", up: true },
-  { label: "Active tasks", value: "47", trend: "−6", up: false },
-];
-
 const columns = [
   {
-    name: "Lead",
-    tint: "bg-chart-3",
+    stage: "Qualified",
+    total: "$128k",
     deals: [
-      { co: "Northwind", val: "$12.5k", who: "AM" },
-      { co: "Acme Corp", val: "$8.2k", who: "JD" },
+      { name: "Aldergate renewal", value: "$42,000", width: "w-3/4" },
+      { name: "Porcelain Studio", value: "$18,500", width: "w-1/3" },
+      { name: "Meridian pilot", value: "$67,500", width: "w-1/2" },
     ],
   },
   {
-    name: "Qualified",
-    tint: "bg-chart-1",
+    stage: "Proposal",
+    total: "$96k",
     deals: [
-      { co: "Globex", val: "$34k", who: "SK" },
-      { co: "Initech", val: "$19.8k", who: "RL" },
+      { name: "Obsidian Group", value: "$54,000", width: "w-2/3" },
+      { name: "Kairos expansion", value: "$42,000", width: "w-1/2" },
     ],
   },
   {
-    name: "Proposal",
-    tint: "bg-chart-4",
-    deals: [{ co: "Umbrella", val: "$56k", who: "TM" }],
-  },
-  {
-    name: "Won",
-    tint: "bg-chart-5",
-    deals: [{ co: "Soylent", val: "$72k", who: "EV" }],
+    stage: "Closing",
+    total: "$210k",
+    deals: [
+      { name: "Northwind annual", value: "$150,000", width: "w-5/6" },
+      { name: "Atelier onboarding", value: "$60,000", width: "w-2/5" },
+    ],
   },
 ];
 
-/**
- * Static, pixel-built mockup of the Eleven dashboard (pipeline board + stats).
- * No screenshots — everything is CSS so it stays crisp at any resolution and
- * follows the active theme through shadcn tokens.
- */
+/** Static monochrome product mock shown in the hero. Decorative only. */
 export function DashboardPreview() {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-card shadow-2xl">
+    <div
+      aria-hidden
+      className="overflow-hidden rounded-xl border bg-card text-left shadow-2xl"
+    >
       {/* window chrome */}
-      <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-3">
-        <div className="flex gap-1.5">
-          <span className="size-3 rounded-full bg-destructive/70" />
-          <span className="size-3 rounded-full bg-amber-400/80" />
-          <span className="size-3 rounded-full bg-emerald-400/80" />
-        </div>
-        <div className="mx-auto flex w-full max-w-xs items-center gap-2 rounded-md border bg-background px-2.5 py-1 text-[11px] text-muted-foreground">
-          <HugeiconsIcon icon={Search01Icon} className="size-3.5" />
-          app.eleven.so/dashboard
-        </div>
+      <div className="flex items-center gap-2 border-b px-4 py-3">
+        <span className="size-2.5 rounded-full bg-border" />
+        <span className="size-2.5 rounded-full bg-border" />
+        <span className="size-2.5 rounded-full bg-border" />
+        <span className="ml-4 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+          eleven / deals / pipeline
+        </span>
       </div>
 
       <div className="flex">
         {/* sidebar */}
-        <aside className="hidden w-44 shrink-0 flex-col gap-0.5 border-r bg-muted/30 p-3 sm:flex">
-          {navItems.map((item) => (
-            <div
-              key={item.label}
-              className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[12.5px] font-medium ${
-                item.active
-                  ? "bg-primary/10 text-foreground ring-1 ring-inset ring-border"
-                  : "text-muted-foreground"
-              }`}
-            >
-              <HugeiconsIcon icon={item.icon} className="size-4" strokeWidth={1.8} />
-              {item.label}
-            </div>
-          ))}
-        </aside>
-
-        {/* main */}
-        <div className="min-w-0 flex-1 p-4 sm:p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-[11px] text-muted-foreground">Pipeline</p>
-              <h3 className="text-[15px] font-semibold text-foreground">
-                Sales overview
-              </h3>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-lg border bg-muted/40 text-muted-foreground">
-                <HugeiconsIcon icon={Notification03Icon} className="size-4" />
-              </span>
-              <span className="size-7 rounded-full bg-primary" />
-            </div>
-          </div>
-
-          {/* stats */}
-          <div className="mb-4 grid grid-cols-3 gap-2.5">
-            {stats.map((s) => (
-              <div key={s.label} className="rounded-xl border bg-muted/30 p-3">
-                <p className="truncate text-[10.5px] text-muted-foreground">
-                  {s.label}
-                </p>
-                <p className="mt-1 text-base font-semibold text-foreground sm:text-lg">
-                  {s.value}
-                </p>
-                <p
-                  className={`mt-0.5 text-[10.5px] font-medium ${
-                    s.up ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"
-                  }`}
-                >
-                  {s.trend}
-                </p>
+        <div className="hidden w-44 shrink-0 border-r p-4 sm:block">
+          {["Dashboard", "Contacts", "Deals", "Projects", "Tasks", "Metrics"].map(
+            (item, i) => (
+              <div
+                key={item}
+                className={`mb-1 rounded-md px-3 py-2 text-xs ${
+                  i === 2
+                    ? "bg-foreground font-medium text-background"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {item}
               </div>
-            ))}
-          </div>
+            ),
+          )}
+        </div>
 
-          {/* board */}
-          <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-            {columns.map((col) => (
-              <div key={col.name} className="flex flex-col gap-2">
-                <div className="flex items-center justify-between px-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className={`size-2 rounded-full ${col.tint}`} />
-                    <span className="text-[11px] font-medium text-muted-foreground">
-                      {col.name}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground">
-                    {col.deals.length}
-                  </span>
-                </div>
-                {col.deals.map((d) => (
+        {/* pipeline board */}
+        <div className="grid flex-1 grid-cols-3 gap-4 p-4 sm:p-6">
+          {columns.map((col) => (
+            <div key={col.stage} className="min-w-0">
+              <div className="mb-3 flex items-baseline justify-between gap-2">
+                <span className="truncate text-xs font-medium">{col.stage}</span>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  {col.total}
+                </span>
+              </div>
+              <div className="space-y-3">
+                {col.deals.map((deal) => (
                   <div
-                    key={d.co}
-                    className="rounded-lg border bg-muted/40 p-2.5 transition-colors hover:border-ring"
+                    key={deal.name}
+                    className="rounded-lg border bg-background p-3"
                   >
-                    <p className="text-[12px] font-medium text-foreground">
-                      {d.co}
+                    <p className="truncate text-[11px] font-medium">{deal.name}</p>
+                    <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+                      {deal.value}
                     </p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-[12px] font-semibold text-foreground">
-                        {d.val}
-                      </span>
-                      <span className="grid size-5 place-items-center rounded-full bg-secondary text-[9px] font-semibold text-secondary-foreground">
-                        {d.who}
-                      </span>
+                    <div className="mt-2.5 h-1 rounded-full bg-muted">
+                      <div className={`h-1 rounded-full bg-foreground/70 ${deal.width}`} />
                     </div>
                   </div>
                 ))}
-                <div className="rounded-lg border border-dashed py-1.5 text-center text-[10px] text-muted-foreground">
-                  + Add
-                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

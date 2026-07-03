@@ -100,7 +100,7 @@ export function ContactPersonDetailContent() {
       <div className="flex flex-wrap items-start gap-4">
         {contact.avatar ? (
           <span className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-xl">
-            <Image src={contact.avatar} alt="" fill className="object-cover" />
+            <Image src={contact.avatar} alt="" fill sizes="64px" className="object-cover" />
           </span>
         ) : null}
         <div>

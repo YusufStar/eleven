@@ -9,6 +9,19 @@
 * 🟢 You can import this file directly.
 */
 
+export const NotificationType = {
+  TASK_ASSIGNED: 'TASK_ASSIGNED',
+  DEAL_STAGE_CHANGED: 'DEAL_STAGE_CHANGED',
+  DEAL_WON: 'DEAL_WON',
+  PROJECT_MEMBER_ADDED: 'PROJECT_MEMBER_ADDED',
+  MEETING_INVITED: 'MEETING_INVITED',
+  CONTACTS_IMPORTED: 'CONTACTS_IMPORTED',
+  GENERIC: 'GENERIC'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
 export const ChatType = {
   ORG: 'ORG',
   DM: 'DM'

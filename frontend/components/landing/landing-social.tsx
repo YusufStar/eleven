@@ -1,60 +1,35 @@
-import { Reveal } from "./reveal";
+import { Marquee } from "@/components/ui/marquee";
 
-const logos = [
+const names = [
   "Northwind",
-  "Globex",
-  "Initech",
-  "Umbrella",
-  "Soylent",
-  "Acme",
-  "Hooli",
-  "Stark",
-];
-
-const stats = [
-  { value: "12k+", label: "Deals tracked" },
-  { value: "98%", label: "Less tool switching" },
-  { value: "3.4×", label: "Faster follow-ups" },
-  { value: "120+", label: "Teams onboarded" },
+  "Atelier Mono",
+  "Obsidian Group",
+  "Porcelain",
+  "Kairos Labs",
+  "Meridian",
+  "Grayscale Co",
+  "Aldergate",
 ];
 
 export function LandingSocial() {
   return (
-    <section className="relative border-y py-14">
+    <section className="border-b py-14">
       <div className="mx-auto max-w-6xl px-6">
-        <Reveal>
-          <p className="text-center text-[13px] font-medium uppercase tracking-widest text-muted-foreground">
-            Trusted by teams that move fast
-          </p>
-        </Reveal>
-
-        {/* marquee */}
-        <div className="relative mt-8 overflow-hidden mask-fade-x">
-          <div className="flex w-max animate-marquee items-center gap-14 pr-14">
-            {[...logos, ...logos].map((name, i) => (
-              <span
-                key={`${name}-${i}`}
-                className="text-xl font-semibold tracking-tight text-muted-foreground/60 transition-colors hover:text-foreground"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* stats */}
-        <Reveal delay={0.1}>
-          <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="bg-card p-6 text-center">
-                <p className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                  {s.value}
-                </p>
-                <p className="mt-1.5 text-[13px] text-muted-foreground">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+        <p className="text-center font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground">
+          Trusted by teams at
+        </p>
+      </div>
+      <div className="mask-fade-x mt-8" aria-hidden>
+        <Marquee pauseOnHover className="[--duration:36s] [--gap:5rem]">
+          {names.map((name) => (
+            <span
+              key={name}
+              className="whitespace-nowrap font-serif text-xl text-muted-foreground/70"
+            >
+              {name}
+            </span>
+          ))}
+        </Marquee>
       </div>
     </section>
   );

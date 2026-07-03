@@ -100,7 +100,7 @@ export function ContactCompanyDetailContent() {
       <div className="flex flex-wrap items-start gap-4">
         {contact.avatar ? (
           <span className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-xl">
-            <Image src={contact.avatar} alt="" fill className="object-cover" />
+            <Image src={contact.avatar} alt="" fill sizes="64px" className="object-cover" />
           </span>
         ) : null}
         <div>
@@ -169,7 +169,7 @@ export function ContactCompanyDetailContent() {
                   <li key={e.id} className="flex items-center gap-2">
                     {e.avatar ? (
                       <span className="relative block h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                        <Image src={e.avatar} alt="" fill className="object-cover" />
+                        <Image src={e.avatar} alt="" fill sizes="32px" className="object-cover" />
                       </span>
                     ) : null}
                     <Link

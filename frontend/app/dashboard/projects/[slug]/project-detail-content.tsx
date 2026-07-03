@@ -150,7 +150,7 @@ export function ProjectDetailContent() {
                 <li key={m.id} className="flex items-center gap-2">
                   {m.member?.user?.image ? (
                     <span className="relative block h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                      <Image src={m.member.user.image} alt="" fill className="object-cover" />
+                      <Image src={m.member.user.image} alt="" fill sizes="32px" className="object-cover" />
                     </span>
                   ) : null}
                   <span className="text-sm font-medium">{m.member?.user?.name ?? "—"}</span>

@@ -1,86 +1,79 @@
 import Link from "next/link";
 import ElevenLogo from "@/components/logo";
 
-const currentYear = new Date().getFullYear();
-
-const columns = [
+const groups = [
   {
     title: "Product",
     links: [
-      { label: "Features", href: "#features" },
-      { label: "Workflow", href: "#workflow" },
+      { label: "Capabilities", href: "#capabilities" },
+      { label: "Method", href: "#method" },
       { label: "Pricing", href: "#pricing" },
-      { label: "FAQ", href: "#faq" },
+      { label: "Questions", href: "#questions" },
     ],
   },
   {
-    title: "Platform",
-    links: [
-      { label: "Contacts", href: "/signup" },
-      { label: "Pipeline", href: "/signup" },
-      { label: "Projects", href: "/signup" },
-      { label: "Reports", href: "/signup" },
-    ],
-  },
-  {
-    title: "Company",
+    title: "Account",
     links: [
       { label: "Sign in", href: "/login" },
-      { label: "Get started", href: "/signup" },
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
+      { label: "Start free", href: "/signup" },
+      { label: "Dashboard", href: "/dashboard" },
     ],
   },
 ];
 
 export function LandingFooter() {
   return (
-    <footer className="relative border-t bg-card">
-      <div className="mx-auto max-w-6xl px-6 py-14">
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
-          <div>
+    <footer className="relative overflow-hidden">
+      <div className="mx-auto max-w-6xl px-6 pb-10 pt-16 md:pt-20">
+        <div className="flex flex-col justify-between gap-12 md:flex-row">
+          <div className="max-w-xs">
             <Link href="/" className="flex items-center gap-2.5">
-              <ElevenLogo className="size-9" />
-              <span className="text-[17px] font-semibold tracking-tight text-foreground">
-                Eleven
-              </span>
+              <ElevenLogo className="size-7" />
+              <span className="text-[15px] font-medium tracking-tight">Eleven</span>
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              The CRM and project management workspace where your customers and
-              your work finally live together.
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              The monochrome workspace for teams that close deals and ship
+              projects.
             </p>
           </div>
 
-          {columns.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-[13px] font-semibold text-foreground">
-                {col.title}
-              </h4>
-              <ul className="mt-4 space-y-2.5">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <Link
-                      href={l.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-7 sm:flex-row">
-          <p className="text-[13px] text-muted-foreground">
-            © {currentYear} Eleven. All rights reserved.
-          </p>
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
-            <span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-            All systems operational
+          <div className="flex gap-16 md:gap-24">
+            {groups.map((g) => (
+              <nav key={g.title} aria-label={g.title}>
+                <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                  {g.title}
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {g.links.map((l) => (
+                    <li key={l.label}>
+                      <Link
+                        href={l.href}
+                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
           </div>
         </div>
+
+        <div className="mt-16 flex items-center justify-between border-t pt-6 text-xs text-muted-foreground">
+          <p>© Eleven. All rights reserved.</p>
+          <p className="font-mono uppercase tracking-[0.3em]">Nº 11</p>
+        </div>
+      </div>
+
+      {/* signature echo: cropped hairline wordmark closing the page */}
+      <div
+        aria-hidden
+        className="mask-fade-b pointer-events-none select-none overflow-hidden"
+      >
+        <p className="text-outline -mb-[0.32em] text-center font-serif text-[22vw] leading-none">
+          ELEVEN
+        </p>
       </div>
     </footer>
   );

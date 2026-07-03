@@ -109,6 +109,8 @@ model Organization {
   projects   Project[]
   tasks      Task[]
   orgChat    Chat?      @relation("OrgChat")
+  meetings      Meeting[]
+  notifications Notification[]
 
   githubConnection OrganizationGithubConnection?
 
@@ -148,6 +150,10 @@ model Member {
   createdTasks    Task[] @relation("CreatedTasks")
   projectMembers  ProjectMember[]
   projectFilesUploaded ProjectFile[]
+  createdMeetings    Meeting[]            @relation("CreatedMeetings")
+  meetingInvites     MeetingParticipant[]
+  notifications      Notification[]       @relation("NotificationRecipient")
+  actedNotifications Notification[]       @relation("NotificationActor")
 
   @@index([organizationId])
   @@index([userId])
@@ -490,7 +496,79 @@ model MessageMedia {
   @@map("message_medias")
 }
 
+// ─── Meetings ────────────────────────────────────
+model Meeting {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  code     String    @unique // room slug used in /meet/<code>
+  title    String
+  startsAt DateTime
+  endsAt   DateTime?
+  isPublic Boolean   @default(false) // open to every member of the organization
+
+  createdById String
+  createdBy   Member @relation("CreatedMeetings", fields: [createdById], references: [id], onDelete: Cascade)
+
+  participants MeetingParticipant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([organizationId, startsAt])
+  @@map("meetings")
+}
+
+model MeetingParticipant {
+  id        String  @id @default(cuid())
+  meetingId String
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, memberId])
+  @@index([memberId])
+  @@map("meeting_participants")
+}
+
+// ─── Notifications ───────────────────────────────
+model Notification {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  recipientId String
+  recipient   Member  @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actorId     String?
+  actor       Member? @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  type   NotificationType
+  title  String
+  body   String?
+  link   String? // in-app path, e.g. /dashboard/tasks or /meet/<code>
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([recipientId, readAt])
+  @@index([recipientId, createdAt])
+  @@index([organizationId])
+  @@map("notifications")
+}
+
 // ─── Enums ───────────────────────────────────────
+
+enum NotificationType {
+  TASK_ASSIGNED
+  DEAL_STAGE_CHANGED
+  DEAL_WON
+  PROJECT_MEMBER_ADDED
+  MEETING_INVITED
+  CONTACTS_IMPORTED
+  GENERIC
+}
 
 enum ChatType {
   ORG

@@ -1,131 +1,105 @@
 import Link from "next/link";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { Reveal } from "./reveal";
 
 const plans = [
   {
-    name: "Free",
+    name: "Starter",
     price: "$0",
-    cadence: "forever",
-    desc: "Everything a small team needs to get organized.",
-    cta: "Start for free",
+    period: "forever",
+    copy: "For a founder keeping the whole business in their head.",
+    features: ["2 seats", "500 contacts", "1 pipeline", "Projects & tasks"],
+    cta: "Start free",
     href: "/signup",
-    featured: false,
-    features: [
-      "Create an organization",
-      "Add team members",
-      "Contacts, deals & pipelines",
-      "Projects, tasks & files",
-      "No credit card required",
-    ],
+    inverted: false,
   },
   {
-    name: "Professional",
-    price: "$1,000",
-    cadence: "one-time, per org",
-    desc: "Unlock full access for the whole team — pay once, use forever.",
-    cta: "Upgrade your org",
-    href: "/signup",
-    featured: true,
+    name: "Pro",
+    price: "$12",
+    period: "per seat / month",
+    copy: "For teams that close deals and ship the work that follows.",
     features: [
-      "Everything in Free",
-      "Unlimited members & seats",
-      "Advanced reports & analytics",
-      "Win/loss & pipeline insights",
-      "Integrations & priority support",
-      "Lifetime access — no subscription",
+      "Unlimited seats",
+      "Unlimited contacts & pipelines",
+      "Metrics & reporting",
+      "Chat, meet & file storage",
     ],
+    cta: "Start 14-day trial",
+    href: "/signup",
+    inverted: true,
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "annual billing",
+    copy: "For organizations with their own rules about everything.",
+    features: ["SSO & audit log", "Custom roles", "Priority support", "SLA"],
+    cta: "Talk to us",
+    href: "/signup",
+    inverted: false,
   },
 ];
 
 export function LandingPricing() {
   return (
-    <section
-      id="pricing"
-      className="relative scroll-mt-24 border-t py-24 sm:py-32"
-    >
-      <div className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-[400px] w-[700px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-      <div className="mx-auto max-w-5xl px-6">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <Badge variant="secondary" className="rounded-full text-primary">
-            Simple pricing
-          </Badge>
-          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Start free. Upgrade once.
-          </h2>
-          <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground">
-            No seats to count every month. No surprise renewals. One transparent
-            one-time upgrade per organization.
+    <section id="pricing" className="scroll-mt-16 border-b">
+      <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <Reveal>
+          <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground">
+            04 — Pricing
           </p>
+          <h2 className="mt-4 max-w-2xl font-serif text-4xl tracking-tight md:text-5xl">
+            Pay for clarity, <em>not clutter.</em>
+          </h2>
         </Reveal>
 
-        <div className="mx-auto mt-14 grid max-w-3xl gap-5 sm:grid-cols-2">
+        <div className="mt-14 grid gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-3">
           {plans.map((plan, i) => (
-            <Reveal key={plan.name} delay={i * 0.08}>
+            <Reveal
+              key={plan.name}
+              delay={i * 0.08}
+              className={plan.inverted ? "bg-foreground" : "bg-background"}
+            >
               <div
-                className={cn(
-                  "relative flex h-full flex-col rounded-2xl border p-7",
-                  plan.featured
-                    ? "border-primary/40 bg-gradient-to-b from-primary/[0.12] to-card shadow-2xl"
-                    : "bg-card"
-                )}
+                className={`flex h-full flex-col p-8 md:p-10 ${
+                  plan.inverted ? "text-background" : ""
+                }`}
               >
-                {plan.featured && (
-                  <Badge className="absolute right-6 top-6 rounded-full">
-                    Most popular
-                  </Badge>
-                )}
-                <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{plan.desc}</p>
-                <div className="mt-6 flex items-baseline gap-2">
-                  <span className="text-4xl font-semibold tracking-tight text-foreground">
+                <p className="font-mono text-[11px] uppercase tracking-[0.3em] opacity-60">
+                  {plan.name}
+                </p>
+                <div className="mt-6 flex items-baseline gap-3">
+                  <span className="font-serif text-5xl tracking-tight">
                     {plan.price}
                   </span>
-                  <span className="text-[13px] text-muted-foreground">
-                    {plan.cadence}
-                  </span>
+                  <span className="text-xs opacity-60">{plan.period}</span>
                 </div>
-
-                <Button
-                  asChild
-                  variant={plan.featured ? "default" : "outline"}
-                  className="group mt-6"
-                >
-                  <Link href={plan.href}>
-                    {plan.cta}
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      className="size-4 transition-transform group-hover:translate-x-0.5"
-                      strokeWidth={2.2}
-                    />
-                  </Link>
-                </Button>
-
-                <ul className="mt-7 space-y-3 border-t pt-7">
+                <p className="mt-4 text-sm leading-relaxed opacity-70">
+                  {plan.copy}
+                </p>
+                <ul className="mt-8 space-y-3 text-sm">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5 text-sm">
-                      <span
-                        className={cn(
-                          "mt-0.5 grid size-4.5 shrink-0 place-items-center rounded-full",
-                          plan.featured
-                            ? "bg-primary/15 text-primary"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
-                        <HugeiconsIcon
-                          icon={Tick02Icon}
-                          className="size-3"
-                          strokeWidth={2.5}
-                        />
+                    <li key={f} className="flex items-baseline gap-3">
+                      <span aria-hidden className="opacity-40">
+                        —
                       </span>
-                      <span className="text-muted-foreground">{f}</span>
+                      {f}
                     </li>
                   ))}
                 </ul>
+                <div className="mt-10 pt-2 md:mt-auto">
+                  <Button
+                    asChild
+                    variant={plan.inverted ? "secondary" : "outline"}
+                    className={`w-full rounded-full ${
+                      plan.inverted
+                        ? "bg-background text-foreground hover:bg-background/90"
+                        : ""
+                    }`}
+                  >
+                    <Link href={plan.href}>{plan.cta}</Link>
+                  </Button>
+                </div>
               </div>
             </Reveal>
           ))}

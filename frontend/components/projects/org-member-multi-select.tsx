@@ -193,6 +193,7 @@ export function OrgMemberMultiSelect({
                                   src={member.user.image}
                                   alt=""
                                   fill
+                                  sizes="24px"
                                   className="object-cover rounded-md"
                                 />
                               </span>

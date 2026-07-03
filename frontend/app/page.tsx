@@ -15,13 +15,7 @@ import {
 
 export default function Page() {
   return (
-    <div className="relative min-h-svh overflow-x-clip bg-background text-foreground antialiased selection:bg-primary/30">
-      {/* ambient page glow */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-background" />
-        <div className="absolute left-1/2 top-[60%] h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-      </div>
-
+    <div className="min-h-svh overflow-x-clip bg-background text-foreground antialiased">
       <LandingNav />
       <main>
         <LandingHero />

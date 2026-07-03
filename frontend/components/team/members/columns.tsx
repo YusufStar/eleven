@@ -28,6 +28,7 @@ export const membersColumns: ColumnDef<TeamMember>[] = [
                 src={m.user.image}
                 alt=""
                 fill
+                sizes="32px"
                 className="rounded-lg object-cover"
               />
             </span>

@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 import { logActivity } from "../lib/activity-log";
+import { notify } from "../lib/notify";
 import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
 import type { DealStatus } from "../../prisma/generated/prisma/enums";
 
@@ -358,6 +359,32 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         entityId: updated.id,
         entityTitle: updated.title,
       });
+      if (updated.ownerId) {
+        if (updated.status === "WON" && existing.status !== "WON") {
+          await notify({
+            prisma,
+            organizationId: activeOrganizationId!,
+            recipientIds: [updated.ownerId],
+            actorId: activeMember!.id,
+            type: "DEAL_WON",
+            title: "Deal won",
+            body: updated.title,
+            link: `/dashboard/deals/${updated.id}`,
+          });
+        } else if (updated.stageId !== existing.stageId) {
+          const stage = await prisma.stage.findUnique({ where: { id: updated.stageId } });
+          await notify({
+            prisma,
+            organizationId: activeOrganizationId!,
+            recipientIds: [updated.ownerId],
+            actorId: activeMember!.id,
+            type: "DEAL_STAGE_CHANGED",
+            title: `Deal moved${stage ? ` to ${stage.name}` : ""}`,
+            body: updated.title,
+            link: `/dashboard/deals/${updated.id}`,
+          });
+        }
+      }
       return updated;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }

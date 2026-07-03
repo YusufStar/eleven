@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 import { logActivity } from "../lib/activity-log";
+import { notify } from "../lib/notify";
 import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
 import { TaskStatus, TaskPriority } from "../../prisma/generated/prisma/enums";
 
@@ -78,6 +79,18 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           entityType: ActivityEntityType.TASK,
           entityId: created.id,
           entityTitle: created.title,
+        });
+      }
+      if (created.assigneeId) {
+        await notify({
+          prisma,
+          organizationId: activeOrganizationId!,
+          recipientIds: [created.assigneeId],
+          actorId: activeMember?.id ?? null,
+          type: "TASK_ASSIGNED",
+          title: "You were assigned a task",
+          body: created.title,
+          link: "/dashboard/tasks",
         });
       }
       return created;
@@ -266,6 +279,18 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           entityType: ActivityEntityType.TASK,
           entityId: updated.id,
           entityTitle: updated.title,
+        });
+      }
+      if (updated.assigneeId && updated.assigneeId !== existing.assigneeId) {
+        await notify({
+          prisma,
+          organizationId: activeOrganizationId!,
+          recipientIds: [updated.assigneeId],
+          actorId: activeMember?.id ?? null,
+          type: "TASK_ASSIGNED",
+          title: "You were assigned a task",
+          body: updated.title,
+          link: "/dashboard/tasks",
         });
       }
       return updated;

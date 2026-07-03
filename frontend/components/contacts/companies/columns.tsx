@@ -92,6 +92,7 @@ export const companiesColumns: ColumnDef<Contact>[] = [
                 src={c.avatar}
                 alt=""
                 fill
+                sizes="32px"
                 className="object-contain rounded-lg"
               />
             </span>

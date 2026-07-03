@@ -1,43 +1,36 @@
 import Link from "next/link";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "./reveal";
 
 export function LandingCta() {
   return (
-    <section className="relative px-6 py-12 sm:py-20">
-      <Reveal className="mx-auto max-w-5xl">
-        <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-primary/20 via-primary/10 to-card px-6 py-16 text-center sm:px-12 sm:py-20">
-          <div className="pointer-events-none absolute inset-0 bg-grid mask-radial-faded opacity-30" />
-          <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-[600px] -translate-x-1/2 rounded-full bg-primary/25 blur-3xl" />
-
-          <div className="relative">
-            <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">
-              Bring your CRM and projects together
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-pretty text-base text-muted-foreground">
-              Set up your workspace in minutes. Start free, invite your team, and
-              upgrade once when you're ready.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" className="group w-full sm:w-auto">
-                <Link href="/signup">
-                  Get started for free
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    className="size-4 transition-transform group-hover:translate-x-0.5"
-                    strokeWidth={2.2}
-                  />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-                <Link href="/login">Sign in</Link>
-              </Button>
-            </div>
+    <section className="bg-foreground text-background">
+      <div className="mx-auto max-w-6xl px-6 py-24 text-center md:py-32">
+        <Reveal>
+          <h2 className="mx-auto max-w-3xl font-serif text-4xl leading-tight tracking-tight sm:text-5xl md:text-6xl">
+            Begin in <em>black &amp; white.</em>
+          </h2>
+          <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed opacity-70 md:text-base">
+            Free for two seats. No card, no demo call — your workspace is ready
+            in a minute.
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full bg-background px-8 text-foreground hover:bg-background/90"
+            >
+              <Link href="/signup">Start free</Link>
+            </Button>
+            <Link
+              href="/login"
+              className="text-sm opacity-70 transition-opacity hover:opacity-100"
+            >
+              Sign in
+            </Link>
           </div>
-        </div>
-      </Reveal>
+        </Reveal>
+      </div>
     </section>
   );
 }

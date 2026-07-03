@@ -1,69 +1,53 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { QuoteDownIcon } from "@hugeicons/core-free-icons";
-import { Badge } from "@/components/ui/badge";
 import { Reveal } from "./reveal";
 
-const testimonials = [
+const aside = [
   {
     quote:
-      "We finally killed the spreadsheet-and-Slack-thread chaos. Deals, projects, and tasks live in one place and nothing slips anymore.",
-    name: "Sarah Kline",
-    role: "Head of Sales, Northwind",
-    initials: "SK",
-    tint: "bg-chart-1",
+      "We replaced three tools the first week. Nobody asked for any of them back.",
+    name: "Mara Lindqvist",
+    role: "COO, Northwind",
   },
   {
     quote:
-      "The pipeline board is fast and the contact timeline means every rep walks into a call already knowing the full story.",
-    name: "Marcus Reed",
-    role: "Founder, Globex",
-    initials: "MR",
-    tint: "bg-chart-2",
-  },
-  {
-    quote:
-      "Pay once, use forever was an easy call. Onboarding the team took an afternoon and reports paid for themselves in a week.",
-    name: "Lena Ortiz",
-    role: "COO, Initech",
-    initials: "LO",
-    tint: "bg-chart-5",
+      "The pipeline finally matches reality. Our forecast stopped being fiction.",
+    name: "Deniz Aksoy",
+    role: "Head of Sales, Kairos Labs",
   },
 ];
 
 export function LandingTestimonials() {
   return (
-    <section className="relative py-24 sm:py-32">
-      <div className="mx-auto max-w-6xl px-6">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <Badge variant="secondary" className="rounded-full text-primary">
-            Loved by teams
-          </Badge>
-          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Teams run their whole motion on Eleven
-          </h2>
+    <section className="border-b">
+      <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <Reveal>
+          <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground">
+            03 — Proof
+          </p>
         </Reveal>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <Reveal key={t.name} delay={i * 0.08}>
-              <figure className="flex h-full flex-col rounded-2xl border bg-card p-6">
-                <HugeiconsIcon
-                  icon={QuoteDownIcon}
-                  className="size-7 text-primary/50"
-                />
-                <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground/90">
-                  “{t.quote}”
+        <Reveal delay={0.08}>
+          <figure className="mt-10 max-w-3xl">
+            <blockquote className="font-serif text-3xl leading-snug tracking-tight md:text-4xl">
+              &ldquo;Eleven is the first tool that made our work look the way it
+              feels when everything is <em>under control.</em>&rdquo;
+            </blockquote>
+            <figcaption className="mt-6 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Jonas Reber</span>
+              {" — "}Founder, Atelier Mono
+            </figcaption>
+          </figure>
+        </Reveal>
+
+        <div className="mt-14 grid gap-px border bg-border sm:grid-cols-2">
+          {aside.map((t, i) => (
+            <Reveal key={t.name} delay={0.1 + i * 0.08} className="bg-background">
+              <figure className="h-full p-8">
+                <blockquote className="text-sm leading-relaxed text-muted-foreground">
+                  &ldquo;{t.quote}&rdquo;
                 </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3 border-t pt-5">
-                  <span
-                    className={`grid size-10 place-items-center rounded-full text-xs font-semibold text-primary-foreground ${t.tint}`}
-                  >
-                    {t.initials}
-                  </span>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                    <p className="text-[12.5px] text-muted-foreground">{t.role}</p>
-                  </div>
+                <figcaption className="mt-5 text-sm">
+                  <span className="font-medium">{t.name}</span>
+                  <span className="text-muted-foreground"> — {t.role}</span>
                 </figcaption>
               </figure>
             </Reveal>

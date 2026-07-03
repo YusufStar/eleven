@@ -1,6 +1,6 @@
 import * as React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon, ChevronsUpDown } from "@hugeicons/core-free-icons";
+import { ChevronsUpDown } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
@@ -176,11 +176,13 @@ const CountrySelectOption = ({
     };
 
     return (
-        <CommandItem className="gap-2" onSelect={handleSelect}>
+        <CommandItem
+            className="gap-2 [&>svg:last-child]:hidden"
+            onSelect={handleSelect}
+        >
             <FlagComponent country={country} countryName={countryName} />
-            <span className="flex-1 text-sm">{countryName}</span>
-            <span className="text-sm text-foreground/50">{`+${RPNInput.getCountryCallingCode(country)}`}</span>
-            <HugeiconsIcon icon={Tick02Icon} className="size-4" strokeWidth={2} />
+            <span className="text-sm">{countryName}</span>
+            <span className="ml-auto text-sm text-muted-foreground">{`+${RPNInput.getCountryCallingCode(country)}`}</span>
         </CommandItem>
     );
 };
@@ -189,7 +191,7 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
     const Flag = flags[country];
 
     return (
-        <span className="flex h-4 w-6 overflow-hidden rounded-sm bg-foreground/20 [&_svg:not([class*='size-'])]:size-full">
+        <span className="flex h-4 w-6 overflow-hidden bg-foreground/20 [&_svg:not([class*='size-'])]:size-full">
             {Flag && <Flag title={countryName} />}
         </span>
     );
