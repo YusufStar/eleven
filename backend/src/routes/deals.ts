@@ -309,6 +309,18 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         entityId: deal.id,
         entityTitle: deal.title,
       });
+      if (deal.ownerId) {
+        await notify({
+          prisma,
+          organizationId: activeOrganizationId!,
+          recipientIds: [deal.ownerId],
+          actorId: activeMember!.id,
+          type: "DEAL_ASSIGNED",
+          title: "A deal was assigned to you",
+          body: deal.title,
+          link: `/dashboard/deals/${deal.id}`,
+        });
+      }
       return deal;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
@@ -359,6 +371,18 @@ export const dealsRoutes = new Elysia({ prefix: "/deals" })
         entityId: updated.id,
         entityTitle: updated.title,
       });
+      if (updated.ownerId && updated.ownerId !== existing.ownerId) {
+        await notify({
+          prisma,
+          organizationId: activeOrganizationId!,
+          recipientIds: [updated.ownerId],
+          actorId: activeMember!.id,
+          type: "DEAL_ASSIGNED",
+          title: "A deal was assigned to you",
+          body: updated.title,
+          link: `/dashboard/deals/${updated.id}`,
+        });
+      }
       if (updated.ownerId) {
         if (updated.status === "WON" && existing.status !== "WON") {
           await notify({

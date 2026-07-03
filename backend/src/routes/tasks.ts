@@ -293,6 +293,18 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
           link: "/dashboard/tasks",
         });
       }
+      if (updated.status === "DONE" && existing.status !== "DONE" && existing.creatorId) {
+        await notify({
+          prisma,
+          organizationId: activeOrganizationId!,
+          recipientIds: [existing.creatorId],
+          actorId: activeMember?.id ?? null,
+          type: "TASK_COMPLETED",
+          title: "Task completed",
+          body: updated.title,
+          link: "/dashboard/tasks",
+        });
+      }
       return updated;
     },
     { requireAuth: true, requireActiveOrg: true }

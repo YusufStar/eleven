@@ -14,6 +14,14 @@ export function useUpcomingMeetings() {
   });
 }
 
+export function useMeetingsRange(from: Date, to: Date) {
+  return useQuery({
+    queryKey: [...key, "range", from.toISOString(), to.toISOString()],
+    queryFn: () => meetingsApi.range(from, to),
+    refetchInterval: 60_000,
+  });
+}
+
 export function useMeetingByCode(code: string | null) {
   return useQuery({
     queryKey: [...key, "by-code", code],

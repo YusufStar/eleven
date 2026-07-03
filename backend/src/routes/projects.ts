@@ -501,6 +501,20 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         entityTitle: pf.fileName,
         metadata: { projectId: params.id },
       });
+      const [projectMembers, project] = await Promise.all([
+        prisma.projectMember.findMany({ where: { projectId: params.id }, select: { memberId: true } }),
+        prisma.project.findUnique({ where: { id: params.id }, select: { name: true, slug: true } }),
+      ]);
+      await notify({
+        prisma,
+        organizationId: activeOrganizationId!,
+        recipientIds: projectMembers.map((m) => m.memberId),
+        actorId: activeMember!.id,
+        type: "PROJECT_FILE_ADDED",
+        title: `New file in ${project?.name ?? "your project"}`,
+        body: pf.fileName,
+        link: project ? `/dashboard/projects/${project.slug}` : "/dashboard/projects",
+      });
       return pf;
     },
     { requireAuth: true, requireActiveOrg: true }

@@ -2,7 +2,8 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
 import { prisma } from "../db/prisma";
-import { mail } from "../plugins/mail";
+import { renderEmail } from "../lib/email-templates";
+import { enqueueEmail } from "../queue/email";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -10,18 +11,22 @@ export const auth = betterAuth({
     }),
     emailVerification: {
         sendOnSignUp: true,
-        sendVerificationEmail: async ({ user, url, token }) => {
-            await mail.sendMail({
-                from: process.env.MAIL_FROM!,
+        sendVerificationEmail: async ({ user, url }) => {
+            enqueueEmail({
                 to: user.email as string,
-                subject: "Verify your email",
-                html: `<div>
-                    <h1>Verify your email</h1>
-                    <p>Click here to verify your email: <a href="${url}">${url}</a></p>
-                    <p>If you did not request this verification, please ignore this email.</p>
-                    <p>Thank you for using our service.</p>
-                </div>`,
-            })
+                subject: "Verify your email — Eleven",
+                html: renderEmail({
+                    preheader: "One click and your workspace is ready.",
+                    title: "Welcome to Eleven.",
+                    paragraphs: [
+                        `Hi ${user.name || "there"} — confirm this address and your monochrome workspace is ready.`,
+                        "If you didn't create an Eleven account, you can safely ignore this email.",
+                    ],
+                    ctaLabel: "Verify email",
+                    ctaUrl: url,
+                    footnote: url,
+                }),
+            });
         },
     },
     plugins: [
@@ -29,16 +34,25 @@ export const auth = betterAuth({
             allowUserToCreateOrganization: true,
             sendInvitationEmail: async (data) => {
                 const inviteUrl = `${process.env.FRONTEND_URL}/accept-invitation?token=${data.invitation.id}`;
+                const orgName = data.organization?.name ?? "an organization";
+                const inviterName = data.inviter?.user?.name;
 
-                await mail.sendMail({
+                enqueueEmail({
                     to: data.invitation.email,
-                    subject: "You are invited to join an organization",
-                    html: `<div>
-                        <h1>You are invited to join an organization</h1>
-                        <p>Click here to accept the invitation: <a href="${inviteUrl}">${inviteUrl}</a></p>
-                        <p>If you did not request this invitation, please ignore this email.</p>
-                        <p>Thank you for using our service.</p>
-                    </div>`,
+                    subject: `Join ${orgName} on Eleven`,
+                    html: renderEmail({
+                        preheader: `You've been invited to ${orgName}.`,
+                        title: `You're invited to ${orgName}.`,
+                        paragraphs: [
+                            inviterName
+                                ? `${inviterName} invited you to work together in ${orgName} on Eleven — deals, projects, and tasks in one place.`
+                                : `You've been invited to work in ${orgName} on Eleven — deals, projects, and tasks in one place.`,
+                            "If you weren't expecting this invitation, you can safely ignore this email.",
+                        ],
+                        ctaLabel: "Accept invitation",
+                        ctaUrl: inviteUrl,
+                        footnote: inviteUrl,
+                    }),
                 });
             },
         }),

@@ -32,6 +32,7 @@
     "@prisma/client": "^7.8.0",
     "@types/minio": "^7.1.1",
     "better-auth": "^1.6.23",
+    "bullmq": "^5.79.2",
     "elysia": "^1.4.29",
     "exceljs": "^4.4.0",
     "minio": "^8.0.7",

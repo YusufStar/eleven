@@ -19,5 +19,9 @@ export const meetingsApi = {
   create: (payload: CreateMeetingPayload) =>
     request<Meeting>("/meetings", { method: "POST", body: JSON.stringify(payload) }),
   upcoming: (limit = 10) => request<{ data: Meeting[] }>(`/meetings/upcoming?limit=${limit}`),
+  range: (from: Date, to: Date) =>
+    request<{ data: Meeting[] }>(
+      `/meetings/range?from=${encodeURIComponent(from.toISOString())}&to=${encodeURIComponent(to.toISOString())}`,
+    ),
   byCode: (code: string) => request<Meeting>(`/meetings/by-code/${encodeURIComponent(code)}`),
 };

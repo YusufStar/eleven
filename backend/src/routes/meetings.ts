@@ -126,6 +126,33 @@ export const meetingsRoutes = new Elysia({ prefix: "/meetings" })
     { requireAuth: true, requireActiveOrg: true }
   )
   .get(
+    "/range",
+    async ({ activeOrganizationId, activeMember, query, set }) => {
+      const from = query?.from ? new Date(String(query.from)) : null;
+      const to = query?.to ? new Date(String(query.to)) : null;
+      if (!from || !to || Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
+        set.status = 400;
+        return { message: "from and to are required ISO dates" };
+      }
+      const data = await prisma.meeting.findMany({
+        where: {
+          organizationId: activeOrganizationId!,
+          startsAt: { gte: from, lte: to },
+          OR: [
+            { isPublic: true },
+            { createdById: activeMember!.id },
+            { participants: { some: { memberId: activeMember!.id } } },
+          ],
+        },
+        include: participantInclude,
+        orderBy: { startsAt: "asc" },
+        take: 200,
+      });
+      return { data };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .get(
     "/by-code/:code",
     async ({ activeOrganizationId, activeMember, params, set }) => {
       const meeting = await prisma.meeting.findUnique({

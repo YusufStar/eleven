@@ -3,11 +3,36 @@ import { prisma } from "../db/prisma";
 import type { Prisma } from "../../prisma/generated/prisma/client";
 import { authPlugin } from "../plugins/auth.plugin";
 import { logActivity } from "../lib/activity-log";
+import { notify } from "../lib/notify";
 import { ActivityAction, ActivityEntityType } from "../../prisma/generated/prisma/enums";
+import type { Contact } from "../../prisma/generated/prisma/client";
 
 type ContactCreateBody = Omit<Prisma.ContactUncheckedCreateInput, "organizationId">;
 type ContactUpdateBody = Omit<Prisma.ContactUncheckedUpdateInput, "organizationId">;
 const orgScope = (activeOrganizationId: string) => ({ organizationId: activeOrganizationId });
+
+function contactDisplayName(c: Contact) {
+  return c.type === "COMPANY"
+    ? (c.companyName ?? "Company")
+    : [c.firstName, c.lastName].filter(Boolean).join(" ").trim() || c.email || "Contact";
+}
+
+async function notifyContactAssigned(contact: Contact, actorId: string) {
+  if (!contact.ownerId) return;
+  await notify({
+    prisma,
+    organizationId: contact.organizationId,
+    recipientIds: [contact.ownerId],
+    actorId,
+    type: "CONTACT_ASSIGNED",
+    title: "A contact was assigned to you",
+    body: contactDisplayName(contact),
+    link:
+      contact.type === "COMPANY"
+        ? `/dashboard/contacts/companies/${contact.id}`
+        : `/dashboard/contacts/people/${contact.id}`,
+  });
+}
 
 export const contactsRoutes = new Elysia({ prefix: "/contacts" })
   .use(authPlugin)
@@ -274,6 +299,7 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
           entityId: contact.id,
           entityTitle: companyName || undefined,
         });
+        await notifyContactAssigned(contact, activeMember!.id);
         return contact;
       }
 
@@ -307,6 +333,7 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
         entityId: contact.id,
         entityTitle: [firstName, lastName].filter(Boolean).join(" ").trim() || email || undefined,
       });
+      await notifyContactAssigned(contact, activeMember!.id);
       return contact;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
@@ -332,6 +359,9 @@ export const contactsRoutes = new Elysia({ prefix: "/contacts" })
         entityId: contact.id,
         entityTitle: existing.type === "PERSON" ? ([existing.firstName, existing.lastName].filter(Boolean).join(" ").trim() || existing.email) ?? undefined : existing.companyName ?? undefined,
       });
+      if (contact.ownerId && contact.ownerId !== existing.ownerId) {
+        await notifyContactAssigned(contact, activeMember!.id);
+      }
       return contact;
     },
     { requireAuth: true, requireActiveOrg: true, requireAdmin: true }

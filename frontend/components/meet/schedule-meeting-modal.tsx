@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Globe02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
@@ -33,13 +33,20 @@ function initials(name: string) {
 export function ScheduleMeetingModal({
   open,
   onOpenChange,
+  defaultStartsAt = null,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultStartsAt?: Date | null;
 }) {
   const { data: session } = authClient.useSession();
   const [title, setTitle] = useState("");
   const [startsAt, setStartsAt] = useState<Date | null>(null);
+
+  // adopt the slot the user clicked in the calendar
+  useEffect(() => {
+    if (open) setStartsAt(defaultStartsAt);
+  }, [open, defaultStartsAt]);
   const [isPublic, setIsPublic] = useState(true);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());

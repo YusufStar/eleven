@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2026-05-27.dahlia" }) : null;
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2026-06-24.dahlia" }) : null;
 const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID ?? "";
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
 const FRONTEND_URL = process.env.FRONTEND_URL ?? "";

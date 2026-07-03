@@ -58,17 +58,19 @@ Yeni landing'de yazılan ama üründe olmayan şeyler (ya yapılmalı ya copy d�
 
 ## Faz 2 — Ürünleştirme (öncelik: orta)
 
-### 2.1 Bildirim sistemi
-- Hiçbir notification altyapısı yok (model, API, UI). Sunum yol haritasında var.
-- **Yapılacak:** `Notification` modeli (Prisma), tetikleyiciler (görev atandı, deal stage değişti, mention, davet), navbar'da zil + unread count, WebSocket ile push (1.3 ile aynı altyapı).
+### 2.1 Bildirim sistemi ✅ (tamamlandı)
+- `Notification` modeli + `/notifications` API + zil/popover UI + 30sn polling kuruldu.
+- Tetikleyiciler: task atandı/tamamlandı, deal atandı/stage değişti/kazanıldı, contact atandı, projeye üye/dosya eklendi, meeting daveti, contacts import.
+- E-posta fan-out: her bildirim BullMQ `emails` kuyruğu üzerinden mail atar (API beklemez). **Kalan:** polling → WebSocket push (1.3 altyapısı hazır).
 
 ### 2.2 Global arama (⌘K)
 - `components/ui/command.tsx` kurulu ama hiçbir yerde CommandDialog kullanılmıyor.
 - **Yapılacak:** ⌘K palette — contacts/deals/projects/tasks arası arama + hızlı aksiyonlar ("yeni görev", "yeni deal"). Backend'e tek bir `/search?q=` endpoint'i.
 
-### 2.3 E-posta bildirimleri
-- `backend/src/plugins/mail.ts` yalnız auth (davet) için kullanılıyor.
-- **Eklenecek:** görev atama, deal kazanma, haftalık özet (digest) mailleri — opt-in ayarlarla.
+### 2.3 E-posta bildirimleri ✅ (altyapı tamamlandı)
+- BullMQ + Redis kuyruk (`src/queue/email.ts`, in-process worker, 3x retry) ve monokrom şablon (`src/lib/email-templates.ts`) kuruldu; doğrulama/davet/bildirim mailleri buradan geçiyor.
+- **Dikkat:** `.env`'deki Gmail app password reddediliyor (535 BadCredentials) — yeni app password gerekli, yoksa hiçbir mail çıkmaz.
+- **Kalan:** haftalık özet (digest), kullanıcı bazlı opt-out ayarları, worker'ı ayrı prosese alma.
 
 ### 2.4 Aktivite akışının derinleştirilmesi
 - `activities` route yalnız düz liste. Detay sayfalarında entity bazlı timeline var mı tutarlı değil.

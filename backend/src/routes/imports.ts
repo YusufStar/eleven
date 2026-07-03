@@ -36,9 +36,19 @@ function hasMagic(bytes: Uint8Array, magic: number[]) {
   return magic.every((b, i) => bytes[i] === b);
 }
 
-/** Neutralize spreadsheet formula injection: strip leading =, +, -, @, tab, CR. */
+/**
+ * Neutralize spreadsheet formula injection: strip leading =, @ always,
+ * and leading +/- unless they start a phone-like value (`+90 ...`).
+ */
 function sanitizeCell(value: string): string {
-  return value.replace(/^[=+\-@\t\r]+/, "").replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "").trim().slice(0, MAX_CELL_LENGTH);
+  let s = value.replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "").trim();
+  while (
+    s &&
+    (s[0] === "=" || s[0] === "@" || ((s[0] === "+" || s[0] === "-") && !/^[+-][\d\s(]/.test(s)))
+  ) {
+    s = s.slice(1).trimStart();
+  }
+  return s.slice(0, MAX_CELL_LENGTH);
 }
 
 /** Minimal RFC-4180 CSV parser (quotes, escaped quotes, CRLF). No eval, no regex backtracking. */
