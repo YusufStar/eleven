@@ -10,8 +10,7 @@ import {
   Folder01Icon,
 } from "@hugeicons/core-free-icons";
 import type { Task } from "@/services/tasks";
-import { TaskStatusBadge } from "@/components/tasks/task-status-badge";
-import { TaskPriorityBadge } from "@/components/tasks/task-priority-badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 export const tasksColumns: ColumnDef<Task>[] = [
   {
@@ -36,7 +35,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
         Status
       </span>
     ),
-    cell: ({ row }) => <TaskStatusBadge status={row.original.status} />,
+    cell: ({ row }) => <StatusBadge domain="task" value={row.original.status} />,
   },
   {
     id: "priority",
@@ -47,7 +46,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
         Priority
       </span>
     ),
-    cell: ({ row }) => <TaskPriorityBadge priority={row.original.priority} />,
+    cell: ({ row }) => <StatusBadge domain="priority" value={row.original.priority} />,
   },
   {
     id: "project",

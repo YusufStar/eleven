@@ -67,7 +67,7 @@ export const addProjectSchema = z.object({
 })
 export type AddProjectSchema = z.infer<typeof addProjectSchema>
 
-const taskStatusEnum = z.enum(["TODO", "IN_PROGRESS", "DONE", "CANCELLED"])
+const taskStatusEnum = z.enum(["TODO", "IN_PROGRESS", "IN_REVIEW", "BLOCKED", "DONE", "CANCELLED"])
 const taskPriorityEnum = z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"])
 
 export const addTaskSchema = z.object({
@@ -76,8 +76,10 @@ export const addTaskSchema = z.object({
   detailsMarkdown: z.string().max(100_000).optional().or(z.literal("")),
   assigneeId: z.string().nullable().optional(),
   projectId: z.string().nullable().optional(),
-  contactId: z.string().nullable().optional(),
+  sprintId: z.string().nullable().optional(),
   parentTaskId: z.string().nullable().optional(),
+  labels: z.array(z.string().max(40)).max(10).optional(),
+  estimate: z.number().int().min(0).max(1000).nullable().optional(),
   status: taskStatusEnum.optional(),
   priority: taskPriorityEnum.optional(),
   dueAt: z.string().nullable().optional(),

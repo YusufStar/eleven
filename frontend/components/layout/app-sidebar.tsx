@@ -15,19 +15,17 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Home02Icon,
-  ContactIcon,
-  PipelineIcon,
   UserGroupIcon,
   Settings05Icon,
   Task01Icon,
   Activity01Icon,
   ChartIcon,
   Notification01Icon,
-  CreditCardIcon,
   Folder01Icon,
   File02Icon,
   BubbleChatQuestionIcon,
   AiVideoIcon,
+  RocketIcon,
 } from "@hugeicons/core-free-icons"
 
 const navMain = [
@@ -51,25 +49,22 @@ const navMain = [
     icon: <HugeiconsIcon icon={Home02Icon} strokeWidth={2} />,
     items: [
       { title: "Overview", url: "/dashboard" },
-      { title: "Metrics", url: "/dashboard/metrics" },
     ],
   },
   {
-    title: "Contacts",
-    url: "/dashboard/contacts",
-    icon: <HugeiconsIcon icon={ContactIcon} strokeWidth={2} />,
+    title: "Tasks",
+    url: "/dashboard/tasks",
+    icon: <HugeiconsIcon icon={Task01Icon} strokeWidth={2} />,
     items: [
-      { title: "People", url: "/dashboard/contacts/people" },
-      { title: "Companies", url: "/dashboard/contacts/companies" },
+      { title: "All tasks", url: "/dashboard/tasks" },
     ],
   },
   {
-    title: "Pipeline",
-    url: "/dashboard/deals/list",
-    icon: <HugeiconsIcon icon={PipelineIcon} strokeWidth={2} />,
+    title: "Sprints",
+    url: "/dashboard/sprints",
+    icon: <HugeiconsIcon icon={RocketIcon} strokeWidth={2} />,
     items: [
-      { title: "All deals", url: "/dashboard/deals/list" },
-      { title: "Stages", url: "/dashboard/deals/stages" },
+      { title: "All sprints", url: "/dashboard/sprints" },
     ],
   },
   {
@@ -89,14 +84,6 @@ const navMain = [
     ],
   },
   {
-    title: "Tasks",
-    url: "/dashboard/tasks",
-    icon: <HugeiconsIcon icon={Task01Icon} strokeWidth={2} />,
-    items: [
-      { title: "All tasks", url: "/dashboard/tasks" },
-    ],
-  },
-  {
     title: "Team",
     url: "/dashboard/team",
     icon: <HugeiconsIcon icon={UserGroupIcon} strokeWidth={2} />,
@@ -106,32 +93,20 @@ const navMain = [
     ],
   },
   {
-    title: "Activities",
+    title: "Activity",
     url: "/dashboard/activities",
     icon: <HugeiconsIcon icon={Activity01Icon} strokeWidth={2} />,
     items: [
-      { title: "All activities", url: "/dashboard/activities" },
+      { title: "All activity", url: "/dashboard/activities" },
     ],
   },
   {
-    title: "Reports",
-    url: "/dashboard/reports",
+    title: "Analytics",
+    url: "/dashboard/metrics",
     icon: <HugeiconsIcon icon={ChartIcon} strokeWidth={2} />,
     items: [
-      { title: "Sales analytics", url: "/dashboard/reports" },
-      { title: "Win / Loss", url: "/dashboard/reports/win-loss" },
-      { title: "Pipeline report", url: "/dashboard/reports/pipeline" },
-    ],
-  },
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: <HugeiconsIcon icon={Settings05Icon} strokeWidth={2} />,
-    items: [
-      { title: "Organization", url: "/dashboard/settings" },
-      { title: "Profile", url: "/dashboard/settings/profile" },
-      { title: "Plan", url: "/dashboard/settings/plan" },
-      { title: "Integrations", url: "/dashboard/settings/integrations" },
+      { title: "Metrics", url: "/dashboard/metrics" },
+      { title: "AI Reports", url: "/dashboard/reports" },
     ],
   },
   {
@@ -144,13 +119,12 @@ const navMain = [
     ],
   },
   {
-    title: "Billing",
-    url: "/dashboard/billing",
-    icon: <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2} />,
+    title: "Settings",
+    url: "/dashboard/settings",
+    icon: <HugeiconsIcon icon={Settings05Icon} strokeWidth={2} />,
     items: [
-      { title: "Invoices", url: "/dashboard/billing" },
-      { title: "Upgrade plan", url: "/dashboard/billing/upgrade" },
-      { title: "Payment method", url: "/dashboard/billing/payment" },
+      { title: "Organization", url: "/dashboard/settings" },
+      { title: "Profile", url: "/dashboard/settings/profile" },
     ],
   },
 ]

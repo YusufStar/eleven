@@ -1,4 +1,4 @@
-import type { PaginatedTeamMembers, TeamMembersListParams } from "./types";
+import type { PaginatedTeamMembers, TeamMember, TeamMembersListParams, UpdateMePayload } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -28,4 +28,7 @@ function membersPath(params?: TeamMembersListParams) {
 export const teamApi = {
   listMembers: (params?: TeamMembersListParams) =>
     request<PaginatedTeamMembers>(membersPath(params)),
+  presence: () => request<{ ok: boolean }>("/team/presence", { method: "POST" }),
+  updateMe: (payload: UpdateMePayload) =>
+    request<TeamMember>("/team/me", { method: "PATCH", body: JSON.stringify(payload) }),
 };

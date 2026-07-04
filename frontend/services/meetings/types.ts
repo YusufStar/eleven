@@ -29,3 +29,25 @@ export interface CreateMeetingPayload {
   isPublic?: boolean;
   participantMemberIds?: string[];
 }
+
+export interface AttendanceSession {
+  id: string;
+  memberId: string;
+  joinedAt: string;
+  leftAt: string | null;
+  member: { id: string; user: MeetingUser };
+}
+
+export interface MeetingRecording {
+  id: string;
+  url: string;
+  sizeBytes: number | null;
+  durationSec: number | null;
+  createdAt: string;
+  createdBy: { user: { name: string } };
+}
+
+export interface MeetingHistoryItem extends Meeting {
+  attendance: AttendanceSession[];
+  recordings: MeetingRecording[];
+}

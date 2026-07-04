@@ -87,30 +87,10 @@ export type Member = Prisma.MemberModel
  */
 export type Invitation = Prisma.InvitationModel
 /**
- * Model Contact
- * 
- */
-export type Contact = Prisma.ContactModel
-/**
  * Model Activity
  * 
  */
 export type Activity = Prisma.ActivityModel
-/**
- * Model Pipeline
- * 
- */
-export type Pipeline = Prisma.PipelineModel
-/**
- * Model Stage
- * 
- */
-export type Stage = Prisma.StageModel
-/**
- * Model Deal
- * 
- */
-export type Deal = Prisma.DealModel
 /**
  * Model Project
  * 
@@ -127,6 +107,16 @@ export type ProjectMember = Prisma.ProjectMemberModel
  */
 export type ProjectFile = Prisma.ProjectFileModel
 /**
+ * Model Sprint
+ * 
+ */
+export type Sprint = Prisma.SprintModel
+/**
+ * Model Milestone
+ * 
+ */
+export type Milestone = Prisma.MilestoneModel
+/**
  * Model Task
  * 
  */
@@ -136,6 +126,26 @@ export type Task = Prisma.TaskModel
  * 
  */
 export type TaskAttachment = Prisma.TaskAttachmentModel
+/**
+ * Model TaskComment
+ * 
+ */
+export type TaskComment = Prisma.TaskCommentModel
+/**
+ * Model TaskWatcher
+ * 
+ */
+export type TaskWatcher = Prisma.TaskWatcherModel
+/**
+ * Model TaskDependency
+ * 
+ */
+export type TaskDependency = Prisma.TaskDependencyModel
+/**
+ * Model TimeEntry
+ * 
+ */
+export type TimeEntry = Prisma.TimeEntryModel
 /**
  * Model Chat
  * 
@@ -152,10 +162,30 @@ export type Message = Prisma.MessageModel
  */
 export type MessageMedia = Prisma.MessageMediaModel
 /**
+ * Model MessageReaction
+ * 
+ */
+export type MessageReaction = Prisma.MessageReactionModel
+/**
+ * Model ChatRead
+ * 
+ */
+export type ChatRead = Prisma.ChatReadModel
+/**
  * Model Meeting
  * 
  */
 export type Meeting = Prisma.MeetingModel
+/**
+ * Model MeetingAttendance
+ * 
+ */
+export type MeetingAttendance = Prisma.MeetingAttendanceModel
+/**
+ * Model MeetingRecording
+ * 
+ */
+export type MeetingRecording = Prisma.MeetingRecordingModel
 /**
  * Model MeetingParticipant
  * 
@@ -166,3 +196,13 @@ export type MeetingParticipant = Prisma.MeetingParticipantModel
  * 
  */
 export type Notification = Prisma.NotificationModel
+/**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = Prisma.NotificationPreferenceModel
+/**
+ * Model AiReport
+ * 
+ */
+export type AiReport = Prisma.AiReportModel

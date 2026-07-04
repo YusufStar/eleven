@@ -23,10 +23,21 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { BubbleChatQuestionIcon } from "@hugeicons/core-free-icons";
 import { useTeamMembersList } from "@/services/team";
+import { useUnreadCounts } from "@/services/chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PresenceDot } from "@/components/ui/status-badge";
 import { initials } from "@/lib/string";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
+
+function UnreadBadge({ count }: { count: number | undefined }) {
+  if (!count) return null;
+  return (
+    <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-status-red px-1.5 text-[10px] font-semibold text-white">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
 
 /** DM chat id: sorted [myId, otherId] joined by "-" so both users share the same URL. */
 function buildDmChatId(myUserId: string, otherUserId: string): string {
@@ -44,6 +55,18 @@ export function ChatSidebar(props: React.ComponentProps<typeof Sidebar>) {
     pageSize: 100,
   });
   const members = membersData?.data ?? [];
+
+  const chatIds = React.useMemo(() => {
+    const ids: string[] = [];
+    if (activeOrgId) ids.push(activeOrgId);
+    if (currentUserId) {
+      for (const m of members) {
+        if (m.userId !== currentUserId) ids.push(buildDmChatId(currentUserId, m.userId));
+      }
+    }
+    return ids;
+  }, [activeOrgId, currentUserId, members]);
+  const { data: unread } = useUnreadCounts(chatIds);
 
   const chatSegment = pathname === "/chat" ? null : pathname.replace(/^\/chat\/?/, "").split("/")[0] ?? null;
   const isOrgChat = activeOrgId != null && chatSegment === activeOrgId;
@@ -64,6 +87,7 @@ export function ChatSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   <Link href={orgChatHref} className="flex items-center gap-2">
                     <HugeiconsIcon icon={BubbleChatQuestionIcon} strokeWidth={2} />
                     <span>Organization chat</span>
+                    <UnreadBadge count={activeOrgId ? unread?.[activeOrgId] : 0} />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -99,18 +123,22 @@ export function ChatSidebar(props: React.ComponentProps<typeof Sidebar>) {
                         isActive={isActive}
                       >
                         <Link href={href}>
-                          <Avatar className="size-6 shrink-0 rounded-full">
-                            <AvatarImage
-                              src={m.user.image ?? m.user.githubProfile?.avatarUrl ?? undefined}
-                              alt=""
-                            />
-                            <AvatarFallback className="text-xs">
-                              {initials(m.user.name ?? m.user.email)}
-                            </AvatarFallback>
-                          </Avatar>
+                          <span className="relative inline-flex shrink-0">
+                            <Avatar className="size-6 rounded-full">
+                              <AvatarImage
+                                src={m.user.image ?? m.user.githubProfile?.avatarUrl ?? undefined}
+                                alt=""
+                              />
+                              <AvatarFallback className="text-xs">
+                                {initials(m.user.name ?? m.user.email)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <PresenceDot lastSeenAt={m.lastSeenAt} className="absolute -bottom-0.5 -right-0.5 size-2" />
+                          </span>
                           <span className="truncate text-sm">
                             {m.user.name || m.user.email || "Member"}
                           </span>
+                          <UnreadBadge count={dmChatId ? unread?.[dmChatId] : 0} />
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

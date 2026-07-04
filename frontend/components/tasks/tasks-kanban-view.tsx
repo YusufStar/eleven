@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 const PRIORITY_CARD_BORDER: Record<string, string> = {
@@ -40,6 +40,14 @@ const COLUMN_CONFIG: Record<TaskStatusValue, { label: string; className: string 
   IN_PROGRESS: {
     label: "In progress",
     className: "border-blue-200/60 bg-blue-50/50 dark:border-blue-800/50 dark:bg-blue-950/20",
+  },
+  IN_REVIEW: {
+    label: "In review",
+    className: "border-orange-200/60 bg-orange-50/50 dark:border-orange-800/50 dark:bg-orange-950/20",
+  },
+  BLOCKED: {
+    label: "Blocked",
+    className: "border-red-200/60 bg-red-50/50 dark:border-red-800/50 dark:bg-red-950/20",
   },
   DONE: {
     label: "Done",
@@ -261,12 +269,9 @@ export function TasksKanbanView({
   onStatusChange,
   currentUserMemberId,
 }: TasksKanbanViewProps) {
+  const router = useRouter();
   const updateStatus = useUpdateTaskStatus();
   const [activeTask, setActiveTask] = React.useState<Task | null>(null);
-  const [detailTaskId, setDetailTaskId] = React.useState<string | null>(null);
-
-  const canOpenDetail = (task: Task) =>
-    !!currentUserMemberId && task.assigneeId === currentUserMemberId;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -277,6 +282,8 @@ export function TasksKanbanView({
     const map: Record<TaskStatusValue, Task[]> = {
       TODO: [],
       IN_PROGRESS: [],
+      IN_REVIEW: [],
+      BLOCKED: [],
       DONE: [],
       CANCELLED: [],
     };
@@ -328,7 +335,7 @@ export function TasksKanbanView({
               status={status}
               tasks={tasksByStatus[status]}
               isPending={isPending}
-              onDetailClick={(t) => canOpenDetail(t) && setDetailTaskId(t.id)}
+              onDetailClick={(t) => router.push(`/dashboard/tasks/${t.id}`)}
               currentUserMemberId={currentUserMemberId}
             />
           </motion.div>
@@ -343,11 +350,6 @@ export function TasksKanbanView({
         ) : null}
       </DragOverlay>
 
-      <TaskDetailModal
-        taskId={detailTaskId}
-        open={!!detailTaskId}
-        onOpenChange={(open) => !open && setDetailTaskId(null)}
-      />
     </DndContext>
   );
 }

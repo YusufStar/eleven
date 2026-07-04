@@ -8,7 +8,9 @@ import { membersColumns } from "@/components/team/members/columns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
+import { Add01Icon } from "@hugeicons/core-free-icons";
+import { authClient } from "@/lib/auth-client";
+import { MyStatusDialog, TeamPresenceGrid } from "@/components/team/team-presence-grid";
 import { useDebouncedCallback } from "@/lib/use-debounced-callback";
 
 const SEARCH_DEBOUNCE_MS = 400;
@@ -59,8 +61,13 @@ export default function TeamMembersPage() {
     role: role === "all" ? undefined : role,
   };
   const { data, isPending, isFetching } = useTeamMembersList(params);
+  // Full list (no filters) powers the presence grid; refreshed for live presence dots.
+  const { data: allData } = useTeamMembersList({ pageSize: 100 }, { refetchInterval: 60_000 });
   const members = data?.data ?? [];
   const total = data?.total ?? 0;
+  const { data: session } = authClient.useSession();
+  const me = (allData?.data ?? []).find((m) => m.userId === session?.user?.id) ?? null;
+  const [statusOpen, setStatusOpen] = useState(false);
 
   const onPageChange = useCallback((p: number) => updateUrl({ page: p }), [updateUrl]);
   const onSearchChange = useCallback(
@@ -82,14 +89,11 @@ export default function TeamMembersPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2" disabled title="Coming soon">
-            <HugeiconsIcon icon={Xls01Icon} className="size-4" strokeWidth={2} />
-            Import Excel
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2" disabled title="Coming soon">
-            <HugeiconsIcon icon={Csv01Icon} className="size-4" strokeWidth={2} />
-            Import CSV
-          </Button>
+          {me && (
+            <Button variant="outline" size="sm" onClick={() => setStatusOpen(true)}>
+              {me.statusEmoji ? `${me.statusEmoji} ` : ""}My status
+            </Button>
+          )}
           <Button asChild className="gap-2">
             <Link href="/dashboard/team/invite">
               <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2} />
@@ -98,6 +102,15 @@ export default function TeamMembersPage() {
           </Button>
         </div>
       </div>
+      {(allData?.data ?? []).length > 0 && (
+        <div className="mb-6">
+          <TeamPresenceGrid
+            members={allData?.data ?? []}
+            myUserId={session?.user?.id ?? null}
+            onEditStatus={() => setStatusOpen(true)}
+          />
+        </div>
+      )}
       <MembersDataTable
         columns={membersColumns}
         data={members}
@@ -112,6 +125,7 @@ export default function TeamMembersPage() {
         role={role}
         onRoleChange={onRoleChange}
       />
+      {me && <MyStatusDialog me={me} open={statusOpen} onOpenChange={setStatusOpen} />}
     </div>
   );
 }

@@ -21,13 +21,10 @@
 - **Yapıldı (frontend-only):** `app/meet` (lobi: yeni toplantı + kodla katılım + günün toplantıları) ve `app/meet/[roomId]` (pre-join kamera önizlemesi → görüşme ekranı → ayrılma ekranı). Gerçek getUserMedia/getDisplayMedia kullanıyor; katılımcılar, chat ve konuşmacı rotasyonu mock (`components/meet/`).
 - **Kalan (API fazı):** Oda oturumu + sinyalleşme (WebRTC SFU ya da hazır SDK: LiveKit / Daily.co önerilir — sıfırdan WebRTC yazma), gerçek katılımcı/chat verisi, takvim senkronu. Sunumdaki "Microsoft Teams Entegrasyonu" hedefi bu faza bağlanabilir.
 
-### 1.2 Metrics API tek endpoint
-- `backend/src/routes/metrics.ts` yalnız `/deals-over-time` sunuyor; `metrics/page.tsx` (387 satır) kalan hesapları client-side yapıyor olmalı.
-- **Yapılacak:** Sunucu tarafı aggregate endpoint'leri:
-  - `/metrics/pipeline-summary` (stage bazlı toplam değer, win rate, ortalama döngü süresi)
-  - `/metrics/tasks-throughput` (tamamlanan görev/hafta, kişi bazlı yük)
-  - `/metrics/revenue` (kapanan deal değeri, aylık trend)
-- Yeni monokrom temayla chart'lar gri tonlarına geçti (`--chart-1..5`); metrics sayfası bu ramp ile yeniden gözden geçirilmeli.
+### 1.2 Metrics API ✅ (tamamlandı)
+- `/metrics/pipeline-summary` (status/stage/pipeline dağılımı + win rate + ortalama döngü), `/metrics/tasks-throughput` (haftalık tamamlanan + kişi bazlı yük), `/metrics/revenue` (aylık kazanılan değer, boş aylar doldurulmuş) eklendi.
+- Metrics sayfası tamamen sunucu aggregate'lerine geçti (artık ilk 100 deal sınırı yok); KPI'lar: pipeline value, win rate, revenue won, avg cycle. Monokrom chart rampasıyla doğrulandı.
+- **Not:** Döngü süresi ve aylık revenue, `closedAt` kolonu olmadığı için WON deal'in `updatedAt`'ini kapanış tarihi sayıyor — ileride gerçek `closedAt` eklenebilir.
 
 ### 1.3 Chat polling → gerçek zamanlı
 - `frontend/services/chat/use-chat.ts` `refetchInterval` ile poll ediyor. Sunum yol haritasında "WebSocket tabanlı anlık bildirim" zaten hedef.

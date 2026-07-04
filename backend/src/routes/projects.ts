@@ -436,10 +436,13 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
       let fileUrl: string;
       let fileType: string | null = null;
       let fileSize: number | null = null;
+      let folder = "/";
 
       if (contentType.includes("multipart/form-data")) {
         const formData = await request.formData();
         const file = formData.get("file");
+        const rawFolder = formData.get("folder");
+        if (typeof rawFolder === "string") folder = rawFolder;
         if (!file || typeof file === "string") {
           return new Response(JSON.stringify({ message: "file is required" }), {
             status: 400,
@@ -467,9 +470,10 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
           fileUrl = "";
         }
       } else {
-        const b = (await request.json()) as { fileName?: string; fileUrl?: string; fileType?: string; fileSize?: number };
+        const b = (await request.json()) as { fileName?: string; fileUrl?: string; fileType?: string; fileSize?: number; folder?: string };
         fileName = typeof b?.fileName === "string" ? b.fileName : "";
         fileUrl = typeof b?.fileUrl === "string" ? b.fileUrl : "";
+        if (typeof b?.folder === "string") folder = b.folder;
         if (!fileName || !fileUrl) {
           return new Response(JSON.stringify({ message: "fileName and fileUrl are required" }), {
             status: 400,
@@ -480,17 +484,45 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         fileSize = typeof b?.fileSize === "number" ? b.fileSize : null;
       }
 
+      // normalize folder path: "/design/specs" style, no trailing slash (except root)
+      folder = "/" + folder.split("/").map((s) => s.trim()).filter(Boolean).join("/");
+      folder = folder.slice(0, 255);
+
       const normalizedType = inferFileType(fileName, fileType);
-      const pf = await prisma.projectFile.create({
-        data: {
-          projectId: params.id,
-          fileName,
-          fileUrl,
-          fileType: normalizedType,
-          fileSize,
-          uploadedById: activeMember!.id,
-        },
+      // Same name in the same folder = new version: keep one row, push the old file into versionHistory.
+      const previous = await prisma.projectFile.findFirst({
+        where: { projectId: params.id, fileName, folder },
       });
+      const pf = previous
+        ? await prisma.projectFile.update({
+            where: { id: previous.id },
+            data: {
+              fileUrl,
+              fileType: normalizedType,
+              fileSize,
+              uploadedById: activeMember!.id,
+              versionHistory: [
+                ...(Array.isArray(previous.versionHistory) ? previous.versionHistory : []),
+                {
+                  fileUrl: previous.fileUrl,
+                  fileSize: previous.fileSize,
+                  uploadedById: previous.uploadedById,
+                  uploadedAt: previous.updatedAt.toISOString(),
+                },
+              ] as object[],
+            },
+          })
+        : await prisma.projectFile.create({
+            data: {
+              projectId: params.id,
+              fileName,
+              fileUrl,
+              fileType: normalizedType,
+              fileSize,
+              folder,
+              uploadedById: activeMember!.id,
+            },
+          });
       await logActivity({
         prisma,
         organizationId: activeOrganizationId!,
@@ -587,6 +619,158 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
         metadata: { projectId: params.id, deleted: entityTitle },
       });
       return { ok: true };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  // ─── Milestones ─────────────────────────────────
+  .get(
+    "/:id/milestones",
+    async ({ params, activeOrganizationId, activeMember }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
+      if (!result)
+        return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      if (!result.isMember)
+        return new Response(JSON.stringify({ message: "Access denied" }), { status: 403, headers: { "Content-Type": "application/json" } });
+      const milestones = await prisma.milestone.findMany({
+        where: { projectId: params.id },
+        include: { tasks: { select: { status: true } } },
+        orderBy: [{ dueAt: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
+      });
+      return milestones.map((m) => ({
+        id: m.id,
+        name: m.name,
+        description: m.description,
+        dueAt: m.dueAt,
+        completedAt: m.completedAt,
+        taskCount: m.tasks.length,
+        doneCount: m.tasks.filter((t) => t.status === "DONE").length,
+      }));
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .post(
+    "/:id/milestones",
+    async ({ params, body, activeOrganizationId, activeMember }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
+      if (!result)
+        return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      if (!result.isMember)
+        return new Response(JSON.stringify({ message: "Access denied" }), { status: 403, headers: { "Content-Type": "application/json" } });
+      const b = body as { name?: string; description?: string | null; dueAt?: string | null };
+      const name = typeof b.name === "string" ? b.name.trim().slice(0, 120) : "";
+      if (!name)
+        return new Response(JSON.stringify({ message: "Name is required" }), { status: 400, headers: { "Content-Type": "application/json" } });
+      const milestone = await prisma.milestone.create({
+        data: {
+          projectId: params.id,
+          name,
+          description: typeof b.description === "string" ? b.description.trim().slice(0, 1000) || null : null,
+          dueAt: b.dueAt ? new Date(b.dueAt) : null,
+        },
+      });
+      await logActivity({
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+        action: ActivityAction.CREATE,
+        entityType: ActivityEntityType.MILESTONE,
+        entityId: milestone.id,
+        entityTitle: milestone.name,
+        metadata: { projectId: params.id },
+      });
+      return milestone;
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .patch(
+    "/:id/milestones/:milestoneId",
+    async ({ params, body, activeOrganizationId, activeMember }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
+      if (!result || !result.isMember)
+        return new Response(JSON.stringify({ message: result ? "Access denied" : "Not found" }), { status: result ? 403 : 404, headers: { "Content-Type": "application/json" } });
+      const existing = await prisma.milestone.findFirst({ where: { id: params.milestoneId, projectId: params.id } });
+      if (!existing)
+        return new Response(JSON.stringify({ message: "Milestone not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      const b = body as { name?: string; description?: string | null; dueAt?: string | null; completed?: boolean };
+      const data: Record<string, unknown> = {};
+      if (typeof b.name === "string" && b.name.trim()) data.name = b.name.trim().slice(0, 120);
+      if (b.description !== undefined) data.description = typeof b.description === "string" ? b.description.trim().slice(0, 1000) || null : null;
+      if (b.dueAt !== undefined) data.dueAt = b.dueAt ? new Date(b.dueAt) : null;
+      if (b.completed !== undefined) data.completedAt = b.completed ? new Date() : null;
+      return prisma.milestone.update({ where: { id: existing.id }, data });
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .delete(
+    "/:id/milestones/:milestoneId",
+    async ({ params, activeOrganizationId, activeMember, set }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
+      if (!result || !result.isMember) {
+        set.status = result ? 403 : 404;
+        return { message: result ? "Access denied" : "Not found" };
+      }
+      await prisma.milestone.deleteMany({ where: { id: params.milestoneId, projectId: params.id } });
+      return { ok: true };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  // ─── Insights: progress, health, burndown, velocity ─
+  .get(
+    "/:id/insights",
+    async ({ params, activeOrganizationId, activeMember }) => {
+      const result = await ensureProjectMember(params.id, activeMember!.id, activeOrganizationId);
+      if (!result)
+        return new Response(JSON.stringify({ message: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      if (!result.isMember)
+        return new Response(JSON.stringify({ message: "Access denied" }), { status: 403, headers: { "Content-Type": "application/json" } });
+
+      const tasks = await prisma.task.findMany({
+        where: { projectId: params.id },
+        select: { status: true, dueAt: true, completedAt: true, createdAt: true, estimate: true },
+      });
+      const total = tasks.length;
+      const done = tasks.filter((t) => t.status === "DONE").length;
+      const blocked = tasks.filter((t) => t.status === "BLOCKED").length;
+      const now = new Date();
+      const overdue = tasks.filter(
+        (t) => t.dueAt && t.dueAt < now && t.status !== "DONE" && t.status !== "CANCELLED"
+      ).length;
+      const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      // health heuristic: blocked/overdue share drives at-risk / off-track
+      const troubled = total > 0 ? (blocked + overdue) / total : 0;
+      const health = total === 0 ? "no-data" : troubled >= 0.3 ? "off-track" : troubled >= 0.12 ? "at-risk" : "on-track";
+
+      // last 8 weeks: created vs completed (burnup-style) + completed points (velocity)
+      const weeks: { week: string; created: number; completed: number; points: number }[] = [];
+      for (let i = 7; i >= 0; i--) {
+        const startW = new Date(now);
+        startW.setDate(startW.getDate() - startW.getDay() - i * 7);
+        startW.setHours(0, 0, 0, 0);
+        const endW = new Date(startW);
+        endW.setDate(endW.getDate() + 7);
+        const createdW = tasks.filter((t) => t.createdAt >= startW && t.createdAt < endW).length;
+        const completedTasks = tasks.filter((t) => t.completedAt && t.completedAt >= startW && t.completedAt < endW);
+        weeks.push({
+          week: startW.toISOString().slice(0, 10),
+          created: createdW,
+          completed: completedTasks.length,
+          points: completedTasks.reduce((sum, t) => sum + (t.estimate ?? 0), 0),
+        });
+      }
+
+      return {
+        total,
+        done,
+        blocked,
+        overdue,
+        inProgress: tasks.filter((t) => t.status === "IN_PROGRESS").length,
+        inReview: tasks.filter((t) => t.status === "IN_REVIEW").length,
+        todo: tasks.filter((t) => t.status === "TODO").length,
+        progress,
+        health,
+        weeks,
+      };
     },
     { requireAuth: true, requireActiveOrg: true }
   );

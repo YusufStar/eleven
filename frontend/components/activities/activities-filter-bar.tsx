@@ -37,35 +37,43 @@ function toDateRange(from: string, to: string): DateRange | undefined {
   return { from: fromDate, to: toDate };
 }
 
-const ACTIONS: ActivityAction[] = ["CREATE", "UPDATE", "DELETE", "VIEW"];
+const ACTIONS: ActivityAction[] = ["CREATE", "UPDATE", "DELETE", "VIEW", "COMMENT", "ASSIGN", "COMPLETE", "MENTION"];
 const ACTION_LABELS: Record<ActivityAction, string> = {
   CREATE: "Created",
   UPDATE: "Updated",
   DELETE: "Deleted",
   VIEW: "Viewed",
+  COMMENT: "Commented",
+  ASSIGN: "Assigned",
+  COMPLETE: "Completed",
+  MENTION: "Mentioned",
 };
 
 const ENTITY_TYPES: ActivityEntityType[] = [
-  "CONTACT",
-  "DEAL",
   "PROJECT",
   "TASK",
-  "PIPELINE",
-  "STAGE",
+  "SPRINT",
+  "MILESTONE",
   "PROJECT_FILE",
   "TASK_ATTACHMENT",
   "PROJECT_MEMBER",
+  "MESSAGE",
+  "MEETING",
+  "MEMBER",
+  "AI_REPORT",
 ];
 const ENTITY_TYPE_LABELS: Record<ActivityEntityType, string> = {
-  CONTACT: "Contact",
-  DEAL: "Deal",
   PROJECT: "Project",
   TASK: "Task",
-  PIPELINE: "Pipeline",
-  STAGE: "Stage",
+  SPRINT: "Sprint",
+  MILESTONE: "Milestone",
   PROJECT_FILE: "Project file",
   TASK_ATTACHMENT: "Task attachment",
   PROJECT_MEMBER: "Project member",
+  MESSAGE: "Message",
+  MEETING: "Meeting",
+  MEMBER: "Member",
+  AI_REPORT: "AI report",
 };
 
 export type ActivitiesFilterBarProps = {

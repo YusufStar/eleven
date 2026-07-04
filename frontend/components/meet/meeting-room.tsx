@@ -17,15 +17,17 @@ import {
   WavingHand01Icon,
   Link01Icon,
   Clock01Icon,
+  RecordIcon,
 } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
 import ElevenLogo from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useMeetingByCode } from "@/services/meetings";
+import { meetingsApi, useMeetingByCode } from "@/services/meetings";
 import { SidePanel, type PanelTab, type PanelParticipant } from "./side-panel";
-import { useWebrtcRoom, type RemotePeer } from "./use-webrtc";
+import { useWebrtcRoom } from "./use-webrtc";
+import { useMeetingRecorder, type Composition } from "./use-recorder";
 
 function initials(name: string) {
   return name
@@ -80,64 +82,105 @@ function ControlButton({
   );
 }
 
-function VideoTile({
-  stream,
-  name,
-  muted,
-  camOff = false,
-  handRaised = false,
-  mirrored = false,
-  isSelf = false,
-  className = "",
-}: {
-  stream?: MediaStream | null;
+type Tile = {
+  key: string;
+  stream: MediaStream | null;
   name: string;
   muted: boolean;
-  camOff?: boolean;
-  handRaised?: boolean;
-  mirrored?: boolean;
-  isSelf?: boolean;
+  camOff: boolean;
+  handRaised: boolean;
+  mirrored: boolean;
+  isSelf: boolean;
+};
+
+function VideoTile({
+  tile,
+  fit = "cover",
+  onClick,
+  className = "",
+}: {
+  tile: Tile;
+  fit?: "cover" | "contain";
+  onClick?: () => void;
   className?: string;
 }) {
   return (
-    <div className={`relative flex items-center justify-center overflow-hidden rounded-xl border bg-card ${className}`}>
-      {stream && (
+    <div
+      className={`relative flex h-full w-full items-center justify-center overflow-hidden rounded-xl border bg-card ${
+        onClick ? "cursor-pointer" : ""
+      } ${className}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+    >
+      {tile.stream && (
         <video
           autoPlay
           playsInline
-          muted={isSelf}
+          muted={tile.isSelf}
           ref={(el) => {
-            if (el && el.srcObject !== stream) {
-              el.srcObject = stream;
+            if (el && el.srcObject !== tile.stream) {
+              el.srcObject = tile.stream;
               el.play().catch(() => {});
             }
           }}
-          className={`h-full w-full object-cover ${mirrored ? "-scale-x-100" : ""} ${camOff ? "invisible" : ""}`}
+          className={`h-full w-full ${fit === "cover" ? "object-cover" : "object-contain"} ${
+            tile.mirrored ? "-scale-x-100" : ""
+          } ${tile.camOff ? "invisible" : ""}`}
         />
       )}
-      {(!stream || camOff) && (
+      {(!tile.stream || tile.camOff) && (
         <span className="absolute flex size-16 items-center justify-center rounded-full border bg-muted font-serif text-xl">
-          {initials(name)}
+          {initials(tile.name)}
         </span>
       )}
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/50 to-transparent px-3 pb-2 pt-6 text-white">
         <span className="truncate text-xs font-medium drop-shadow">
-          {name}
-          {isSelf && " (you)"}
+          {tile.name}
+          {tile.isSelf && tile.key === "self" && " (you)"}
         </span>
         <span className="flex items-center gap-1.5">
-          {handRaised && <HugeiconsIcon icon={WavingHand01Icon} className="size-4 drop-shadow" strokeWidth={2} />}
-          {muted && <HugeiconsIcon icon={MicOff01Icon} className="size-4 drop-shadow" strokeWidth={2} />}
+          {tile.handRaised && <HugeiconsIcon icon={WavingHand01Icon} className="size-4 drop-shadow" strokeWidth={2} />}
+          {tile.muted && <HugeiconsIcon icon={MicOff01Icon} className="size-4 drop-shadow" strokeWidth={2} />}
         </span>
       </div>
     </div>
   );
 }
 
-function gridCols(count: number) {
-  if (count <= 1) return "grid-cols-1";
-  if (count <= 4) return "grid-cols-1 sm:grid-cols-2";
-  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+/** Meet-style auto layout: picks the column count that maximizes tile size. */
+function AutoGrid({ tiles, onTileClick }: { tiles: Tile[]; onTileClick: (key: string) => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setSize({ w: el.clientWidth, h: el.clientHeight }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const GAP = 12;
+  const ASPECT = 16 / 9;
+  let best = { w: 0, h: 0 };
+  for (let cols = 1; cols <= tiles.length; cols++) {
+    const rows = Math.ceil(tiles.length / cols);
+    const maxW = (size.w - GAP * (cols - 1)) / cols;
+    const maxH = (size.h - GAP * (rows - 1)) / rows;
+    const w = Math.min(maxW, maxH * ASPECT);
+    if (w > best.w) best = { w, h: w / ASPECT };
+  }
+
+  return (
+    <div ref={ref} className="flex min-h-0 flex-1 flex-wrap content-center items-center justify-center gap-3">
+      {size.w > 0 &&
+        tiles.map((t) => (
+          <div key={t.key} style={{ width: Math.floor(best.w), height: Math.floor(best.h) }}>
+            <VideoTile tile={t} onClick={() => onTileClick(t.key)} />
+          </div>
+        ))}
+    </div>
+  );
 }
 
 export function MeetingRoom({ roomId }: { roomId: string }) {
@@ -152,6 +195,7 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
   const [handRaised, setHandRaised] = useState(false);
   const [panel, setPanel] = useState<PanelTab | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [pinned, setPinned] = useState<string | null>(null);
 
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [mediaError, setMediaError] = useState(false);
@@ -162,16 +206,63 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
   const name = displayName.trim() || selfName;
   const title = meeting?.title ?? roomId;
 
-  const { connected, failed, peers, messages, sendChat, sendState, replaceVideoTrack } = useWebrtcRoom({
+  const {
+    connected,
+    failed,
+    peers,
+    messages,
+    sendChat,
+    sendState,
+    replaceVideoTrack,
+    addExtraAudioTrack,
+    removeExtraAudioTrack,
+  } = useWebrtcRoom({
     roomId,
     displayName: name,
     localStream: stream,
     enabled: phase === "call",
   });
 
+  /* ---------- recording ---------- */
+  const compositionRef = useRef<Composition>({ tiles: [], screen: null });
+  const getComposition = useCallback(() => compositionRef.current, []);
+  const recorder = useMeetingRecorder(getComposition);
+
+  const uploadRecording = useCallback(
+    async (result: { blob: Blob; durationSec: number } | null) => {
+      if (!result) return;
+      try {
+        await meetingsApi.uploadRecording(roomId, result.blob, result.durationSec);
+        toast.success("Recording saved to meeting history.");
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Recording upload failed");
+      }
+    },
+    [roomId],
+  );
+
+  const toggleRecording = async () => {
+    if (recorder.recording) {
+      await uploadRecording(await recorder.stop());
+    } else {
+      try {
+        await recorder.start();
+        toast.info("Recording started — the full layout and audio are captured.");
+      } catch {
+        toast.error("Recording could not start in this browser.");
+      }
+    }
+  };
+
+  /* ---------- media ---------- */
   const acquireMedia = useCallback(async () => {
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      // maximum quality: 1080p30 camera, processed audio
+      const s = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+      s.getVideoTracks().forEach((t) => (t.contentHint = "motion"));
       streamRef.current = s;
       setStream(s);
       setMediaError(false);
@@ -180,7 +271,6 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
     }
   }, []);
 
-  // acquire devices once; release on unmount
   useEffect(() => {
     acquireMedia();
     return () => {
@@ -189,7 +279,6 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
     };
   }, [acquireMedia]);
 
-  // call timer
   useEffect(() => {
     if (phase !== "call") return;
     const t = setInterval(() => setElapsed((e) => e + 1), 1000);
@@ -226,11 +315,13 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
   };
 
   const stopShare = useCallback(() => {
+    const audio = screenRef.current?.getAudioTracks()[0];
+    if (audio) removeExtraAudioTrack(audio);
     screenRef.current?.getTracks().forEach((t) => t.stop());
     screenRef.current = null;
     setScreenStream(null);
     void replaceVideoTrack(null); // back to the camera
-  }, [replaceVideoTrack]);
+  }, [replaceVideoTrack, removeExtraAudioTrack]);
 
   const toggleShare = async () => {
     if (screenStream) {
@@ -238,12 +329,19 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
       return;
     }
     try {
-      const s = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      // maximum quality: native resolution, 30fps, tab/system audio when offered
+      const s = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: { ideal: 30 } },
+        audio: true,
+      });
       const track = s.getVideoTracks()[0];
+      track.contentHint = "detail"; // keep text sharp over smooth motion
       track.onended = stopShare;
       screenRef.current = s;
       setScreenStream(s);
       await replaceVideoTrack(track);
+      const audio = s.getAudioTracks()[0];
+      if (audio) addExtraAudioTrack(audio, s);
     } catch {
       // user dismissed the picker — nothing to do
     }
@@ -254,7 +352,8 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
     toast.success("Meeting link copied.");
   };
 
-  const leave = () => {
+  const leave = async () => {
+    if (recorder.recording) await uploadRecording(await recorder.stop());
     stopShare();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
@@ -267,6 +366,7 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
     setMicOn(true);
     setCamOn(true);
     setHandRaised(false);
+    setPinned(null);
     await acquireMedia();
     setPhase("lobby");
   };
@@ -384,7 +484,9 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
                 </div>
               )
             ) : (
-              <p className="mt-3 text-sm text-muted-foreground">Ad-hoc room — anyone on your team with the code can join.</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Ad-hoc room — anyone on your team with the code can join.
+              </p>
             )}
 
             <div className="mt-8 max-w-xs space-y-3">
@@ -432,11 +534,56 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
   }
 
   /* ---------------- call ---------------- */
+  const selfTile: Tile = {
+    key: "self",
+    stream,
+    name,
+    muted: !micOn,
+    camOff: !camOn,
+    handRaised,
+    mirrored: true,
+    isSelf: true,
+  };
+  const peerTiles: Tile[] = peers.map((p) => ({
+    key: p.id,
+    stream: p.stream,
+    name: p.name,
+    muted: !p.mic,
+    camOff: !p.cam,
+    handRaised: p.hand,
+    mirrored: false,
+    isSelf: false,
+  }));
+  const tiles = [selfTile, ...peerTiles];
+
+  const screenTile: Tile | null = screenStream
+    ? {
+        key: "screen",
+        stream: screenStream,
+        name: `${name} is presenting`,
+        muted: !micOn,
+        camOff: false,
+        handRaised: false,
+        mirrored: false,
+        isSelf: true,
+      }
+    : null;
+
+  const featured = screenTile ?? (pinned ? (tiles.find((t) => t.key === pinned) ?? null) : null);
+  const stripTiles = featured ? tiles.filter((t) => t.key !== featured.key) : [];
+
+  // keep the recorder's view of the call in sync with what's on screen
+  compositionRef.current = {
+    tiles: tiles.map((t) => ({ stream: t.stream, label: t.name, camOff: t.camOff })),
+    screen: screenTile ? { stream: screenTile.stream, label: screenTile.name } : null,
+  };
+
   const roster: PanelParticipant[] = [
     { id: "self", name, muted: !micOn, hand: handRaised, isSelf: true },
-    ...peers.map((p: RemotePeer) => ({ id: p.id, name: p.name, muted: !p.mic, hand: p.hand })),
+    ...peers.map((p) => ({ id: p.id, name: p.name, muted: !p.mic, hand: p.hand })),
   ];
-  const tileCount = peers.length + 1;
+
+  const togglePin = (key: string) => setPinned((prev) => (prev === key ? null : key));
 
   return (
     // the call stage is always dark, whatever the app theme
@@ -454,6 +601,12 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
           <span className="truncate text-sm text-muted-foreground">{title}</span>
         </div>
         <div className="flex items-center gap-4 font-mono text-xs text-muted-foreground">
+          {recorder.recording && (
+            <span className="flex items-center gap-1.5 text-destructive">
+              <span className="size-2 animate-pulse rounded-full bg-destructive" />
+              REC
+            </span>
+          )}
           {!connected && <span className="text-destructive">reconnecting…</span>}
           <span className="flex items-center gap-1.5">
             <HugeiconsIcon icon={Clock01Icon} className="size-3.5" strokeWidth={2} />
@@ -461,68 +614,32 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
           </span>
           <span className="flex items-center gap-1.5">
             <HugeiconsIcon icon={UserGroupIcon} className="size-3.5" strokeWidth={2} />
-            {tileCount}
+            {tiles.length}
           </span>
         </div>
       </header>
 
       <main className="flex min-h-0 flex-1 gap-4 p-4">
         <div className="flex min-w-0 flex-1 flex-col gap-3">
-          {screenStream ? (
+          {featured ? (
             <>
-              <VideoTile
-                stream={screenStream}
-                name={`${name} is presenting`}
-                muted={!micOn}
-                isSelf
-                className="min-h-0 flex-1"
-              />
-              <div className="flex h-28 shrink-0 gap-3 overflow-x-auto">
+              <div className="min-h-0 flex-1">
                 <VideoTile
-                  stream={stream}
-                  name={name}
-                  muted={!micOn}
-                  camOff={!camOn}
-                  handRaised={handRaised}
-                  mirrored
-                  isSelf
-                  className="aspect-video shrink-0"
+                  tile={featured}
+                  fit={featured.key === "screen" ? "contain" : "cover"}
+                  onClick={featured.key === "screen" ? undefined : () => togglePin(featured.key)}
                 />
-                {peers.map((p) => (
-                  <VideoTile
-                    key={p.id}
-                    stream={p.stream}
-                    name={p.name}
-                    muted={!p.mic}
-                    camOff={!p.cam}
-                    handRaised={p.hand}
-                    className="aspect-video shrink-0"
-                  />
+              </div>
+              <div className="flex h-28 shrink-0 justify-center gap-3 overflow-x-auto">
+                {(featured.key === "screen" ? tiles : stripTiles).map((t) => (
+                  <div key={t.key} className="aspect-video h-full shrink-0">
+                    <VideoTile tile={t} onClick={() => togglePin(t.key)} />
+                  </div>
                 ))}
               </div>
             </>
           ) : (
-            <div className={`grid min-h-0 flex-1 gap-3 ${gridCols(tileCount)}`}>
-              <VideoTile
-                stream={stream}
-                name={name}
-                muted={!micOn}
-                camOff={!camOn}
-                handRaised={handRaised}
-                mirrored
-                isSelf
-              />
-              {peers.map((p) => (
-                <VideoTile
-                  key={p.id}
-                  stream={p.stream}
-                  name={p.name}
-                  muted={!p.mic}
-                  camOff={!p.cam}
-                  handRaised={p.hand}
-                />
-              ))}
-            </div>
+            <AutoGrid tiles={tiles} onTileClick={togglePin} />
           )}
           {peers.length === 0 && (
             <p className="pb-1 text-center font-mono text-xs text-muted-foreground">
@@ -560,6 +677,13 @@ export function MeetingRoom({ roomId }: { roomId: string }) {
           label={screenStream ? "Stop presenting" : "Present your screen"}
           active={!screenStream}
           onClick={toggleShare}
+        />
+        <ControlButton
+          icon={RecordIcon}
+          label={recorder.recording ? "Stop recording" : "Record the meeting"}
+          active={!recorder.recording}
+          danger={recorder.recording}
+          onClick={toggleRecording}
         />
         <ControlButton
           icon={WavingHand01Icon}

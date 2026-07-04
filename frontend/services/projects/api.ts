@@ -64,9 +64,10 @@ export const projectsApi = {
     const path = search ? `/projects/${projectId}/files?search=${encodeURIComponent(search)}` : `/projects/${projectId}/files`;
     return request<ProjectFileRow[]>(path);
   },
-  addFile: (projectId: string, file: File) => {
+  addFile: (projectId: string, file: File, folder?: string) => {
     const form = new FormData();
     form.append("file", file);
+    if (folder) form.append("folder", folder);
     return request<ProjectFileRow>(`/projects/${projectId}/files`, { method: "POST", body: form });
   },
   addFileByUrl: (projectId: string, body: { fileName: string; fileUrl: string; fileType?: string; fileSize?: number }) =>
@@ -79,4 +80,44 @@ export const projectsApi = {
 
   getFileDownloadUrl: (projectId: string, fileId: string) =>
     `${BASE}/projects/${projectId}/files/${fileId}/download`,
+
+  getInsights: (projectId: string) => request<ProjectInsights>(`/projects/${projectId}/insights`),
+
+  listMilestones: (projectId: string) => request<MilestoneRow[]>(`/projects/${projectId}/milestones`),
+  addMilestone: (projectId: string, body: { name: string; description?: string | null; dueAt?: string | null }) =>
+    request<MilestoneRow>(`/projects/${projectId}/milestones`, { method: "POST", body: JSON.stringify(body) }),
+  updateMilestone: (
+    projectId: string,
+    milestoneId: string,
+    body: Partial<{ name: string; description: string | null; dueAt: string | null; completed: boolean }>
+  ) =>
+    request<MilestoneRow>(`/projects/${projectId}/milestones/${milestoneId}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+  deleteMilestone: (projectId: string, milestoneId: string) =>
+    request<{ ok: boolean }>(`/projects/${projectId}/milestones/${milestoneId}`, { method: "DELETE" }),
 };
+
+export interface ProjectInsights {
+  total: number;
+  done: number;
+  blocked: number;
+  overdue: number;
+  inProgress: number;
+  inReview: number;
+  todo: number;
+  progress: number;
+  health: "on-track" | "at-risk" | "off-track" | "no-data";
+  weeks: { week: string; created: number; completed: number; points: number }[];
+}
+
+export interface MilestoneRow {
+  id: string;
+  name: string;
+  description: string | null;
+  dueAt: string | null;
+  completedAt: string | null;
+  taskCount: number;
+  doneCount: number;
+}

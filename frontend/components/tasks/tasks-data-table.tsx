@@ -69,8 +69,10 @@ const PRIORITY_ROW_BORDER: Record<string, string> = {
 const STATUS_LABELS: Record<TaskStatusValue, string> = {
   TODO: "To do",
   IN_PROGRESS: "In progress",
+  IN_REVIEW: "In review",
+  BLOCKED: "Blocked",
   DONE: "Done",
-  CANCELLED: "Cancelled",
+  CANCELLED: "Archived",
 };
 
 export type TasksDataTableProps = {
@@ -83,6 +85,7 @@ export type TasksDataTableProps = {
   total: number;
   onPageChange: (page: number) => void;
   onBulkStatusChange?: (taskIds: string[], status: TaskStatusValue) => void;
+  onBulkDelete?: (taskIds: string[]) => void;
 };
 
 export function TasksDataTable({
@@ -95,6 +98,7 @@ export function TasksDataTable({
   total,
   onPageChange,
   onBulkStatusChange,
+  onBulkDelete,
 }: TasksDataTableProps) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
@@ -153,6 +157,9 @@ export function TasksDataTable({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
+        {selectedIds.length > 0 && (
+          <span className="text-sm text-muted-foreground">{selectedIds.length} selected</span>
+        )}
         {selectedIds.length > 0 && onBulkStatusChange && (
           <Select value={statusSelectValue || undefined} onValueChange={handleStatusChange}>
             <SelectTrigger className="w-[160px]" size="sm">
@@ -166,6 +173,19 @@ export function TasksDataTable({
               ))}
             </SelectContent>
           </Select>
+        )}
+        {selectedIds.length > 0 && onBulkDelete && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:text-destructive"
+            onClick={() => {
+              onBulkDelete(selectedIds);
+              setRowSelection({});
+            }}
+          >
+            Delete
+          </Button>
         )}
         <div className="ml-auto">
           <DropdownMenu>

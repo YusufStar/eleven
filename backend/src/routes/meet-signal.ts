@@ -64,6 +64,7 @@ export const meetSignalRoutes = new Elysia()
       const meeting = await prisma.meeting.findUnique({
         where: { code: roomId },
         select: {
+          id: true,
           organizationId: true,
           isPublic: true,
           createdById: true,
@@ -80,6 +81,11 @@ export const meetSignalRoutes = new Elysia()
           ws.close(4403, "You are not invited to this meeting");
           return;
         }
+        // attendance: one row per join session; leftAt closes it
+        const attendance = await prisma.meetingAttendance.create({
+          data: { meetingId: meeting.id, memberId: activeMember.id },
+        });
+        (ws.data as Record<string, unknown>).attendanceId = attendance.id;
       }
       // rooms are scoped per organization so codes never collide across tenants
       const roomKey = `${activeOrganizationId}:${roomId}`;
@@ -161,7 +167,12 @@ export const meetSignalRoutes = new Elysia()
     },
 
     close(ws) {
-      const data = ws.data as unknown as { peer?: Peer; roomKey?: string };
+      const data = ws.data as unknown as { peer?: Peer; roomKey?: string; attendanceId?: string };
+      if (data.attendanceId) {
+        prisma.meetingAttendance
+          .update({ where: { id: data.attendanceId }, data: { leftAt: new Date() } })
+          .catch(() => {});
+      }
       const peer = data.peer;
       const roomKey = data.roomKey;
       if (!peer || !roomKey) return;

@@ -87,7 +87,7 @@ export function NotificationBell() {
             <p className="px-4 py-8 text-center text-sm text-muted-foreground">Loading…</p>
           ) : notifications.length === 0 ? (
             <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-              Nothing yet. You&apos;ll see task assignments, deal updates, and meeting invites here.
+              Nothing yet. Task assignments, mentions, and meeting invites will show up here.
             </p>
           ) : (
             notifications.map((n) => <NotificationRow key={n.id} n={n} onOpen={open} />)

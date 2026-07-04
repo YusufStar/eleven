@@ -4,7 +4,7 @@ import { format, parseISO } from "date-fns";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar03Icon, Clock01Icon, TextIcon, UserIcon } from "@hugeicons/core-free-icons";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCalendar } from "@/components/ui/calendar/calendar-context";
 import { formatTime } from "@/components/ui/calendar/helpers";
 import type { IEvent } from "@/components/ui/calendar/interfaces";
-import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
 
 interface IProps {
   event: IEvent;
@@ -27,7 +26,7 @@ interface IProps {
 }
 
 export function EventDetailsDialog({ event, children }: IProps) {
-  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const router = useRouter();
   const startDate = parseISO(event.startDate);
   const endDate = parseISO(event.endDate);
   const { use24HourFormat, removeEvent, currentUserId } = useCalendar();
@@ -36,25 +35,17 @@ export function EventDetailsDialog({ event, children }: IProps) {
     currentUserId == null || event.user.id === currentUserId;
 
   if (event.taskId) {
+    // any teammate can open a task's page — the backend scopes access to the org
     return (
-      <>
-        <div
-          role={canViewDetails ? "button" : undefined}
-          tabIndex={canViewDetails ? 0 : undefined}
-          onClick={canViewDetails ? () => setTaskModalOpen(true) : undefined}
-          onKeyDown={
-            canViewDetails
-              ? (e) => e.key === "Enter" && setTaskModalOpen(true)
-              : undefined
-          }
-          className={canViewDetails ? "" : "cursor-default"}
-        >
-          {children}
-        </div>
-        {canViewDetails && (
-          <TaskDetailModal taskId={event.taskId} open={taskModalOpen} onOpenChange={setTaskModalOpen} />
-        )}
-      </>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => router.push(`/dashboard/tasks/${event.taskId}`)}
+        onKeyDown={(e) => e.key === "Enter" && router.push(`/dashboard/tasks/${event.taskId}`)}
+        className="cursor-pointer"
+      >
+        {children}
+      </div>
     );
   }
 

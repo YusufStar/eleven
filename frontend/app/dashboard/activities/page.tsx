@@ -6,7 +6,11 @@ import { useActivitiesList } from "@/services/activities";
 import type { ActivityAction, ActivityEntityType } from "@/services/activities";
 import { ActivitiesFilterBar } from "@/components/activities/activities-filter-bar";
 import { ActivitiesDataTable } from "@/components/activities/activities-data-table";
+import { ActivitiesTimeline } from "@/components/activities/activities-timeline";
 import { activitiesColumns } from "@/components/activities/activities-columns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Activity01Icon, Table01Icon } from "@hugeicons/core-free-icons";
 import { useDebouncedCallback } from "@/lib/use-debounced-callback";
 
 const SEARCH_DEBOUNCE_MS = 400;
@@ -22,6 +26,7 @@ export default function ActivitiesPage() {
   const dateFrom = searchParams.get("dateFrom") || "";
   const dateTo = searchParams.get("dateTo") || "";
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+  const view = searchParams.get("view") === "table" ? "table" : "timeline";
 
   const updateUrl = useCallback(
     (updates: {
@@ -31,8 +36,13 @@ export default function ActivitiesPage() {
       dateFrom?: string;
       dateTo?: string;
       page?: number;
+      view?: "timeline" | "table";
     }) => {
       const next = new URLSearchParams(searchParams.toString());
+      if (updates.view !== undefined) {
+        if (updates.view === "table") next.set("view", "table");
+        else next.delete("view");
+      }
       if (updates.search !== undefined) {
         if (updates.search) next.set("search", updates.search);
         else next.delete("search");
@@ -116,11 +126,23 @@ export default function ActivitiesPage() {
     <div className="container mx-auto py-2">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Activity log</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Activity</h1>
           <p className="text-muted-foreground text-sm">
-            Live view of who viewed, created, updated, or deleted items. Refreshes every second.
+            Everything happening across your workspace — updated live.
           </p>
         </div>
+        <Tabs value={view} onValueChange={(v) => updateUrl({ view: v as "timeline" | "table" })}>
+          <TabsList>
+            <TabsTrigger value="timeline" className="gap-1.5">
+              <HugeiconsIcon icon={Activity01Icon} className="size-4" strokeWidth={2} />
+              Timeline
+            </TabsTrigger>
+            <TabsTrigger value="table" className="gap-1.5">
+              <HugeiconsIcon icon={Table01Icon} className="size-4" strokeWidth={2} />
+              Table
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
       <ActivitiesFilterBar
         search={searchInput}
@@ -137,17 +159,46 @@ export default function ActivitiesPage() {
         hasActiveFilters={hasActiveFilters}
         className="mb-4"
       />
-      <ActivitiesDataTable
-        columns={activitiesColumns()}
-        data={activities}
-        loading={isPending}
-        fetching={isFetching}
-        page={page}
-        pageSize={pageSize}
-        total={total}
-        onPageChange={onPageChange}
-        hasActiveFilters={hasActiveFilters}
-      />
+      {view === "timeline" ? (
+        <>
+          <ActivitiesTimeline activities={activities} loading={isPending} fetching={isFetching} />
+          {total > pageSize && (
+            <div className="mt-4 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                className="rounded-md border px-3 py-1.5 text-sm disabled:opacity-50"
+                disabled={page <= 1}
+                onClick={() => onPageChange(page - 1)}
+              >
+                Previous
+              </button>
+              <span className="text-sm tabular-nums text-muted-foreground">
+                {page} / {Math.ceil(total / pageSize)}
+              </span>
+              <button
+                type="button"
+                className="rounded-md border px-3 py-1.5 text-sm disabled:opacity-50"
+                disabled={page >= Math.ceil(total / pageSize)}
+                onClick={() => onPageChange(page + 1)}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <ActivitiesDataTable
+          columns={activitiesColumns()}
+          data={activities}
+          loading={isPending}
+          fetching={isFetching}
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={onPageChange}
+          hasActiveFilters={hasActiveFilters}
+        />
+      )}
     </div>
   );
 }

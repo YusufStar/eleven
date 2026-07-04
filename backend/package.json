@@ -23,6 +23,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0",
     "@aws-sdk/client-s3": "^3.1079.0",
     "@elysiajs/bearer": "^1.4.4",
     "@elysiajs/cors": "^1.4.2",

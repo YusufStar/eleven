@@ -26,4 +26,5 @@ export {
   useAddProjectFile,
   useAddProjectFileByUrl,
   useDeleteProjectFile,
-} from "./use-projects";
+} from "./use-projects";export { useProjectInsights, useProjectMilestones, useAddMilestone, useUpdateMilestone, useDeleteMilestone } from "./use-projects";
+export type { ProjectInsights, MilestoneRow } from "./api";

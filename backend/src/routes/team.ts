@@ -37,4 +37,53 @@ export const teamRoutes = new Elysia({ prefix: "/team" })
       return { data, total, page, pageSize };
     },
     { requireAuth: true, requireActiveOrg: true }
+  )
+  // Presence heartbeat — frontend pings every ~60s while the app is focused.
+  .post(
+    "/presence",
+    async ({ activeMember }) => {
+      await prisma.member.update({
+        where: { id: activeMember!.id },
+        data: { lastSeenAt: new Date() },
+      });
+      return { ok: true };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  // Self profile: status, working-on, timezone, skills
+  .patch(
+    "/me",
+    async ({ activeMember, body }) => {
+      const b = body as {
+        statusEmoji?: string | null;
+        statusText?: string | null;
+        workingOn?: string | null;
+        timezone?: string | null;
+        skills?: string[];
+      };
+      const str = (v: unknown, max: number): string | null =>
+        typeof v === "string" ? v.trim().slice(0, max) || null : null;
+      const data: Record<string, unknown> = {};
+      if (b.statusEmoji !== undefined) data.statusEmoji = str(b.statusEmoji, 8);
+      if (b.statusText !== undefined) data.statusText = str(b.statusText, 100);
+      if (b.workingOn !== undefined) data.workingOn = str(b.workingOn, 140);
+      if (b.timezone !== undefined) data.timezone = str(b.timezone, 64);
+      if (Array.isArray(b.skills)) {
+        data.skills = [
+          ...new Set(
+            b.skills
+              .filter((s): s is string => typeof s === "string")
+              .map((s) => s.trim().toLowerCase().slice(0, 30))
+              .filter(Boolean),
+          ),
+        ].slice(0, 15);
+      }
+      const updated = await prisma.member.update({
+        where: { id: activeMember!.id },
+        data,
+        include: { user: { select: { id: true, name: true, email: true, image: true } } },
+      });
+      return updated;
+    },
+    { requireAuth: true, requireActiveOrg: true }
   );

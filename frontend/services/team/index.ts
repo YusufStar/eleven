@@ -1,3 +1,3 @@
-export type { TeamMember, TeamMemberUser, TeamMembersListParams, PaginatedTeamMembers } from "./types";
+export type { TeamMember, TeamMemberUser, TeamMembersListParams, PaginatedTeamMembers, UpdateMePayload } from "./types";
 export { teamApi } from "./api";
-export { useTeamMembersList } from "./use-team-members";
+export { useTeamMembersList, useUpdateMe, usePresenceHeartbeat } from "./use-team-members";

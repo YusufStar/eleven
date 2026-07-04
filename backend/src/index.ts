@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { auth } from "./auth/auth";
 import { authPlugin } from "./plugins/auth.plugin";
-import { chatRoutes, contactsRoutes, dealsRoutes, paymentsRoutes, stripeWebhookApp, projectsRoutes, profileRoutes, teamRoutes, tasksRoutes, uploadRoutes, settingsRoutes, activitiesRoutes, homeDataRoutes, metricsRoutes, notificationsRoutes, meetingsRoutes, meetSignalRoutes, importsRoutes } from "./routes";
+import { chatRoutes, paymentsRoutes, stripeWebhookApp, projectsRoutes, profileRoutes, teamRoutes, tasksRoutes, uploadRoutes, settingsRoutes, activitiesRoutes, homeDataRoutes, metricsRoutes, notificationsRoutes, meetingsRoutes, meetSignalRoutes, sprintsRoutes, filesRoutes, aiReportsRoutes } from "./routes";
 import { createDummyData } from "./dummy/create-dummy-data";
 
 const app = new Elysia()
@@ -16,8 +16,6 @@ const app = new Elysia()
   .use(authPlugin)
   .use(stripeWebhookApp)
   .use(chatRoutes)
-  .use(contactsRoutes)
-  .use(dealsRoutes)
   .use(paymentsRoutes)
   .use(projectsRoutes)
   .use(profileRoutes)
@@ -31,7 +29,9 @@ const app = new Elysia()
   .use(notificationsRoutes)
   .use(meetingsRoutes)
   .use(meetSignalRoutes)
-  .use(importsRoutes)
+  .use(sprintsRoutes)
+  .use(filesRoutes)
+  .use(aiReportsRoutes)
   .get("/", () => "Hello World")
   .get("/dummy-create", async ({ set }) => {
     try {

@@ -12,14 +12,12 @@
 export const NotificationType = {
   TASK_ASSIGNED: 'TASK_ASSIGNED',
   TASK_COMPLETED: 'TASK_COMPLETED',
-  DEAL_STAGE_CHANGED: 'DEAL_STAGE_CHANGED',
-  DEAL_WON: 'DEAL_WON',
-  DEAL_ASSIGNED: 'DEAL_ASSIGNED',
-  CONTACT_ASSIGNED: 'CONTACT_ASSIGNED',
+  TASK_COMMENT: 'TASK_COMMENT',
+  MENTION: 'MENTION',
   PROJECT_MEMBER_ADDED: 'PROJECT_MEMBER_ADDED',
   PROJECT_FILE_ADDED: 'PROJECT_FILE_ADDED',
   MEETING_INVITED: 'MEETING_INVITED',
-  CONTACTS_IMPORTED: 'CONTACTS_IMPORTED',
+  SPRINT_STARTED: 'SPRINT_STARTED',
   GENERIC: 'GENERIC'
 } as const
 
@@ -34,68 +32,35 @@ export const ChatType = {
 export type ChatType = (typeof ChatType)[keyof typeof ChatType]
 
 
-export const ContactType = {
-  PERSON: 'PERSON',
-  COMPANY: 'COMPANY'
-} as const
-
-export type ContactType = (typeof ContactType)[keyof typeof ContactType]
-
-
-export const ContactStatus = {
-  LEAD: 'LEAD',
-  PROSPECT: 'PROSPECT',
-  CUSTOMER: 'CUSTOMER',
-  CHURNED: 'CHURNED',
-  PARTNER: 'PARTNER'
-} as const
-
-export type ContactStatus = (typeof ContactStatus)[keyof typeof ContactStatus]
-
-
-export const ContactSource = {
-  MANUAL: 'MANUAL',
-  CSV_IMPORT: 'CSV_IMPORT',
-  WEB_FORM: 'WEB_FORM',
-  EMAIL: 'EMAIL',
-  API: 'API'
-} as const
-
-export type ContactSource = (typeof ContactSource)[keyof typeof ContactSource]
-
-
 export const ActivityAction = {
   CREATE: 'CREATE',
   UPDATE: 'UPDATE',
   DELETE: 'DELETE',
-  VIEW: 'VIEW'
+  VIEW: 'VIEW',
+  COMMENT: 'COMMENT',
+  ASSIGN: 'ASSIGN',
+  COMPLETE: 'COMPLETE',
+  MENTION: 'MENTION'
 } as const
 
 export type ActivityAction = (typeof ActivityAction)[keyof typeof ActivityAction]
 
 
 export const ActivityEntityType = {
-  CONTACT: 'CONTACT',
-  DEAL: 'DEAL',
   PROJECT: 'PROJECT',
   TASK: 'TASK',
-  PIPELINE: 'PIPELINE',
-  STAGE: 'STAGE',
+  SPRINT: 'SPRINT',
+  MILESTONE: 'MILESTONE',
   PROJECT_FILE: 'PROJECT_FILE',
   TASK_ATTACHMENT: 'TASK_ATTACHMENT',
-  PROJECT_MEMBER: 'PROJECT_MEMBER'
+  PROJECT_MEMBER: 'PROJECT_MEMBER',
+  MESSAGE: 'MESSAGE',
+  MEETING: 'MEETING',
+  MEMBER: 'MEMBER',
+  AI_REPORT: 'AI_REPORT'
 } as const
 
 export type ActivityEntityType = (typeof ActivityEntityType)[keyof typeof ActivityEntityType]
-
-
-export const DealStatus = {
-  OPEN: 'OPEN',
-  WON: 'WON',
-  LOST: 'LOST'
-} as const
-
-export type DealStatus = (typeof DealStatus)[keyof typeof DealStatus]
 
 
 export const Plan = {
@@ -109,6 +74,8 @@ export type Plan = (typeof Plan)[keyof typeof Plan]
 export const TaskStatus = {
   TODO: 'TODO',
   IN_PROGRESS: 'IN_PROGRESS',
+  IN_REVIEW: 'IN_REVIEW',
+  BLOCKED: 'BLOCKED',
   DONE: 'DONE',
   CANCELLED: 'CANCELLED'
 } as const
@@ -124,3 +91,12 @@ export const TaskPriority = {
 } as const
 
 export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority]
+
+
+export const AiReportKind = {
+  MINI: 'MINI',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type AiReportKind = (typeof AiReportKind)[keyof typeof AiReportKind]

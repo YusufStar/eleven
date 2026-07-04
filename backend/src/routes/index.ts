@@ -1,6 +1,4 @@
 export { chatRoutes } from "./chat";
-export { contactsRoutes } from "./contacts";
-export { dealsRoutes } from "./deals";
 export { paymentsRoutes, stripeWebhookApp } from "./payments";
 export { projectsRoutes } from "./projects";
 export { profileRoutes } from "./profile";
@@ -14,4 +12,6 @@ export { metricsRoutes } from "./metrics";
 export { notificationsRoutes } from "./notifications";
 export { meetingsRoutes } from "./meetings";
 export { meetSignalRoutes } from "./meet-signal";
-export { importsRoutes } from "./imports";
+export { sprintsRoutes } from "./sprints";
+export { filesRoutes } from "./files";
+export { aiReportsRoutes } from "./ai-reports";

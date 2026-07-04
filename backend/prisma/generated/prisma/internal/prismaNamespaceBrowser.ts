@@ -60,22 +60,30 @@ export const ModelName = {
   OrganizationGithubConnection: 'OrganizationGithubConnection',
   Member: 'Member',
   Invitation: 'Invitation',
-  Contact: 'Contact',
   Activity: 'Activity',
-  Pipeline: 'Pipeline',
-  Stage: 'Stage',
-  Deal: 'Deal',
   Project: 'Project',
   ProjectMember: 'ProjectMember',
   ProjectFile: 'ProjectFile',
+  Sprint: 'Sprint',
+  Milestone: 'Milestone',
   Task: 'Task',
   TaskAttachment: 'TaskAttachment',
+  TaskComment: 'TaskComment',
+  TaskWatcher: 'TaskWatcher',
+  TaskDependency: 'TaskDependency',
+  TimeEntry: 'TimeEntry',
   Chat: 'Chat',
   Message: 'Message',
   MessageMedia: 'MessageMedia',
+  MessageReaction: 'MessageReaction',
+  ChatRead: 'ChatRead',
   Meeting: 'Meeting',
+  MeetingAttendance: 'MeetingAttendance',
+  MeetingRecording: 'MeetingRecording',
   MeetingParticipant: 'MeetingParticipant',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  NotificationPreference: 'NotificationPreference',
+  AiReport: 'AiReport'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -198,7 +206,13 @@ export const MemberScalarFieldEnum = {
   organizationId: 'organizationId',
   userId: 'userId',
   role: 'role',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  statusEmoji: 'statusEmoji',
+  statusText: 'statusText',
+  workingOn: 'workingOn',
+  timezone: 'timezone',
+  skills: 'skills',
+  lastSeenAt: 'lastSeenAt'
 } as const
 
 export type MemberScalarFieldEnum = (typeof MemberScalarFieldEnum)[keyof typeof MemberScalarFieldEnum]
@@ -218,37 +232,6 @@ export const InvitationScalarFieldEnum = {
 export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
 
 
-export const ContactScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  type: 'type',
-  status: 'status',
-  source: 'source',
-  avatar: 'avatar',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  email: 'email',
-  phone: 'phone',
-  title: 'title',
-  companyName: 'companyName',
-  website: 'website',
-  industry: 'industry',
-  employeeCount: 'employeeCount',
-  companyId: 'companyId',
-  country: 'country',
-  city: 'city',
-  address: 'address',
-  ownerId: 'ownerId',
-  notes: 'notes',
-  tags: 'tags',
-  customFields: 'customFields',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ContactScalarFieldEnum = (typeof ContactScalarFieldEnum)[keyof typeof ContactScalarFieldEnum]
-
-
 export const ActivityScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -262,51 +245,6 @@ export const ActivityScalarFieldEnum = {
 } as const
 
 export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
-
-
-export const PipelineScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  name: 'name',
-  isDefault: 'isDefault',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PipelineScalarFieldEnum = (typeof PipelineScalarFieldEnum)[keyof typeof PipelineScalarFieldEnum]
-
-
-export const StageScalarFieldEnum = {
-  id: 'id',
-  pipelineId: 'pipelineId',
-  name: 'name',
-  order: 'order',
-  color: 'color'
-} as const
-
-export type StageScalarFieldEnum = (typeof StageScalarFieldEnum)[keyof typeof StageScalarFieldEnum]
-
-
-export const DealScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  title: 'title',
-  value: 'value',
-  currency: 'currency',
-  probability: 'probability',
-  expectedClose: 'expectedClose',
-  status: 'status',
-  lostReason: 'lostReason',
-  contactId: 'contactId',
-  stageId: 'stageId',
-  pipelineId: 'pipelineId',
-  ownerId: 'ownerId',
-  customFields: 'customFields',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
 
 
 export const ProjectScalarFieldEnum = {
@@ -342,11 +280,41 @@ export const ProjectFileScalarFieldEnum = {
   fileUrl: 'fileUrl',
   fileType: 'fileType',
   fileSize: 'fileSize',
+  folder: 'folder',
+  versionHistory: 'versionHistory',
   uploadedById: 'uploadedById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type ProjectFileScalarFieldEnum = (typeof ProjectFileScalarFieldEnum)[keyof typeof ProjectFileScalarFieldEnum]
+
+
+export const SprintScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  goal: 'goal',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SprintScalarFieldEnum = (typeof SprintScalarFieldEnum)[keyof typeof SprintScalarFieldEnum]
+
+
+export const MilestoneScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  name: 'name',
+  description: 'description',
+  dueAt: 'dueAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type MilestoneScalarFieldEnum = (typeof MilestoneScalarFieldEnum)[keyof typeof MilestoneScalarFieldEnum]
 
 
 export const TaskScalarFieldEnum = {
@@ -357,13 +325,16 @@ export const TaskScalarFieldEnum = {
   detailsMarkdown: 'detailsMarkdown',
   status: 'status',
   priority: 'priority',
+  labels: 'labels',
   dueAt: 'dueAt',
   completedAt: 'completedAt',
+  estimate: 'estimate',
+  timeSpentMinutes: 'timeSpentMinutes',
   assigneeId: 'assigneeId',
   creatorId: 'creatorId',
   projectId: 'projectId',
-  contactId: 'contactId',
-  dealId: 'dealId',
+  sprintId: 'sprintId',
+  milestoneId: 'milestoneId',
   parentTaskId: 'parentTaskId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -385,6 +356,49 @@ export const TaskAttachmentScalarFieldEnum = {
 export type TaskAttachmentScalarFieldEnum = (typeof TaskAttachmentScalarFieldEnum)[keyof typeof TaskAttachmentScalarFieldEnum]
 
 
+export const TaskCommentScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  authorId: 'authorId',
+  body: 'body',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskCommentScalarFieldEnum = (typeof TaskCommentScalarFieldEnum)[keyof typeof TaskCommentScalarFieldEnum]
+
+
+export const TaskWatcherScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  memberId: 'memberId',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskWatcherScalarFieldEnum = (typeof TaskWatcherScalarFieldEnum)[keyof typeof TaskWatcherScalarFieldEnum]
+
+
+export const TaskDependencyScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  dependsOnId: 'dependsOnId'
+} as const
+
+export type TaskDependencyScalarFieldEnum = (typeof TaskDependencyScalarFieldEnum)[keyof typeof TaskDependencyScalarFieldEnum]
+
+
+export const TimeEntryScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  memberId: 'memberId',
+  minutes: 'minutes',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type TimeEntryScalarFieldEnum = (typeof TimeEntryScalarFieldEnum)[keyof typeof TimeEntryScalarFieldEnum]
+
+
 export const ChatScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -402,6 +416,10 @@ export const MessageScalarFieldEnum = {
   chatId: 'chatId',
   senderUserId: 'senderUserId',
   content: 'content',
+  replyToId: 'replyToId',
+  mentionUserIds: 'mentionUserIds',
+  pinnedAt: 'pinnedAt',
+  editedAt: 'editedAt',
   createdAt: 'createdAt'
 } as const
 
@@ -417,6 +435,27 @@ export const MessageMediaScalarFieldEnum = {
 } as const
 
 export type MessageMediaScalarFieldEnum = (typeof MessageMediaScalarFieldEnum)[keyof typeof MessageMediaScalarFieldEnum]
+
+
+export const MessageReactionScalarFieldEnum = {
+  id: 'id',
+  messageId: 'messageId',
+  userId: 'userId',
+  emoji: 'emoji',
+  createdAt: 'createdAt'
+} as const
+
+export type MessageReactionScalarFieldEnum = (typeof MessageReactionScalarFieldEnum)[keyof typeof MessageReactionScalarFieldEnum]
+
+
+export const ChatReadScalarFieldEnum = {
+  id: 'id',
+  chatId: 'chatId',
+  userId: 'userId',
+  lastReadAt: 'lastReadAt'
+} as const
+
+export type ChatReadScalarFieldEnum = (typeof ChatReadScalarFieldEnum)[keyof typeof ChatReadScalarFieldEnum]
 
 
 export const MeetingScalarFieldEnum = {
@@ -435,6 +474,30 @@ export const MeetingScalarFieldEnum = {
 export type MeetingScalarFieldEnum = (typeof MeetingScalarFieldEnum)[keyof typeof MeetingScalarFieldEnum]
 
 
+export const MeetingAttendanceScalarFieldEnum = {
+  id: 'id',
+  meetingId: 'meetingId',
+  memberId: 'memberId',
+  joinedAt: 'joinedAt',
+  leftAt: 'leftAt'
+} as const
+
+export type MeetingAttendanceScalarFieldEnum = (typeof MeetingAttendanceScalarFieldEnum)[keyof typeof MeetingAttendanceScalarFieldEnum]
+
+
+export const MeetingRecordingScalarFieldEnum = {
+  id: 'id',
+  meetingId: 'meetingId',
+  url: 'url',
+  sizeBytes: 'sizeBytes',
+  durationSec: 'durationSec',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type MeetingRecordingScalarFieldEnum = (typeof MeetingRecordingScalarFieldEnum)[keyof typeof MeetingRecordingScalarFieldEnum]
+
+
 export const MeetingParticipantScalarFieldEnum = {
   id: 'id',
   meetingId: 'meetingId',
@@ -450,14 +513,49 @@ export const NotificationScalarFieldEnum = {
   recipientId: 'recipientId',
   actorId: 'actorId',
   type: 'type',
+  category: 'category',
+  priority: 'priority',
   title: 'title',
   body: 'body',
   link: 'link',
   readAt: 'readAt',
+  archivedAt: 'archivedAt',
+  snoozedUntil: 'snoozedUntil',
   createdAt: 'createdAt'
 } as const
 
 export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  categories: 'categories',
+  emailEnabled: 'emailEnabled',
+  pushEnabled: 'pushEnabled',
+  quietHoursStart: 'quietHoursStart',
+  quietHoursEnd: 'quietHoursEnd',
+  digest: 'digest',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
+
+
+export const AiReportScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  kind: 'kind',
+  title: 'title',
+  content: 'content',
+  metrics: 'metrics',
+  model: 'model',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  createdAt: 'createdAt'
+} as const
+
+export type AiReportScalarFieldEnum = (typeof AiReportScalarFieldEnum)[keyof typeof AiReportScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -474,6 +572,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

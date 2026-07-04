@@ -1,8 +1,4 @@
-export type {
-  DealsOverTimeItem,
-  DealsOverTimeResponse,
-  DealsOverTimeParams,
-} from "./types";
+export type { MetricsOverview, TasksThroughput, SprintVelocity, CycleTime } from "./types";
 export { metricsApi } from "./api";
 export { metricsQueryKeys } from "./query-keys";
-export { useDealsOverTime } from "./use-metrics";
+export { useMetricsOverview, useTasksThroughput, useSprintVelocity, useCycleTime } from "./use-metrics";

@@ -26,6 +26,7 @@ import { useActiveOrgPaymentStatus } from "@/services/payments";
 import { PlanDetailsCard } from "@/components/payment";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { PresenceHeartbeat } from "@/components/team/presence-heartbeat";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -55,6 +56,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             <AnimatePresence>
                 {(isSessionPending || isOrganizationsPending || isActiveOrganizationPending) ? <Loading key="loading" /> : organizations && organizations.length > 0 ? (
                     <SidebarProvider>
+                        <PresenceHeartbeat />
                         <AppSidebar />
                         <SidebarInset>
                             <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">

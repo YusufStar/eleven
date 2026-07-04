@@ -14,6 +14,7 @@ import {
   ArrowRight02Icon,
   Globe02Icon,
   Add01Icon,
+  Clock01Icon,
 } from "@hugeicons/core-free-icons";
 import ElevenLogo from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -145,6 +146,12 @@ export function MeetHome() {
           </div>
           <NotificationBell />
           <ThemeToggle />
+          <Button asChild variant="outline" size="sm" className="gap-2 rounded-full">
+            <Link href="/meet/history">
+              <HugeiconsIcon icon={Clock01Icon} className="size-4" strokeWidth={1.8} />
+              History
+            </Link>
+          </Button>
           <Button asChild variant="outline" size="sm" className="rounded-full">
             <Link href="/dashboard">Dashboard</Link>
           </Button>

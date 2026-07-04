@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Add01Icon, Xls01Icon, Csv01Icon } from "@hugeicons/core-free-icons";
+import { Add01Icon } from "@hugeicons/core-free-icons";
 import { TasksFilterBar, type TaskViewType } from "@/components/tasks/tasks-filter-bar";
 import { TasksDataTableView } from "@/components/tasks/tasks-data-table-view";
 import { TasksKanbanView } from "@/components/tasks/tasks-kanban-view";
@@ -22,6 +22,7 @@ const VIEW_TYPES: TaskViewType[] = ["table", "kanban", "calendar"];
 
 function parseTasksUrl(searchParams: URLSearchParams) {
   const projectId = searchParams.get("projectId") || null;
+  const sprintId = searchParams.get("sprintId") || null;
   const assigneeIdsRaw = searchParams.get("assigneeIds") || "";
   const assigneeIds = assigneeIdsRaw.trim() ? assigneeIdsRaw.split(",").map((id) => id.trim()).filter(Boolean) : [];
   const search = searchParams.get("search") || "";
@@ -31,7 +32,7 @@ function parseTasksUrl(searchParams: URLSearchParams) {
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
   const view = searchParams.get("view") || "table";
   const viewType = VIEW_TYPES.includes(view as TaskViewType) ? (view as TaskViewType) : "table";
-  return { projectId, assigneeIds, search, statuses, page, viewType };
+  return { projectId, sprintId, assigneeIds, search, statuses, page, viewType };
 }
 
 export default function TasksPage() {
@@ -49,8 +50,9 @@ export default function TasksPage() {
   }, [teamData?.data, session?.user?.id]);
 
   const fromUrl = useMemo(() => parseTasksUrl(searchParams), [searchParams]);
-  const assigneeIds = fromUrl.assigneeIds.length > 0 ? fromUrl.assigneeIds : (myMemberId ? [myMemberId] : []);
+  const assigneeIds = fromUrl.assigneeIds.length > 0 ? fromUrl.assigneeIds : (fromUrl.sprintId ? [] : myMemberId ? [myMemberId] : []);
   const projectId = fromUrl.projectId;
+  const sprintId = fromUrl.sprintId;
   const search = fromUrl.search;
   const statuses = fromUrl.statuses;
   const page = fromUrl.page;
@@ -112,6 +114,7 @@ export default function TasksPage() {
     pageSize: 10,
     search: search || undefined,
     projectId: projectId || undefined,
+    sprintId: sprintId || undefined,
     assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
     status: statuses.length > 0 ? statuses : undefined,
   };
@@ -119,6 +122,7 @@ export default function TasksPage() {
     all: true,
     search: search || undefined,
     projectId: projectId || undefined,
+    sprintId: sprintId || undefined,
     assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
     status: statuses.length > 0 ? statuses : undefined,
   };
@@ -145,14 +149,6 @@ export default function TasksPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2" title="Coming soon">
-            <HugeiconsIcon icon={Xls01Icon} className="size-4" strokeWidth={2} />
-            Import Excel
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2" title="Coming soon">
-            <HugeiconsIcon icon={Csv01Icon} className="size-4" strokeWidth={2} />
-            Import CSV
-          </Button>
           <Button className="gap-2" onClick={() => setAddModalOpen(true)}>
             <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2} />
             Add task

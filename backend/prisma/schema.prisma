@@ -23,6 +23,8 @@ model User {
   dmChatsAsParticipant1 Chat[] @relation("DMParticipant1")
   dmChatsAsParticipant2 Chat[] @relation("DMParticipant2")
   messagesSent Message[]
+  messageReactions MessageReaction[]
+  chatReads        ChatRead[]
 
   @@unique([email])
   @@map("user")
@@ -102,12 +104,11 @@ model Organization {
 
   plan       Plan       @default(FREE)
   paidAt     DateTime?  // set when one-time payment succeeds
-  contacts   Contact[]
-  deals      Deal[]
-  pipelines  Pipeline[]
   activities Activity[]
   projects   Project[]
   tasks      Task[]
+  sprints    Sprint[]
+  aiReports  AiReport[]
   orgChat    Chat?      @relation("OrgChat")
   meetings      Meeting[]
   notifications Notification[]
@@ -143,17 +144,29 @@ model Member {
   role           String       @default("member")
   createdAt      DateTime
 
-  ownedContacts   Contact[]
-  ownedDeals      Deal[]
+  // Presence & profile (team page)
+  statusEmoji String?
+  statusText  String?
+  workingOn   String?
+  timezone    String?
+  skills      String[]  @default([])
+  lastSeenAt  DateTime?
+
   activityLogs    Activity[]
   assignedTasks   Task[] @relation("AssignedTasks")
   createdTasks    Task[] @relation("CreatedTasks")
+  taskComments    TaskComment[]
+  watchedTasks    TaskWatcher[]
+  timeEntries     TimeEntry[]
   projectMembers  ProjectMember[]
   projectFilesUploaded ProjectFile[]
   createdMeetings    Meeting[]            @relation("CreatedMeetings")
   meetingInvites     MeetingParticipant[]
+  meetingAttendance  MeetingAttendance[]  @relation("MeetingAttendance")
+  meetingRecordings  MeetingRecording[]   @relation("MeetingRecordings")
   notifications      Notification[]       @relation("NotificationRecipient")
   actedNotifications Notification[]       @relation("NotificationActor")
+  notificationPreference NotificationPreference?
 
   @@index([organizationId])
   @@index([userId])
@@ -177,66 +190,7 @@ model Invitation {
   @@map("invitation")
 }
 
-model Contact {
-  id             String       @id @default(cuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  // Temel bilgiler
-  type   ContactType   @default(PERSON)
-  status ContactStatus @default(LEAD)
-  source ContactSource @default(MANUAL)
-  avatar String?       // profile picture for PERSON, logo for COMPANY
-
-  // Kişi bilgileri
-  firstName String
-  lastName  String?
-  email     String?
-  phone     String?
-  title     String? // "Pazarlama Müdürü" gibi unvan
-
-  // Şirket bilgileri (type = COMPANY ise bunlar dolu)
-  companyName   String?
-  website       String?
-  industry      String?
-  employeeCount Int?
-
-  // Şirket-Kişi ilişkisi
-  // Bir kişi bir şirkete bağlı olabilir
-  companyId String?
-  company   Contact?  @relation("CompanyPersons", fields: [companyId], references: [id])
-  employees Contact[] @relation("CompanyPersons")
-
-  // Adres
-  country String?
-  city    String?
-  address String?
-
-  // Sorumlu kişi (hangi ekip üyesi takip ediyor)
-  ownerId String?
-  owner   Member? @relation(fields: [ownerId], references: [id])
-
-  // Ek bilgiler
-  notes        String?
-  tags         String[] @default([])
-  customFields Json?    @default("{}")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // İlişkiler
-  deals      Deal[]
-  tasks      Task[]
-
-  @@index([organizationId])
-  @@index([organizationId, type])
-  @@index([organizationId, status])
-  @@index([organizationId, ownerId])
-  @@index([email])
-  @@map("contacts")
-}
-
-// Audit log: who did what (create/update/delete/view) on which entity. List endpoints are not logged.
+// Audit log: who did what (create/update/delete/comment/...) on which entity. List endpoints are not logged.
 model Activity {
   id             String       @id @default(cuid())
   organizationId String
@@ -248,7 +202,7 @@ model Activity {
   action    ActivityAction
   entityType ActivityEntityType
   entityId  String
-  entityTitle String?  // optional display/search label (e.g. contact name, deal title)
+  entityTitle String?  // optional display/search label (e.g. task title, project name)
   metadata  Json?     // optional details (e.g. changed fields for UPDATE)
 
   createdAt DateTime @default(now())
@@ -261,73 +215,6 @@ model Activity {
   @@index([organizationId, createdAt])
   @@index([organizationId, entityTitle])
   @@map("activities")
-}
-
-model Pipeline {
-  id             String       @id @default(cuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  name           String
-  isDefault      Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
-  stages Stage[]
-  deals  Deal[]
-
-  @@index([organizationId])
-  @@map("pipelines")
-}
-
-model Stage {
-  id         String   @id @default(cuid())
-  pipelineId String
-  pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
-  name       String
-  order      Int
-  color      String?
-
-  deals Deal[]
-
-  @@index([pipelineId])
-  @@map("stages")
-}
-
-model Deal {
-  id             String       @id @default(cuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  title         String
-  value         Decimal?   @db.Decimal(15, 2)
-  currency      String     @default("TRY")
-  probability   Int?       @default(50)
-  expectedClose DateTime?
-  status        DealStatus @default(OPEN)
-  lostReason    String? // kaybedildiyse neden
-
-  contactId  String?
-  contact    Contact? @relation(fields: [contactId], references: [id])
-  stageId    String
-  stage      Stage    @relation(fields: [stageId], references: [id])
-  pipelineId String
-  pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
-
-  ownerId String?
-  owner   Member? @relation(fields: [ownerId], references: [id])
-
-  customFields Json? @default("{}")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  tasks      Task[]
-
-  @@index([organizationId])
-  @@index([organizationId, status])
-  @@index([organizationId, stageId])
-  @@index([organizationId, ownerId])
-  @@map("deals")
 }
 
 model Project {
@@ -348,6 +235,7 @@ model Project {
   tasks       Task[]
   members     ProjectMember[]
   files       ProjectFile[]
+  milestones  Milestone[]
 
   @@unique([organizationId, slug])
   @@index([organizationId])
@@ -378,12 +266,53 @@ model ProjectFile {
   fileUrl     String
   fileType    String?
   fileSize    Int?
+  // Virtual folder path, e.g. "/" or "/design/specs". No Folder model needed.
+  folder      String   @default("/")
+  // Previous versions: [{ fileUrl, fileSize, uploadedById, uploadedAt }]
+  versionHistory Json  @default("[]")
   uploadedById String?
   uploadedBy  Member?  @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([projectId])
+  @@index([projectId, folder])
   @@map("project_files")
+}
+
+// ─── Sprints & Milestones ───────────────────────
+model Sprint {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  goal           String?
+  startsAt       DateTime
+  endsAt         DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tasks Task[]
+
+  @@index([organizationId])
+  @@index([organizationId, startsAt])
+  @@map("sprints")
+}
+
+model Milestone {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  dueAt       DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  tasks Task[]
+
+  @@index([projectId])
+  @@map("milestones")
 }
 
 model Task {
@@ -397,9 +326,14 @@ model Task {
 
   status      TaskStatus   @default(TODO)
   priority    TaskPriority @default(MEDIUM)
+  labels      String[]     @default([])
 
   dueAt       DateTime?
   completedAt DateTime?
+
+  // Estimation & time tracking
+  estimate         Int? // story points
+  timeSpentMinutes Int  @default(0) // denormalized sum of TimeEntry.minutes
 
   assigneeId String?
   assignee   Member? @relation("AssignedTasks", fields: [assigneeId], references: [id])
@@ -410,17 +344,23 @@ model Task {
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
-  contactId String?
-  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  sprintId String?
+  sprint   Sprint? @relation(fields: [sprintId], references: [id], onDelete: SetNull)
 
-  dealId String?
-  deal   Deal? @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  milestoneId String?
+  milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
 
   parentTaskId String?
   parentTask   Task?  @relation("SubTasks", fields: [parentTaskId], references: [id])
   subTasks     Task[] @relation("SubTasks")
 
   attachments TaskAttachment[]
+  comments    TaskComment[]
+  watchers    TaskWatcher[]
+  timeEntries TimeEntry[]
+  // Dependencies: this task is blocked until `dependsOn` tasks complete
+  dependsOn     TaskDependency[] @relation("DependsOn")
+  dependedOnBy  TaskDependency[] @relation("DependedOnBy")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -429,6 +369,7 @@ model Task {
   @@index([organizationId, status])
   @@index([organizationId, assigneeId])
   @@index([organizationId, projectId])
+  @@index([organizationId, sprintId])
   @@map("tasks")
 }
 
@@ -448,6 +389,64 @@ model TaskAttachment {
   @@map("task_attachments")
 }
 
+model TaskComment {
+  id       String @id @default(cuid())
+  taskId   String
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId String
+  author   Member @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+  @@map("task_comments")
+}
+
+model TaskWatcher {
+  id       String @id @default(cuid())
+  taskId   String
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([taskId, memberId])
+  @@index([memberId])
+  @@map("task_watchers")
+}
+
+// task depends on dependsOn (dependsOn must complete first)
+model TaskDependency {
+  id          String @id @default(cuid())
+  taskId      String
+  task        Task   @relation("DependsOn", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnId String
+  dependsOn   Task   @relation("DependedOnBy", fields: [dependsOnId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnId])
+  @@index([dependsOnId])
+  @@map("task_dependencies")
+}
+
+model TimeEntry {
+  id       String  @id @default(cuid())
+  taskId   String
+  task     Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  memberId String
+  member   Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  minutes  Int
+  note     String?
+
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+  @@index([memberId])
+  @@map("time_entries")
+}
+
 // ─── Chat ───────────────────────────────────────
 // Chat id in URL: for org = organizationId, for DM = "participant1Id-participant2Id" (sorted)
 model Chat {
@@ -460,6 +459,7 @@ model Chat {
   participant1   User?    @relation("DMParticipant1", fields: [participant1Id], references: [id], onDelete: Cascade)
   participant2   User?    @relation("DMParticipant2", fields: [participant2Id], references: [id], onDelete: Cascade)
   messages       Message[]
+  reads          ChatRead[]
   createdAt      DateTime @default(now())
 
   @@index([type])
@@ -476,10 +476,23 @@ model Message {
   sender      User     @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
   content     String?  // optional when message is media-only
   medias      MessageMedia[]
-  createdAt   DateTime @default(now())
+
+  // Threads: replies reference the thread root message
+  replyToId String?
+  replyTo   Message?  @relation("Replies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[] @relation("Replies")
+
+  mentionUserIds String[] @default([])
+  reactions      MessageReaction[]
+
+  pinnedAt  DateTime?
+  editedAt  DateTime?
+  createdAt DateTime @default(now())
 
   @@index([chatId])
   @@index([chatId, createdAt])
+  @@index([chatId, pinnedAt])
+  @@index([replyToId])
   @@index([senderUserId])
   @@map("messages")
 }
@@ -494,6 +507,35 @@ model MessageMedia {
 
   @@index([messageId])
   @@map("message_medias")
+}
+
+model MessageReaction {
+  id        String  @id @default(cuid())
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String
+
+  createdAt DateTime @default(now())
+
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
+  @@map("message_reactions")
+}
+
+// Read receipts / unread counts: last time a user read a chat
+model ChatRead {
+  id         String   @id @default(cuid())
+  chatId     String
+  chat       Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastReadAt DateTime @default(now())
+
+  @@unique([chatId, userId])
+  @@index([userId])
+  @@map("chat_reads")
 }
 
 // ─── Meetings ────────────────────────────────────
@@ -512,6 +554,8 @@ model Meeting {
   createdBy   Member @relation("CreatedMeetings", fields: [createdById], references: [id], onDelete: Cascade)
 
   participants MeetingParticipant[]
+  attendance   MeetingAttendance[]
+  recordings   MeetingRecording[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -519,6 +563,36 @@ model Meeting {
   @@index([organizationId])
   @@index([organizationId, startsAt])
   @@map("meetings")
+}
+
+// One row per join session — a rejoin creates a new row.
+model MeetingAttendance {
+  id        String    @id @default(cuid())
+  meetingId String
+  meeting   Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member    @relation("MeetingAttendance", fields: [memberId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime  @default(now())
+  leftAt    DateTime?
+
+  @@index([meetingId])
+  @@index([memberId])
+  @@map("meeting_attendance")
+}
+
+model MeetingRecording {
+  id          String   @id @default(cuid())
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  url         String
+  sizeBytes   Int?
+  durationSec Int?
+  createdById String
+  createdBy   Member   @relation("MeetingRecordings", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([meetingId])
+  @@map("meeting_recordings")
 }
 
 model MeetingParticipant {
@@ -544,18 +618,64 @@ model Notification {
   actorId     String?
   actor       Member? @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
 
-  type   NotificationType
+  type     NotificationType
+  // Grouping bucket for filters/preferences: "task" | "mention" | "project" | "meeting" | "system"
+  category String           @default("system")
+  // "low" | "normal" | "high"
+  priority String           @default("normal")
   title  String
   body   String?
   link   String? // in-app path, e.g. /dashboard/tasks or /meet/<code>
-  readAt DateTime?
+  readAt       DateTime?
+  archivedAt   DateTime?
+  snoozedUntil DateTime?
 
   createdAt DateTime @default(now())
 
   @@index([recipientId, readAt])
   @@index([recipientId, createdAt])
+  @@index([recipientId, archivedAt])
   @@index([organizationId])
   @@map("notifications")
+}
+
+// Per-member notification preferences. categories Json shape:
+// { task: { inApp: true, email: true }, mention: {...}, project: {...}, meeting: {...}, system: {...} }
+model NotificationPreference {
+  id       String @id @default(cuid())
+  memberId String @unique
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  categories      Json    @default("{}")
+  emailEnabled    Boolean @default(true)
+  pushEnabled     Boolean @default(false)
+  quietHoursStart Int? // hour 0-23, in member timezone
+  quietHoursEnd   Int?
+  digest          String  @default("off") // "off" | "daily" | "weekly"
+
+  updatedAt DateTime @updatedAt
+
+  @@map("notification_preferences")
+}
+
+// ─── AI Reports ──────────────────────────────────
+model AiReport {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  kind        AiReportKind
+  title       String
+  content     String // markdown
+  metrics     Json   @default("{}") // structured numbers used in the report
+  model       String?
+  periodStart DateTime
+  periodEnd   DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, kind, createdAt])
+  @@map("ai_reports")
 }
 
 // ─── Enums ───────────────────────────────────────
@@ -563,14 +683,12 @@ model Notification {
 enum NotificationType {
   TASK_ASSIGNED
   TASK_COMPLETED
-  DEAL_STAGE_CHANGED
-  DEAL_WON
-  DEAL_ASSIGNED
-  CONTACT_ASSIGNED
+  TASK_COMMENT
+  MENTION
   PROJECT_MEMBER_ADDED
   PROJECT_FILE_ADDED
   MEETING_INVITED
-  CONTACTS_IMPORTED
+  SPRINT_STARTED
   GENERIC
 }
 
@@ -579,50 +697,29 @@ enum ChatType {
   DM
 }
 
-enum ContactType {
-  PERSON
-  COMPANY
-}
-
-enum ContactStatus {
-  LEAD // potansiyel, henüz görüşülmedi
-  PROSPECT // görüşme aşamasında
-  CUSTOMER // aktif müşteri
-  CHURNED // kaybedilmiş müşteri
-  PARTNER // iş ortağı
-}
-
-enum ContactSource {
-  MANUAL // elle eklendi
-  CSV_IMPORT // toplu import
-  WEB_FORM // web sitesi formu
-  EMAIL // email entegrasyonu
-  API // dış sistem
-}
-
 enum ActivityAction {
   CREATE
   UPDATE
   DELETE
   VIEW
+  COMMENT
+  ASSIGN
+  COMPLETE
+  MENTION
 }
 
 enum ActivityEntityType {
-  CONTACT
-  DEAL
   PROJECT
   TASK
-  PIPELINE
-  STAGE
+  SPRINT
+  MILESTONE
   PROJECT_FILE
   TASK_ATTACHMENT
   PROJECT_MEMBER
-}
-
-enum DealStatus {
-  OPEN
-  WON
-  LOST
+  MESSAGE
+  MEETING
+  MEMBER
+  AI_REPORT
 }
 
 enum Plan {
@@ -633,6 +730,8 @@ enum Plan {
 enum TaskStatus {
   TODO
   IN_PROGRESS
+  IN_REVIEW
+  BLOCKED
   DONE
   CANCELLED
 }
@@ -642,4 +741,10 @@ enum TaskPriority {
   MEDIUM
   HIGH
   URGENT
+}
+
+enum AiReportKind {
+  MINI
+  MEDIUM
+  HIGH
 }

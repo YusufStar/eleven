@@ -66,8 +66,11 @@ export function MeetWeekCalendar({
     if ((e.target as HTMLElement).closest("[data-meeting]")) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const minutes = ((e.clientY - rect.top) / HOUR_PX) * 60 + DAY_START_HOUR * 60;
-    const rounded = Math.round(minutes / 30) * 30;
-    const start = new Date(startOfDay(day).getTime() + rounded * 60 * 1000);
+    // three click zones per hour cell: top → :00, middle → :30, bottom → next :00
+    const hour = Math.floor(minutes / 60);
+    const within = minutes % 60;
+    const snapped = within < 20 ? hour * 60 : within < 40 ? hour * 60 + 30 : (hour + 1) * 60;
+    const start = new Date(startOfDay(day).getTime() + snapped * 60 * 1000);
     onSlotClick(start);
   };
 

@@ -45,8 +45,8 @@ export const auth = betterAuth({
                         title: `You're invited to ${orgName}.`,
                         paragraphs: [
                             inviterName
-                                ? `${inviterName} invited you to work together in ${orgName} on Eleven — deals, projects, and tasks in one place.`
-                                : `You've been invited to work in ${orgName} on Eleven — deals, projects, and tasks in one place.`,
+                                ? `${inviterName} invited you to work together in ${orgName} on Eleven — projects, tasks, and chat in one place.`
+                                : `You've been invited to work in ${orgName} on Eleven — projects, tasks, and chat in one place.`,
                             "If you weren't expecting this invitation, you can safely ignore this email.",
                         ],
                         ctaLabel: "Accept invitation",

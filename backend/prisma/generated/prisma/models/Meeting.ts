@@ -225,6 +225,8 @@ export type MeetingWhereInput = {
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   createdBy?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   participants?: Prisma.MeetingParticipantListRelationFilter
+  attendance?: Prisma.MeetingAttendanceListRelationFilter
+  recordings?: Prisma.MeetingRecordingListRelationFilter
 }
 
 export type MeetingOrderByWithRelationInput = {
@@ -241,6 +243,8 @@ export type MeetingOrderByWithRelationInput = {
   organization?: Prisma.OrganizationOrderByWithRelationInput
   createdBy?: Prisma.MemberOrderByWithRelationInput
   participants?: Prisma.MeetingParticipantOrderByRelationAggregateInput
+  attendance?: Prisma.MeetingAttendanceOrderByRelationAggregateInput
+  recordings?: Prisma.MeetingRecordingOrderByRelationAggregateInput
 }
 
 export type MeetingWhereUniqueInput = Prisma.AtLeast<{
@@ -260,6 +264,8 @@ export type MeetingWhereUniqueInput = Prisma.AtLeast<{
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   createdBy?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   participants?: Prisma.MeetingParticipantListRelationFilter
+  attendance?: Prisma.MeetingAttendanceListRelationFilter
+  recordings?: Prisma.MeetingRecordingListRelationFilter
 }, "id" | "code">
 
 export type MeetingOrderByWithAggregationInput = {
@@ -306,6 +312,8 @@ export type MeetingCreateInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutMeetingsInput
   createdBy: Prisma.MemberCreateNestedOneWithoutCreatedMeetingsInput
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUncheckedCreateInput = {
@@ -320,6 +328,8 @@ export type MeetingUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUpdateInput = {
@@ -334,6 +344,8 @@ export type MeetingUpdateInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMeetingsNestedInput
   createdBy?: Prisma.MemberUpdateOneRequiredWithoutCreatedMeetingsNestedInput
   participants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateInput = {
@@ -348,6 +360,8 @@ export type MeetingUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingCreateManyInput = {
@@ -525,6 +539,34 @@ export type MeetingUncheckedUpdateManyWithoutCreatedByNestedInput = {
   deleteMany?: Prisma.MeetingScalarWhereInput | Prisma.MeetingScalarWhereInput[]
 }
 
+export type MeetingCreateNestedOneWithoutAttendanceInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutAttendanceInput, Prisma.MeetingUncheckedCreateWithoutAttendanceInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutAttendanceInput
+  connect?: Prisma.MeetingWhereUniqueInput
+}
+
+export type MeetingUpdateOneRequiredWithoutAttendanceNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutAttendanceInput, Prisma.MeetingUncheckedCreateWithoutAttendanceInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutAttendanceInput
+  upsert?: Prisma.MeetingUpsertWithoutAttendanceInput
+  connect?: Prisma.MeetingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MeetingUpdateToOneWithWhereWithoutAttendanceInput, Prisma.MeetingUpdateWithoutAttendanceInput>, Prisma.MeetingUncheckedUpdateWithoutAttendanceInput>
+}
+
+export type MeetingCreateNestedOneWithoutRecordingsInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutRecordingsInput, Prisma.MeetingUncheckedCreateWithoutRecordingsInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutRecordingsInput
+  connect?: Prisma.MeetingWhereUniqueInput
+}
+
+export type MeetingUpdateOneRequiredWithoutRecordingsNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutRecordingsInput, Prisma.MeetingUncheckedCreateWithoutRecordingsInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutRecordingsInput
+  upsert?: Prisma.MeetingUpsertWithoutRecordingsInput
+  connect?: Prisma.MeetingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MeetingUpdateToOneWithWhereWithoutRecordingsInput, Prisma.MeetingUpdateWithoutRecordingsInput>, Prisma.MeetingUncheckedUpdateWithoutRecordingsInput>
+}
+
 export type MeetingCreateNestedOneWithoutParticipantsInput = {
   create?: Prisma.XOR<Prisma.MeetingCreateWithoutParticipantsInput, Prisma.MeetingUncheckedCreateWithoutParticipantsInput>
   connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutParticipantsInput
@@ -550,6 +592,8 @@ export type MeetingCreateWithoutOrganizationInput = {
   updatedAt?: Date | string
   createdBy: Prisma.MemberCreateNestedOneWithoutCreatedMeetingsInput
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUncheckedCreateWithoutOrganizationInput = {
@@ -563,6 +607,8 @@ export type MeetingUncheckedCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingCreateOrConnectWithoutOrganizationInput = {
@@ -618,6 +664,8 @@ export type MeetingCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutMeetingsInput
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUncheckedCreateWithoutCreatedByInput = {
@@ -631,6 +679,8 @@ export type MeetingUncheckedCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingCreateOrConnectWithoutCreatedByInput = {
@@ -659,6 +709,158 @@ export type MeetingUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.MeetingUpdateManyMutationInput, Prisma.MeetingUncheckedUpdateManyWithoutCreatedByInput>
 }
 
+export type MeetingCreateWithoutAttendanceInput = {
+  id?: string
+  code: string
+  title: string
+  startsAt: Date | string
+  endsAt?: Date | string | null
+  isPublic?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutMeetingsInput
+  createdBy: Prisma.MemberCreateNestedOneWithoutCreatedMeetingsInput
+  participants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingUncheckedCreateWithoutAttendanceInput = {
+  id?: string
+  organizationId: string
+  code: string
+  title: string
+  startsAt: Date | string
+  endsAt?: Date | string | null
+  isPublic?: boolean
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingCreateOrConnectWithoutAttendanceInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutAttendanceInput, Prisma.MeetingUncheckedCreateWithoutAttendanceInput>
+}
+
+export type MeetingUpsertWithoutAttendanceInput = {
+  update: Prisma.XOR<Prisma.MeetingUpdateWithoutAttendanceInput, Prisma.MeetingUncheckedUpdateWithoutAttendanceInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutAttendanceInput, Prisma.MeetingUncheckedCreateWithoutAttendanceInput>
+  where?: Prisma.MeetingWhereInput
+}
+
+export type MeetingUpdateToOneWithWhereWithoutAttendanceInput = {
+  where?: Prisma.MeetingWhereInput
+  data: Prisma.XOR<Prisma.MeetingUpdateWithoutAttendanceInput, Prisma.MeetingUncheckedUpdateWithoutAttendanceInput>
+}
+
+export type MeetingUpdateWithoutAttendanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMeetingsNestedInput
+  createdBy?: Prisma.MemberUpdateOneRequiredWithoutCreatedMeetingsNestedInput
+  participants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateWithoutAttendanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingCreateWithoutRecordingsInput = {
+  id?: string
+  code: string
+  title: string
+  startsAt: Date | string
+  endsAt?: Date | string | null
+  isPublic?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutMeetingsInput
+  createdBy: Prisma.MemberCreateNestedOneWithoutCreatedMeetingsInput
+  participants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingUncheckedCreateWithoutRecordingsInput = {
+  id?: string
+  organizationId: string
+  code: string
+  title: string
+  startsAt: Date | string
+  endsAt?: Date | string | null
+  isPublic?: boolean
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
+  attendance?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingCreateOrConnectWithoutRecordingsInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutRecordingsInput, Prisma.MeetingUncheckedCreateWithoutRecordingsInput>
+}
+
+export type MeetingUpsertWithoutRecordingsInput = {
+  update: Prisma.XOR<Prisma.MeetingUpdateWithoutRecordingsInput, Prisma.MeetingUncheckedUpdateWithoutRecordingsInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutRecordingsInput, Prisma.MeetingUncheckedCreateWithoutRecordingsInput>
+  where?: Prisma.MeetingWhereInput
+}
+
+export type MeetingUpdateToOneWithWhereWithoutRecordingsInput = {
+  where?: Prisma.MeetingWhereInput
+  data: Prisma.XOR<Prisma.MeetingUpdateWithoutRecordingsInput, Prisma.MeetingUncheckedUpdateWithoutRecordingsInput>
+}
+
+export type MeetingUpdateWithoutRecordingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMeetingsNestedInput
+  createdBy?: Prisma.MemberUpdateOneRequiredWithoutCreatedMeetingsNestedInput
+  participants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateWithoutRecordingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
 export type MeetingCreateWithoutParticipantsInput = {
   id?: string
   code: string
@@ -670,6 +872,8 @@ export type MeetingCreateWithoutParticipantsInput = {
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutMeetingsInput
   createdBy: Prisma.MemberCreateNestedOneWithoutCreatedMeetingsInput
+  attendance?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUncheckedCreateWithoutParticipantsInput = {
@@ -683,6 +887,8 @@ export type MeetingUncheckedCreateWithoutParticipantsInput = {
   createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  attendance?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  recordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingCreateOrConnectWithoutParticipantsInput = {
@@ -712,6 +918,8 @@ export type MeetingUpdateWithoutParticipantsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMeetingsNestedInput
   createdBy?: Prisma.MemberUpdateOneRequiredWithoutCreatedMeetingsNestedInput
+  attendance?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateWithoutParticipantsInput = {
@@ -725,6 +933,8 @@ export type MeetingUncheckedUpdateWithoutParticipantsInput = {
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attendance?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingCreateManyOrganizationInput = {
@@ -750,6 +960,8 @@ export type MeetingUpdateWithoutOrganizationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.MemberUpdateOneRequiredWithoutCreatedMeetingsNestedInput
   participants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateWithoutOrganizationInput = {
@@ -763,6 +975,8 @@ export type MeetingUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateManyWithoutOrganizationInput = {
@@ -800,6 +1014,8 @@ export type MeetingUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMeetingsNestedInput
   participants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateWithoutCreatedByInput = {
@@ -813,6 +1029,8 @@ export type MeetingUncheckedUpdateWithoutCreatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
+  attendance?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  recordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateManyWithoutCreatedByInput = {
@@ -834,10 +1052,14 @@ export type MeetingUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type MeetingCountOutputType = {
   participants: number
+  attendance: number
+  recordings: number
 }
 
 export type MeetingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   participants?: boolean | MeetingCountOutputTypeCountParticipantsArgs
+  attendance?: boolean | MeetingCountOutputTypeCountAttendanceArgs
+  recordings?: boolean | MeetingCountOutputTypeCountRecordingsArgs
 }
 
 /**
@@ -857,6 +1079,20 @@ export type MeetingCountOutputTypeCountParticipantsArgs<ExtArgs extends runtime.
   where?: Prisma.MeetingParticipantWhereInput
 }
 
+/**
+ * MeetingCountOutputType without action
+ */
+export type MeetingCountOutputTypeCountAttendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MeetingAttendanceWhereInput
+}
+
+/**
+ * MeetingCountOutputType without action
+ */
+export type MeetingCountOutputTypeCountRecordingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MeetingRecordingWhereInput
+}
+
 
 export type MeetingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -872,6 +1108,8 @@ export type MeetingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   participants?: boolean | Prisma.Meeting$participantsArgs<ExtArgs>
+  attendance?: boolean | Prisma.Meeting$attendanceArgs<ExtArgs>
+  recordings?: boolean | Prisma.Meeting$recordingsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["meeting"]>
 
@@ -923,6 +1161,8 @@ export type MeetingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   participants?: boolean | Prisma.Meeting$participantsArgs<ExtArgs>
+  attendance?: boolean | Prisma.Meeting$attendanceArgs<ExtArgs>
+  recordings?: boolean | Prisma.Meeting$recordingsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MeetingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -940,6 +1180,8 @@ export type $MeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     organization: Prisma.$OrganizationPayload<ExtArgs>
     createdBy: Prisma.$MemberPayload<ExtArgs>
     participants: Prisma.$MeetingParticipantPayload<ExtArgs>[]
+    attendance: Prisma.$MeetingAttendancePayload<ExtArgs>[]
+    recordings: Prisma.$MeetingRecordingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1349,6 +1591,8 @@ export interface Prisma__MeetingClient<T, Null = never, ExtArgs extends runtime.
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.MemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemberDefaultArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   participants<T extends Prisma.Meeting$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attendance<T extends Prisma.Meeting$attendanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recordings<T extends Prisma.Meeting$recordingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$recordingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingRecordingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1810,6 +2054,54 @@ export type Meeting$participantsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.MeetingParticipantScalarFieldEnum | Prisma.MeetingParticipantScalarFieldEnum[]
+}
+
+/**
+ * Meeting.attendance
+ */
+export type Meeting$attendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MeetingAttendance
+   */
+  select?: Prisma.MeetingAttendanceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MeetingAttendance
+   */
+  omit?: Prisma.MeetingAttendanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingAttendanceInclude<ExtArgs> | null
+  where?: Prisma.MeetingAttendanceWhereInput
+  orderBy?: Prisma.MeetingAttendanceOrderByWithRelationInput | Prisma.MeetingAttendanceOrderByWithRelationInput[]
+  cursor?: Prisma.MeetingAttendanceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MeetingAttendanceScalarFieldEnum | Prisma.MeetingAttendanceScalarFieldEnum[]
+}
+
+/**
+ * Meeting.recordings
+ */
+export type Meeting$recordingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MeetingRecording
+   */
+  select?: Prisma.MeetingRecordingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MeetingRecording
+   */
+  omit?: Prisma.MeetingRecordingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingRecordingInclude<ExtArgs> | null
+  where?: Prisma.MeetingRecordingWhereInput
+  orderBy?: Prisma.MeetingRecordingOrderByWithRelationInput | Prisma.MeetingRecordingOrderByWithRelationInput[]
+  cursor?: Prisma.MeetingRecordingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MeetingRecordingScalarFieldEnum | Prisma.MeetingRecordingScalarFieldEnum[]
 }
 
 /**

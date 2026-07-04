@@ -102,19 +102,17 @@ export function notificationCta(type: string): string {
   switch (type) {
     case "TASK_ASSIGNED":
       return "Open the task";
-    case "DEAL_STAGE_CHANGED":
-    case "DEAL_WON":
-    case "DEAL_ASSIGNED":
-      return "Open the deal";
     case "PROJECT_MEMBER_ADDED":
     case "PROJECT_FILE_ADDED":
       return "Open the project";
     case "MEETING_INVITED":
       return "Join the meeting";
-    case "CONTACTS_IMPORTED":
-    case "CONTACT_ASSIGNED":
-      return "Open contacts";
+    case "SPRINT_STARTED":
+      return "Open the sprint";
+    case "MENTION":
+      return "Open the conversation";
     case "TASK_COMPLETED":
+    case "TASK_COMMENT":
       return "Open the task";
     default:
       return "Open Eleven";

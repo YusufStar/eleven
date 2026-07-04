@@ -3,11 +3,11 @@
 import * as React from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Task } from "@/services/tasks";
-import { useUpdateTaskStatus } from "@/services/tasks";
+import { useBulkDeleteTasks, useBulkUpdateTasks } from "@/services/tasks";
 import type { TaskStatusValue } from "@/services/tasks/types";
 import { TasksDataTable } from "@/components/tasks/tasks-data-table";
 import { tasksColumns } from "@/components/tasks/columns";
-import { TaskDetailModal } from "@/components/tasks/task-detail-modal";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -36,8 +36,8 @@ export function TasksDataTableView({
   isPending,
   onPageChange,
 }: TasksDataTableViewProps) {
-  const updateStatus = useUpdateTaskStatus();
-  const [detailTaskId, setDetailTaskId] = React.useState<string | null>(null);
+  const bulkUpdate = useBulkUpdateTasks();
+  const bulkDelete = useBulkDeleteTasks();
 
   const columns = React.useMemo<ColumnDef<Task>[]>(() => {
     const base = tasksColumns.filter((c) => c.id !== "actions");
@@ -47,12 +47,8 @@ export function TasksDataTableView({
         ...actionsColumn,
         cell: ({ row }: { row: { original: Task } }) => (
           <div className="flex justify-end w-full">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDetailTaskId(row.original.id)}
-            >
-              View details
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={`/dashboard/tasks/${row.original.id}`}>View details</Link>
             </Button>
           </div>
         ),
@@ -62,12 +58,19 @@ export function TasksDataTableView({
 
   const handleBulkStatusChange = async (taskIds: string[], status: TaskStatusValue) => {
     try {
-      await Promise.all(
-        taskIds.map((taskId) => updateStatus.mutateAsync({ taskId, status }))
-      );
-      toast.success("Status updated");
+      const res = await bulkUpdate.mutateAsync({ ids: taskIds, status });
+      toast.success(`Updated ${res.count} tasks`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to update status");
+    }
+  };
+
+  const handleBulkDelete = async (taskIds: string[]) => {
+    try {
+      const res = await bulkDelete.mutateAsync(taskIds);
+      toast.success(`Deleted ${res.count} tasks`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete tasks");
     }
   };
 
@@ -82,11 +85,7 @@ export function TasksDataTableView({
         total={total}
         onPageChange={onPageChange}
         onBulkStatusChange={handleBulkStatusChange}
-      />
-      <TaskDetailModal
-        taskId={detailTaskId}
-        open={!!detailTaskId}
-        onOpenChange={(open) => !open && setDetailTaskId(null)}
+        onBulkDelete={handleBulkDelete}
       />
     </>
   );

@@ -31,6 +31,13 @@ export function useMeetingByCode(code: string | null) {
   });
 }
 
+export function useMeetingHistory() {
+  return useQuery({
+    queryKey: [...key, "history"],
+    queryFn: () => meetingsApi.history(),
+  });
+}
+
 export function useCreateMeeting() {
   const queryClient = useQueryClient();
   return useMutation({

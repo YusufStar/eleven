@@ -46,8 +46,10 @@ const VIEW_LABELS: Record<TaskViewType, string> = {
 const STATUS_LABELS: Record<TaskStatusValue, string> = {
   TODO: "To do",
   IN_PROGRESS: "In progress",
+  IN_REVIEW: "In review",
+  BLOCKED: "Blocked",
   DONE: "Done",
-  CANCELLED: "Cancelled",
+  CANCELLED: "Archived",
 };
 
 export type TasksFilterBarProps = {

@@ -27,9 +27,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Eleven — CRM & Project Management for modern teams",
+  title: "Eleven — the work platform for software teams",
   description:
-    "Contacts, deals, pipelines, projects, and tasks in one workspace. The CRM and project management platform built for teams that move fast.",
+    "Tasks, sprints, projects, chat, files, and AI reports in one fast workspace. Slack + Jira + Linear + Notion, reimagined for engineering teams.",
 };
 
 export default function RootLayout({

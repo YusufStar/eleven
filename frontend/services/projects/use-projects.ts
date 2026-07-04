@@ -119,11 +119,15 @@ export function useProjectFiles(projectId: string | null, params?: { search?: st
 export function useAddProjectFile(projectId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (file: File) => projectsApi.addFile(projectId, file),
+    mutationFn: (input: File | { file: File; folder?: string }) =>
+      input instanceof File
+        ? projectsApi.addFile(projectId, input)
+        : projectsApi.addFile(projectId, input.file, input.folder),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: projectsKey });
       qc.invalidateQueries({ queryKey: [...projectsKey, projectId] });
       qc.invalidateQueries({ queryKey: [...projectsKey, projectId, "files"] });
+      qc.invalidateQueries({ queryKey: ["files"] });
     },
   });
 }
@@ -149,6 +153,49 @@ export function useDeleteProjectFile(projectId: string) {
       qc.invalidateQueries({ queryKey: projectsKey });
       qc.invalidateQueries({ queryKey: [...projectsKey, projectId] });
       qc.invalidateQueries({ queryKey: [...projectsKey, projectId, "files"] });
+      qc.invalidateQueries({ queryKey: ["files"] });
     },
+  });
+}
+
+export function useProjectInsights(projectId: string | null) {
+  return useQuery({
+    queryKey: [...projectsKey, projectId, "insights"],
+    queryFn: () => projectsApi.getInsights(projectId!),
+    enabled: !!projectId,
+  });
+}
+
+export function useProjectMilestones(projectId: string | null) {
+  return useQuery({
+    queryKey: [...projectsKey, projectId, "milestones"],
+    queryFn: () => projectsApi.listMilestones(projectId!),
+    enabled: !!projectId,
+  });
+}
+
+export function useAddMilestone(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { name: string; description?: string | null; dueAt?: string | null }) =>
+      projectsApi.addMilestone(projectId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...projectsKey, projectId, "milestones"] }),
+  });
+}
+
+export function useUpdateMilestone(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ milestoneId, body }: { milestoneId: string; body: Partial<{ name: string; description: string | null; dueAt: string | null; completed: boolean }> }) =>
+      projectsApi.updateMilestone(projectId, milestoneId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...projectsKey, projectId, "milestones"] }),
+  });
+}
+
+export function useDeleteMilestone(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (milestoneId: string) => projectsApi.deleteMilestone(projectId, milestoneId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...projectsKey, projectId, "milestones"] }),
   });
 }

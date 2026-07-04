@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 import { ChatType } from "../../prisma/generated/prisma/enums";
+import { notify } from "../lib/notify";
 
 const R2_PUBLIC_BASE_URL = (process.env.R2_PUBLIC_BASE_URL ?? "").replace(/\/$/, "");
 const ALLOWED_MEDIA_MIMETYPES = [
@@ -106,8 +107,86 @@ const jsonResponse = (body: object, status: number) =>
     headers: { "Content-Type": "application/json" },
   });
 
+const messageInclude = {
+  sender: { select: { id: true, name: true, email: true, image: true } },
+  medias: true,
+  reactions: { select: { emoji: true, userId: true, user: { select: { name: true } } } },
+  replyTo: {
+    select: {
+      id: true,
+      content: true,
+      senderUserId: true,
+      sender: { select: { id: true, name: true } },
+    },
+  },
+  _count: { select: { replies: true } },
+} as const;
+
+// Typing indicators are ephemeral — in-memory is enough for a single-process backend.
+// ponytail: moves to Redis/WebSocket if the backend ever runs multi-process
+const typingState = new Map<string, Map<string, { name: string; at: number }>>();
+const TYPING_TTL_MS = 5000;
+
+function setTyping(chatId: string, userId: string, name: string) {
+  let chat = typingState.get(chatId);
+  if (!chat) {
+    chat = new Map();
+    typingState.set(chatId, chat);
+  }
+  chat.set(userId, { name, at: Date.now() });
+}
+
+function getTyping(chatId: string, excludeUserId: string): { userId: string; name: string }[] {
+  const chat = typingState.get(chatId);
+  if (!chat) return [];
+  const now = Date.now();
+  const out: { userId: string; name: string }[] = [];
+  for (const [userId, v] of chat) {
+    if (now - v.at > TYPING_TTL_MS) {
+      chat.delete(userId);
+      continue;
+    }
+    if (userId !== excludeUserId) out.push({ userId, name: v.name });
+  }
+  return out;
+}
+
 export const chatRoutes = new Elysia({ prefix: "/chat" })
   .use(authPlugin)
+  // Unread counts across chats (for sidebar badges). chatIds is comma-separated.
+  .get(
+    "/unread-counts",
+    async ({ user, query }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const raw = typeof query?.chatIds === "string" ? query.chatIds : "";
+      const chatIds = raw.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 50);
+      if (chatIds.length === 0) return {};
+      const accessible: string[] = [];
+      for (const chatId of chatIds) {
+        const access = await resolveChatAccess(chatId, user.id, null);
+        if (access.ok) accessible.push(chatId);
+      }
+      const reads = await prisma.chatRead.findMany({
+        where: { userId: user.id, chatId: { in: accessible } },
+      });
+      const readAt = new Map(reads.map((r) => [r.chatId, r.lastReadAt]));
+      const counts: Record<string, number> = {};
+      await Promise.all(
+        accessible.map(async (chatId) => {
+          counts[chatId] = await prisma.message.count({
+            where: {
+              chatId,
+              senderUserId: { not: user.id },
+              replyToId: null, // thread replies don't bump the main unread badge
+              ...(readAt.get(chatId) ? { createdAt: { gt: readAt.get(chatId)! } } : {}),
+            },
+          });
+        })
+      );
+      return counts;
+    },
+    { requireAuth: true }
+  )
   .get(
     "/:chatId",
     async ({ user, params }) => {
@@ -150,16 +229,25 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
       }
       const limit = Math.min(100, Math.max(1, Number(query?.limit) || 100));
       const cursor = typeof query?.cursor === "string" && query.cursor.trim() !== "" ? query.cursor.trim() : undefined;
+      // `after` = incremental polling: only messages newer than this id, ascending
+      const after = typeof query?.after === "string" && query.after.trim() !== "" ? query.after.trim() : undefined;
       const chat = await prisma.chat.findUnique({ where: { id: access.chatId } });
       if (!chat) {
         return { data: [], nextCursor: null };
       }
+      if (after) {
+        const anchor = await prisma.message.findFirst({ where: { id: after, chatId: chat.id }, select: { createdAt: true } });
+        const data = await prisma.message.findMany({
+          where: { chatId: chat.id, ...(anchor ? { createdAt: { gt: anchor.createdAt } } : {}) },
+          include: messageInclude,
+          orderBy: { createdAt: "asc" },
+          take: limit,
+        });
+        return { data, nextCursor: null };
+      }
       const messages = await prisma.message.findMany({
         where: { chatId: chat.id },
-        include: {
-          sender: { select: { id: true, name: true, email: true, image: true } },
-          medias: true,
-        },
+        include: messageInclude,
         orderBy: { createdAt: "desc" },
         take: limit + 1,
         ...(cursor
@@ -195,7 +283,7 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
       type MediaInput =
         | { url: string; mimetype: string; size: number }
         | { url: string; fileName: string; fileType: string; fileSize: number };
-      const b = body as { content?: string; medias?: MediaInput[] };
+      const b = body as { content?: string; medias?: MediaInput[]; replyToId?: string; mentionUserIds?: string[] };
       const content = typeof b.content === "string" ? b.content.trim() || null : null;
       const rawMedias = Array.isArray(b.medias) ? b.medias : [];
       const medias = rawMedias
@@ -220,11 +308,25 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
         return jsonResponse({ message: "Message must have content or at least one valid media" }, 400);
       }
       const chat = await ensureChatExists(access);
+      let replyToId: string | null = null;
+      if (typeof b.replyToId === "string" && b.replyToId.trim() !== "") {
+        const parent = await prisma.message.findFirst({
+          where: { id: b.replyToId.trim(), chatId: chat.id },
+          select: { id: true, replyToId: true },
+        });
+        // one thread level: replying to a reply attaches to the thread root
+        replyToId = parent ? parent.replyToId ?? parent.id : null;
+      }
+      const mentionUserIds = Array.isArray(b.mentionUserIds)
+        ? [...new Set(b.mentionUserIds.filter((id): id is string => typeof id === "string"))].slice(0, 20)
+        : [];
       const message = await prisma.message.create({
         data: {
           chatId: chat.id,
           senderUserId: user.id,
           content,
+          replyToId,
+          mentionUserIds,
           medias:
             medias.length > 0
               ? {
@@ -232,12 +334,226 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
               }
               : undefined,
         },
-        include: {
-          sender: { select: { id: true, name: true, email: true, image: true } },
-          medias: true,
-        },
+        include: messageInclude,
       });
+      // typing indicator is stale the moment a message lands
+      typingState.get(chat.id)?.delete(user.id);
+      if (mentionUserIds.length > 0 && access.type === "org") {
+        const mentionedMembers = await prisma.member.findMany({
+          where: { organizationId: access.organizationId, userId: { in: mentionUserIds } },
+          select: { id: true },
+        });
+        const actor = await prisma.member.findFirst({
+          where: { organizationId: access.organizationId, userId: user.id },
+          select: { id: true },
+        });
+        if (mentionedMembers.length > 0) {
+          await notify({
+            prisma,
+            organizationId: access.organizationId,
+            recipientIds: mentionedMembers.map((m) => m.id),
+            actorId: actor?.id ?? null,
+            type: "MENTION",
+            title: "You were mentioned in chat",
+            body: content?.slice(0, 140) ?? "Shared a file",
+            link: `/chat/${chat.id}`,
+          });
+        }
+      }
       return message;
+    },
+    { requireAuth: true }
+  )
+  .patch(
+    "/:chatId/messages/:messageId",
+    async ({ user, params, body }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const b = body as { content?: string };
+      const content = typeof b.content === "string" ? b.content.trim() : "";
+      if (!content) return jsonResponse({ message: "Content is required" }, 400);
+      const message = await prisma.message.findFirst({
+        where: { id: params.messageId, chatId: access.chatId },
+      });
+      if (!message) return jsonResponse({ message: "Message not found" }, 404);
+      if (message.senderUserId !== user.id) return jsonResponse({ message: "You can only edit your own messages" }, 403);
+      return prisma.message.update({
+        where: { id: message.id },
+        data: { content, editedAt: new Date() },
+        include: messageInclude,
+      });
+    },
+    { requireAuth: true }
+  )
+  .delete(
+    "/:chatId/messages/:messageId",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const message = await prisma.message.findFirst({
+        where: { id: params.messageId, chatId: access.chatId },
+      });
+      if (!message) return jsonResponse({ message: "Message not found" }, 404);
+      if (message.senderUserId !== user.id) return jsonResponse({ message: "You can only delete your own messages" }, 403);
+      await prisma.message.delete({ where: { id: message.id } });
+      return { ok: true };
+    },
+    { requireAuth: true }
+  )
+  // ─── Reactions ──────────────────────────────────
+  .post(
+    "/:chatId/messages/:messageId/reactions/toggle",
+    async ({ user, params, body }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const b = body as { emoji?: string };
+      const emoji = typeof b.emoji === "string" ? b.emoji.trim().slice(0, 16) : "";
+      if (!emoji) return jsonResponse({ message: "emoji is required" }, 400);
+      const message = await prisma.message.findFirst({
+        where: { id: params.messageId, chatId: access.chatId },
+        select: { id: true },
+      });
+      if (!message) return jsonResponse({ message: "Message not found" }, 404);
+      const existing = await prisma.messageReaction.findUnique({
+        where: { messageId_userId_emoji: { messageId: message.id, userId: user.id, emoji } },
+      });
+      if (existing) {
+        await prisma.messageReaction.delete({ where: { id: existing.id } });
+        return { reacted: false, emoji };
+      }
+      await prisma.messageReaction.create({
+        data: { messageId: message.id, userId: user.id, emoji },
+      });
+      return { reacted: true, emoji };
+    },
+    { requireAuth: true }
+  )
+  // ─── Pins ───────────────────────────────────────
+  .post(
+    "/:chatId/messages/:messageId/pin",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const message = await prisma.message.findFirst({
+        where: { id: params.messageId, chatId: access.chatId },
+        select: { id: true, pinnedAt: true },
+      });
+      if (!message) return jsonResponse({ message: "Message not found" }, 404);
+      const updated = await prisma.message.update({
+        where: { id: message.id },
+        data: { pinnedAt: message.pinnedAt ? null : new Date() },
+        select: { id: true, pinnedAt: true },
+      });
+      return { pinned: updated.pinnedAt != null };
+    },
+    { requireAuth: true }
+  )
+  .get(
+    "/:chatId/pinned",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const data = await prisma.message.findMany({
+        where: { chatId: access.chatId, pinnedAt: { not: null } },
+        include: messageInclude,
+        orderBy: { pinnedAt: "desc" },
+        take: 50,
+      });
+      return { data };
+    },
+    { requireAuth: true }
+  )
+  // ─── Threads ────────────────────────────────────
+  .get(
+    "/:chatId/messages/:messageId/replies",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const data = await prisma.message.findMany({
+        where: { chatId: access.chatId, replyToId: params.messageId },
+        include: messageInclude,
+        orderBy: { createdAt: "asc" },
+        take: 200,
+      });
+      return { data };
+    },
+    { requireAuth: true }
+  )
+  // ─── Read receipts ──────────────────────────────
+  .post(
+    "/:chatId/read",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      await ensureChatExists(access);
+      const read = await prisma.chatRead.upsert({
+        where: { chatId_userId: { chatId: access.chatId, userId: user.id } },
+        update: { lastReadAt: new Date() },
+        create: { chatId: access.chatId, userId: user.id },
+      });
+      return { ok: true, lastReadAt: read.lastReadAt };
+    },
+    { requireAuth: true }
+  )
+  .get(
+    "/:chatId/reads",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const data = await prisma.chatRead.findMany({
+        where: { chatId: access.chatId },
+        include: { user: { select: { id: true, name: true, image: true } } },
+      });
+      return { data };
+    },
+    { requireAuth: true }
+  )
+  // ─── Typing ─────────────────────────────────────
+  .post(
+    "/:chatId/typing",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      setTyping(access.chatId, user.id, user.name ?? "Someone");
+      return { ok: true };
+    },
+    { requireAuth: true }
+  )
+  .get(
+    "/:chatId/typing",
+    async ({ user, params }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      return { data: getTyping(access.chatId, user.id) };
+    },
+    { requireAuth: true }
+  )
+  // ─── Search ─────────────────────────────────────
+  .get(
+    "/:chatId/search",
+    async ({ user, params, query }) => {
+      if (!user?.id) return jsonResponse({ message: "Unauthorized" }, 401);
+      const access = await resolveChatAccess(params.chatId, user.id, null);
+      if (!access.ok) return jsonResponse({ message: access.message }, access.status);
+      const q = typeof query?.q === "string" ? query.q.trim() : "";
+      if (q.length < 2) return { data: [] };
+      const data = await prisma.message.findMany({
+        where: { chatId: access.chatId, content: { contains: q, mode: "insensitive" } },
+        include: messageInclude,
+        orderBy: { createdAt: "desc" },
+        take: 30,
+      });
+      return { data };
     },
     { requireAuth: true }
   );

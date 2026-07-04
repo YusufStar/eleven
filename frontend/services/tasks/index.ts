@@ -3,15 +3,42 @@ export type {
   TaskDetail,
   TaskAssignee,
   TaskProject,
-  TaskContact,
-  TaskDeal,
+  TaskSprint,
+  TaskMilestone,
   TaskParentOrSub,
   TaskAttachment,
+  TaskComment,
+  TaskWatcher,
+  TaskDependency,
+  TimeEntry,
   TasksListParams,
   PaginatedTasks,
   TaskStatusValue,
+  TaskPriorityValue,
+  Sprint,
 } from "./types";
-export { TASK_STATUSES } from "./types";
+export { TASK_STATUSES, TASK_PRIORITIES } from "./types";
 export { tasksApi } from "./api";
-export type { CreateTaskPayload, UpdateTaskPayload, AddAttachmentPayload } from "./api";
-export { useTasksList, useCreateTask, useUpdateTask, useUpdateTaskStatus, useAddTaskAttachment, useTaskDetail } from "./use-tasks";
+export type { CreateTaskPayload, UpdateTaskPayload, BulkUpdatePayload, AddAttachmentPayload } from "./api";
+export {
+  useTasksList,
+  useCreateTask,
+  useUpdateTask,
+  useUpdateTaskStatus,
+  useDeleteTask,
+  useBulkUpdateTasks,
+  useBulkDeleteTasks,
+  useAddTaskComment,
+  useDeleteTaskComment,
+  useToggleTaskWatch,
+  useAddTaskDependency,
+  useRemoveTaskDependency,
+  useLogTaskTime,
+  useAddTaskAttachment,
+  useDeleteTaskAttachment,
+  useTaskDetail,
+  useSprints,
+  useCreateSprint,
+  useUpdateSprint,
+  useDeleteSprint,
+} from "./use-tasks";

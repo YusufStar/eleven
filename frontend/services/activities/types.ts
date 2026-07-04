@@ -1,15 +1,25 @@
-export type ActivityAction = "CREATE" | "UPDATE" | "DELETE" | "VIEW";
+export type ActivityAction =
+  | "CREATE"
+  | "UPDATE"
+  | "DELETE"
+  | "VIEW"
+  | "COMMENT"
+  | "ASSIGN"
+  | "COMPLETE"
+  | "MENTION";
 
 export type ActivityEntityType =
-  | "CONTACT"
-  | "DEAL"
   | "PROJECT"
   | "TASK"
-  | "PIPELINE"
-  | "STAGE"
+  | "SPRINT"
+  | "MILESTONE"
   | "PROJECT_FILE"
   | "TASK_ATTACHMENT"
-  | "PROJECT_MEMBER";
+  | "PROJECT_MEMBER"
+  | "MESSAGE"
+  | "MEETING"
+  | "MEMBER"
+  | "AI_REPORT";
 
 export interface ActivityListItem {
   id: string;

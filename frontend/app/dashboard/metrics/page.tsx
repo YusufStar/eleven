@@ -1,387 +1,260 @@
 "use client";
 
-import { useMemo } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Line,
-  LineChart,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, Line, LineChart } from "recharts";
+import Link from "next/link";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from "@/components/ui/chart";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDealsList, usePipelines } from "@/services/deals";
-import type { DealListItem } from "@/services/deals";
-import { useDealsOverTime } from "@/services/metrics";
+import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChartLineData01Icon, SparklesIcon } from "@hugeicons/core-free-icons";
+import {
+  useMetricsOverview,
+  useTasksThroughput,
+  useSprintVelocity,
+  useCycleTime,
+} from "@/services/metrics";
 
-const statusConfig = {
-  OPEN: { label: "Open", color: "var(--chart-1)" },
-  WON: { label: "Won", color: "var(--chart-2)" },
-  LOST: { label: "Lost", color: "var(--chart-3)" },
+const throughputConfig = {
+  count: { label: "Tasks completed", color: "var(--status-green)" },
 } satisfies ChartConfig;
 
-const valueByPipelineConfig = {
-  value: { label: "Total value", color: "var(--chart-1)" },
+const velocityConfig = {
+  committedPoints: { label: "Committed", color: "var(--status-neutral)" },
+  completedPoints: { label: "Completed", color: "var(--brand)" },
 } satisfies ChartConfig;
 
-const dealsByStageConfig = {
-  count: { label: "Deals", color: "var(--chart-2)" },
+const cycleConfig = {
+  days: { label: "Avg cycle (days)", color: "var(--status-orange)" },
 } satisfies ChartConfig;
 
-const dealsOverTimeConfig = {
-  count: { label: "Deals created", color: "var(--chart-1)" },
-  value: { label: "Value", color: "var(--chart-2)" },
-} satisfies ChartConfig;
-
-function aggregateDeals(deals: DealListItem[]) {
-  const byStatus: Record<string, number> = { OPEN: 0, WON: 0, LOST: 0 };
-  const byStage: Record<string, number> = {};
-  const byPipelineValue: Record<string, number> = {};
-  let totalValue = 0;
-
-  for (const d of deals) {
-    byStatus[d.status] = (byStatus[d.status] ?? 0) + 1;
-    const stageName = d.stage?.name ?? "Unknown";
-    byStage[stageName] = (byStage[stageName] ?? 0) + 1;
-    const pipelineName = d.pipeline?.name ?? "Unknown";
-    const val = d.value != null ? Number(d.value) : 0;
-    byPipelineValue[pipelineName] = (byPipelineValue[pipelineName] ?? 0) + val;
-    totalValue += val;
-  }
-
-  const statusChartData = [
-    { status: "Open", count: byStatus.OPEN, fill: "var(--chart-1)" },
-    { status: "Won", count: byStatus.WON, fill: "var(--chart-2)" },
-    { status: "Lost", count: byStatus.LOST, fill: "var(--chart-3)" },
-  ];
-
-  const stageChartData = Object.entries(byStage).map(([name, count]) => ({
-    stage: name,
-    count,
-    fill: "var(--chart-2)",
-  }));
-
-  const pipelineValueData = Object.entries(byPipelineValue).map(([name, value]) => ({
-    pipeline: name,
-    value: Math.round(value * 100) / 100,
-    fill: "var(--chart-1)",
-  }));
-
-  return {
-    totalDeals: deals.length,
-    open: byStatus.OPEN,
-    won: byStatus.WON,
-    lost: byStatus.LOST,
-    totalValue,
-    statusChartData,
-    stageChartData,
-    pipelineValueData,
+function KpiCard({
+  label,
+  value,
+  sub,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  tone?: "neutral" | "blue" | "green" | "orange" | "red";
+}) {
+  const bar: Record<string, string> = {
+    neutral: "bg-status-neutral",
+    blue: "bg-status-blue",
+    green: "bg-status-green",
+    orange: "bg-status-orange",
+    red: "bg-status-red",
   };
+  return (
+    <Card size="sm" className="relative overflow-hidden">
+      <span className={`absolute inset-x-0 top-0 h-0.5 ${bar[tone]} opacity-70`} />
+      <CardHeader className="pb-1">
+        <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <span className="text-2xl font-semibold tabular-nums">{value}</span>
+        {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function MetricsPage() {
-  const { data: dealsRes, isPending: dealsLoading } = useDealsList({
-    page: 1,
-    pageSize: 100,
-  });
-  const { data: pipelinesRes, isPending: pipelinesLoading } = usePipelines();
-  const { data: overTimeRes, isPending: overTimeLoading } = useDealsOverTime({ days: 30 });
+  const overview = useMetricsOverview();
+  const throughput = useTasksThroughput(8);
+  const velocity = useSprintVelocity();
+  const cycle = useCycleTime(8);
 
-  const deals = dealsRes?.data ?? [];
-  const pipelines = pipelinesRes?.data ?? [];
-  const totalDealsCount = dealsRes?.total ?? 0;
-
-  const aggregated = useMemo(() => aggregateDeals(deals), [deals]);
-
-  const dealsOverTimeData = useMemo(() => {
-    const raw = overTimeRes?.data ?? [];
-    if (raw.length === 0) return [];
-    const byDate = new Map(raw.map((r) => [r.date, r]));
-    const start = raw[0]?.date ?? "";
-    const end = raw[raw.length - 1]?.date ?? "";
-    if (!start || !end) return raw;
-    const out: { date: string; count: number; value: number }[] = [];
-    const d = new Date(start);
-    const endD = new Date(end);
-    while (d <= endD) {
-      const key = d.toISOString().slice(0, 10);
-      out.push(byDate.get(key) ?? { date: key, count: 0, value: 0 });
-      d.setDate(d.getDate() + 1);
-    }
-    return out;
-  }, [overTimeRes?.data]);
-
-  const isLoading = dealsLoading || pipelinesLoading || overTimeLoading;
-
-  const defaultCurrency = deals[0]?.currency ?? "USD";
+  const o = overview.data;
+  const wowDelta =
+    o && o.donePrevWeek > 0 ? Math.round(((o.doneThisWeek - o.donePrevWeek) / o.donePrevWeek) * 100) : null;
 
   return (
-    <div className="container mx-auto py-6 space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Metrics</h1>
-        <p className="text-muted-foreground text-sm">
-          Pipeline and deal metrics. Based on {deals.length}
-          {totalDealsCount > deals.length ? ` of ${totalDealsCount}` : ""} deals.
-        </p>
+    <div className="container mx-auto space-y-6 py-2">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted-foreground">Delivery health, velocity, and team load.</p>
+        </div>
+        <Button asChild variant="outline" size="sm" className="gap-1.5">
+          <Link href="/dashboard/reports">
+            <HugeiconsIcon icon={SparklesIcon} className="size-4 text-brand" strokeWidth={2} />
+            AI Reports
+          </Link>
+        </Button>
       </div>
 
-      {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-24 rounded-lg" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total deals</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{aggregated.totalDeals}</div>
-              <p className="text-muted-foreground text-xs">In this view</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Open</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{aggregated.open}</div>
-              <p className="text-muted-foreground text-xs">Active deals</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Won</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{aggregated.won}</div>
-              <p className="text-muted-foreground text-xs">Closed won</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Lost</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{aggregated.lost}</div>
-              <p className="text-muted-foreground text-xs">Closed lost</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total value</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {new Intl.NumberFormat(undefined, {
-                  style: "currency",
-                  currency: defaultCurrency,
-                  maximumFractionDigits: 0,
-                }).format(aggregated.totalValue)}
-              </div>
-              <p className="text-muted-foreground text-xs">Sum of deal values</p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {!isLoading &&
-        (aggregated.statusChartData.some((d) => d.count > 0) ||
-          aggregated.stageChartData.length > 0 ||
-          aggregated.pipelineValueData.length > 0) && (
-          <div className="grid gap-4 md:grid-cols-2">
-            {aggregated.statusChartData.some((d) => d.count > 0) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Deals by status</CardTitle>
-                  <CardDescription>Open, won, and lost</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer config={statusConfig} className="h-[260px] w-full">
-                    <BarChart
-                      accessibilityLayer
-                      data={aggregated.statusChartData}
-                      margin={{ top: 12, right: 12, bottom: 12, left: 12 }}
-                    >
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        dataKey="status"
-                        tickLine={false}
-                        tickMargin={10}
-                        axisLine={false}
-                      />
-                      <YAxis tickLine={false} axisLine={false} tickMargin={10} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <ChartLegend content={<ChartLegendContent />} />
-                      <Bar
-                        dataKey="count"
-                        radius={4}
-                        shape={(props: { payload?: { fill?: string }; fill?: string; x?: number; y?: number; width?: number; height?: number }) => {
-                          const fill = props.payload?.fill ?? props.fill ?? "var(--chart-1)";
-                          return (
-                            <rect
-                              x={props.x}
-                              y={props.y}
-                              width={props.width}
-                              height={props.height}
-                              fill={fill}
-                              rx={4}
-                              ry={4}
-                            />
-                          );
-                        }}
-                      />
-                    </BarChart>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-            )}
-
-            {aggregated.stageChartData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Deals by stage</CardTitle>
-                  <CardDescription>Distribution across pipeline stages</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer config={dealsByStageConfig} className="h-[260px] w-full">
-                    <BarChart
-                      accessibilityLayer
-                      data={aggregated.stageChartData}
-                      margin={{ top: 12, right: 12, bottom: 12, left: 12 }}
-                    >
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        dataKey="stage"
-                        tickLine={false}
-                        tickMargin={10}
-                        axisLine={false}
-                        tickFormatter={(v) => (v.length > 12 ? `${v.slice(0, 10)}…` : v)}
-                      />
-                      <YAxis tickLine={false} axisLine={false} tickMargin={10} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="count" fill="var(--color-count)" radius={4} />
-                    </BarChart>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-            )}
-
-            {aggregated.pipelineValueData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Total value by pipeline</CardTitle>
-                  <CardDescription>Sum of deal values per pipeline</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer config={valueByPipelineConfig} className="h-[260px] w-full">
-                    <BarChart
-                      accessibilityLayer
-                      data={aggregated.pipelineValueData}
-                      margin={{ top: 12, right: 12, bottom: 12, left: 12 }}
-                    >
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        dataKey="pipeline"
-                        tickLine={false}
-                        tickMargin={10}
-                        axisLine={false}
-                        tickFormatter={(v) => (v.length > 12 ? `${v.slice(0, 10)}…` : v)}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={10}
-                        tickFormatter={(v) =>
-                          typeof v === "number" && v >= 1000 ? `${v / 1000}k` : String(v)
-                        }
-                      />
-                      <ChartTooltip
-                        content={
-                          <ChartTooltipContent
-                            formatter={(value) =>
-                              new Intl.NumberFormat(undefined, {
-                                style: "currency",
-                                currency: defaultCurrency,
-                                maximumFractionDigits: 0,
-                              }).format(Number(value))
-                            }
-                          />
-                        }
-                      />
-                      <Bar dataKey="value" fill="var(--color-value)" radius={4} />
-                    </BarChart>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-            )}
-
-            {dealsOverTimeData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Deals over time</CardTitle>
-                  <CardDescription>Deals created per day (last 30 days)</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer config={dealsOverTimeConfig} className="h-[260px] w-full">
-                    <LineChart
-                      accessibilityLayer
-                      data={dealsOverTimeData}
-                      margin={{ top: 12, right: 12, bottom: 12, left: 12 }}
-                    >
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        dataKey="date"
-                        tickLine={false}
-                        tickMargin={10}
-                        axisLine={false}
-                        tickFormatter={(v) => (typeof v === "string" ? v.slice(5) : v)}
-                      />
-                      <YAxis tickLine={false} axisLine={false} tickMargin={10} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Line
-                        type="monotone"
-                        dataKey="count"
-                        stroke="var(--color-count)"
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+      {/* KPIs */}
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
+        {overview.isPending || !o ? (
+          [1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)
+        ) : (
+          <>
+            <KpiCard label="Open tasks" value={String(o.openTasks)} tone="blue" />
+            <KpiCard
+              label="Done this week"
+              value={String(o.doneThisWeek)}
+              sub={wowDelta != null ? `${wowDelta >= 0 ? "+" : ""}${wowDelta}% vs last week` : undefined}
+              tone="green"
+            />
+            <KpiCard label="Blocked" value={String(o.blocked)} tone="red" />
+            <KpiCard label="Overdue" value={String(o.overdue)} tone="orange" />
+            <KpiCard
+              label="Avg cycle time"
+              value={o.avgCycleDays != null ? `${o.avgCycleDays}d` : "—"}
+              sub={o.completionRate30d != null ? `${Math.round(o.completionRate30d * 100)}% completion (30d)` : undefined}
+              tone="neutral"
+            />
+          </>
         )}
+      </div>
 
-      {!isLoading &&
-        aggregated.statusChartData.every((d) => d.count === 0) &&
-        aggregated.stageChartData.length === 0 &&
-        aggregated.pipelineValueData.length === 0 && (
-          <Card>
-            <CardContent className="flex min-h-[200px] items-center justify-center text-muted-foreground">
-              No deal data yet. Create deals to see metrics here.
-            </CardContent>
-          </Card>
-        )}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* Throughput */}
+        <Card size="sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <HugeiconsIcon icon={ChartLineData01Icon} className="size-4 text-status-green" strokeWidth={2} />
+              Throughput
+            </CardTitle>
+            <CardDescription>Tasks completed per week (last 8 weeks)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {throughput.isPending ? (
+              <Skeleton className="h-52 w-full" />
+            ) : (
+              <ChartContainer config={throughputConfig} className="h-52 w-full">
+                <BarChart data={throughput.data?.completedPerWeek ?? []} margin={{ left: 4, right: 4 }}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="week"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    fontSize={11}
+                    tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ChartContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sprint velocity */}
+        <Card size="sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <HugeiconsIcon icon={ChartLineData01Icon} className="size-4 text-brand" strokeWidth={2} />
+              Sprint velocity
+            </CardTitle>
+            <CardDescription>Committed vs completed story points</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {velocity.isPending ? (
+              <Skeleton className="h-52 w-full" />
+            ) : (velocity.data?.data ?? []).length === 0 ? (
+              <p className="flex h-52 items-center justify-center text-sm text-muted-foreground">No sprints yet.</p>
+            ) : (
+              <ChartContainer config={velocityConfig} className="h-52 w-full">
+                <BarChart data={velocity.data?.data ?? []} margin={{ left: 4, right: 4 }}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} fontSize={11} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="committedPoints" fill="var(--color-committedPoints)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="completedPoints" fill="var(--color-completedPoints)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ChartContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Cycle time */}
+        <Card size="sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <HugeiconsIcon icon={ChartLineData01Icon} className="size-4 text-status-orange" strokeWidth={2} />
+              Cycle time
+            </CardTitle>
+            <CardDescription>Average days from create to done</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {cycle.isPending ? (
+              <Skeleton className="h-52 w-full" />
+            ) : (
+              <ChartContainer config={cycleConfig} className="h-52 w-full">
+                <LineChart data={cycle.data?.data ?? []} margin={{ left: 4, right: 4 }}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="week"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    fontSize={11}
+                    tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line dataKey="days" type="monotone" stroke="var(--color-days)" strokeWidth={2} dot={false} />
+                </LineChart>
+              </ChartContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Team load */}
+        <Card size="sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Team load</CardTitle>
+            <CardDescription>Open work per person</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {throughput.isPending ? (
+              <Skeleton className="h-52 w-full" />
+            ) : (throughput.data?.workload ?? []).length === 0 ? (
+              <p className="flex h-52 items-center justify-center text-sm text-muted-foreground">No assigned tasks.</p>
+            ) : (
+              <ul className="space-y-2.5">
+                {(throughput.data?.workload ?? []).slice(0, 8).map((w) => {
+                  const open = w.todo + w.inProgress + w.inReview + w.blocked;
+                  const total = open + w.done;
+                  return (
+                    <li key={w.memberId}>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="truncate font-medium">{w.name}</span>
+                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          {w.blocked > 0 && (
+                            <StatusBadge domain="task" value="BLOCKED" size="sm" showIcon label={String(w.blocked)} noTooltip />
+                          )}
+                          <span className="tabular-nums">{open} open</span>
+                        </span>
+                      </div>
+                      <div className="mt-1 flex h-2 overflow-hidden rounded-full bg-muted">
+                        {total > 0 && (
+                          <>
+                            <span className="bg-status-neutral" style={{ width: `${(w.todo / total) * 100}%` }} />
+                            <span className="bg-status-blue" style={{ width: `${(w.inProgress / total) * 100}%` }} />
+                            <span className="bg-status-orange" style={{ width: `${(w.inReview / total) * 100}%` }} />
+                            <span className="bg-status-red" style={{ width: `${(w.blocked / total) * 100}%` }} />
+                            <span className="bg-status-green" style={{ width: `${(w.done / total) * 100}%` }} />
+                          </>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

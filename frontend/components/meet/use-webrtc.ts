@@ -11,6 +11,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
 const ICE_SERVERS: RTCIceServer[] = [{ urls: "stun:stun.l.google.com:19302" }];
 
+/** Push senders toward maximum quality: high bitrate caps, screen keeps resolution. */
+function tuneVideoSender(sender: RTCRtpSender) {
+  try {
+    const isScreen = sender.track?.contentHint === "detail";
+    const p = sender.getParameters();
+    p.degradationPreference = isScreen ? "maintain-resolution" : "balanced";
+    if (!p.encodings?.length) p.encodings = [{}];
+    p.encodings[0].maxBitrate = isScreen ? 4_000_000 : 2_500_000;
+    void sender.setParameters(p).catch(() => {});
+  } catch {
+    // older browsers without setParameters support
+  }
+}
+
 export type RemotePeer = {
   id: string;
   name: string;
@@ -64,6 +78,8 @@ export function useWebrtcRoom({
   const entriesRef = useRef(new Map<string, PeerEntry>());
   const localStreamRef = useRef(localStream);
   localStreamRef.current = localStream;
+  // extra outgoing tracks (e.g. screen-share audio) — added to current and future peers
+  const extraTracksRef = useRef<{ track: MediaStreamTrack; stream: MediaStream }[]>([]);
 
   const sendRaw = useCallback((msg: Record<string, unknown>) => {
     const ws = wsRef.current;
@@ -87,6 +103,10 @@ export function useWebrtcRoom({
 
       const stream = localStreamRef.current;
       stream?.getTracks().forEach((t) => pc.addTrack(t, stream));
+      extraTracksRef.current.forEach(({ track, stream: s }) => pc.addTrack(track, s));
+      pc.getSenders().forEach((s) => {
+        if (s.track?.kind === "video") tuneVideoSender(s);
+      });
 
       pc.onicecandidate = (e) => {
         if (e.candidate) sendRaw({ type: "signal", to: id, data: { candidate: e.candidate.toJSON() } });
@@ -229,10 +249,37 @@ export function useWebrtcRoom({
         pc
           .getSenders()
           .filter((s) => s.track?.kind === "video")
-          .map((s) => s.replaceTrack(next)),
+          .map(async (s) => {
+            await s.replaceTrack(next);
+            tuneVideoSender(s);
+          }),
       ),
     );
   }, []);
 
-  return { connected, failed, peers, messages, sendChat, sendState, replaceVideoTrack };
+  /** Send an additional audio track (screen-share audio) to everyone; renegotiation is automatic. */
+  const addExtraAudioTrack = useCallback((track: MediaStreamTrack, stream: MediaStream) => {
+    extraTracksRef.current.push({ track, stream });
+    entriesRef.current.forEach(({ pc }) => pc.addTrack(track, stream));
+  }, []);
+
+  const removeExtraAudioTrack = useCallback((track: MediaStreamTrack) => {
+    extraTracksRef.current = extraTracksRef.current.filter((e) => e.track !== track);
+    entriesRef.current.forEach(({ pc }) => {
+      const sender = pc.getSenders().find((s) => s.track === track);
+      if (sender) pc.removeTrack(sender);
+    });
+  }, []);
+
+  return {
+    connected,
+    failed,
+    peers,
+    messages,
+    sendChat,
+    sendState,
+    replaceVideoTrack,
+    addExtraAudioTrack,
+    removeExtraAudioTrack,
+  };
 }

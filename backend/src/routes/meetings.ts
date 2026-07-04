@@ -1,7 +1,42 @@
 import { Elysia } from "elysia";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 import { notify, notifyOrganization } from "../lib/notify";
+
+const s3 =
+  process.env.R2_ENDPOINT && process.env.AWS_ACCESS_KEY_ID
+    ? new S3Client({
+        region: "auto",
+        endpoint: process.env.R2_ENDPOINT,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      })
+    : null;
+const R2_BUCKET = process.env.R2_BUCKET_NAME;
+const R2_PUBLIC_BASE_URL = process.env.R2_PUBLIC_BASE_URL ?? "";
+
+const MAX_RECORDING_BYTES = 1000 * 1024 * 1024; // 1000 MB
+const RECORDING_TYPES = ["video/webm", "video/mp4"];
+
+type MeetingAccess = {
+  id: string;
+  organizationId: string;
+  isPublic: boolean;
+  createdById: string;
+  participants: { memberId: string }[];
+};
+
+function canAccessMeeting(meeting: MeetingAccess, organizationId: string, memberId: string) {
+  return (
+    meeting.organizationId === organizationId &&
+    (meeting.isPublic ||
+      meeting.createdById === memberId ||
+      meeting.participants.some((p) => p.memberId === memberId))
+  );
+}
 
 const CODE_LETTERS = "abcdefghijkmnpqrstuvwxyz";
 function chunk(len: number) {
@@ -172,6 +207,99 @@ export const meetingsRoutes = new Elysia({ prefix: "/meetings" })
         return { message: "You are not invited to this meeting" };
       }
       return meeting;
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .get(
+    "/history",
+    async ({ activeOrganizationId, activeMember, query }) => {
+      const limit = Math.min(50, Math.max(1, Number(query?.limit) || 20));
+      const data = await prisma.meeting.findMany({
+        where: {
+          organizationId: activeOrganizationId!,
+          startsAt: { lte: new Date() },
+          OR: [
+            { isPublic: true },
+            { createdById: activeMember!.id },
+            { participants: { some: { memberId: activeMember!.id } } },
+          ],
+        },
+        include: {
+          ...participantInclude,
+          attendance: {
+            include: { member: { include: { user: { select: { id: true, name: true, image: true } } } } },
+            orderBy: { joinedAt: "asc" },
+          },
+          recordings: {
+            include: { createdBy: { include: { user: { select: { name: true } } } } },
+            orderBy: { createdAt: "asc" },
+          },
+        },
+        orderBy: { startsAt: "desc" },
+        take: limit,
+      });
+      return { data };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .post(
+    "/:code/recordings",
+    async ({ params, request, activeOrganizationId, activeMember, set }) => {
+      const meeting = await prisma.meeting.findUnique({
+        where: { code: params.code },
+        select: {
+          id: true,
+          organizationId: true,
+          isPublic: true,
+          createdById: true,
+          participants: { select: { memberId: true } },
+        },
+      });
+      if (!meeting || !canAccessMeeting(meeting, activeOrganizationId!, activeMember!.id)) {
+        set.status = 404;
+        return { message: "Meeting not found" };
+      }
+      const formData = await request.formData().catch(() => null);
+      const file = formData?.get("file");
+      const durationSec = Number(formData?.get("durationSec")) || null;
+      if (!file || typeof file === "string") {
+        set.status = 400;
+        return { message: "No recording uploaded" };
+      }
+      if (file.size === 0 || file.size > MAX_RECORDING_BYTES) {
+        set.status = 400;
+        return { message: "Recording must be between 1 byte and 500 MB" };
+      }
+      const baseType = (file.type || "").split(";")[0];
+      if (!RECORDING_TYPES.includes(baseType)) {
+        set.status = 400;
+        return { message: "Only webm/mp4 recordings are accepted" };
+      }
+      if (!s3 || !R2_BUCKET) {
+        set.status = 503;
+        return { message: "Storage is not configured" };
+      }
+      const ext = baseType === "video/mp4" ? "mp4" : "webm";
+      const key = `meet-recordings/${meeting.id}/${Date.now()}.${ext}`;
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: R2_BUCKET,
+          Key: key,
+          Body: new Uint8Array(await file.arrayBuffer()),
+          ContentType: baseType,
+        })
+      );
+      const url = R2_PUBLIC_BASE_URL ? `${R2_PUBLIC_BASE_URL.replace(/\/$/, "")}/${key}` : key;
+      const recording = await prisma.meetingRecording.create({
+        data: {
+          meetingId: meeting.id,
+          url,
+          sizeBytes: file.size,
+          durationSec,
+          createdById: activeMember!.id,
+        },
+      });
+      return recording;
     },
     { requireAuth: true, requireActiveOrg: true }
   );

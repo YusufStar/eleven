@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addTaskSchema, type AddTaskSchema } from "@/lib/schema";
-import { useCreateTask, useAddTaskAttachment, useTasksList } from "@/services/tasks";
+import { useCreateTask, useAddTaskAttachment, useSprints } from "@/services/tasks";
 import { useUploadFileMutation } from "@/services/upload";
 import { toast } from "sonner";
 import {
@@ -22,7 +22,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { ProjectSelect } from "@/components/projects/project-select";
 import { OrgMemberMultiSelect } from "@/components/projects/org-member-multi-select";
-import { ContactSelect } from "@/components/contacts/contact-select";
 import { TaskSelect } from "@/components/tasks/task-select";
 import { TaskDetailsEditor } from "@/components/tasks/task-details-editor";
 import {
@@ -44,8 +43,10 @@ const defaultValues: AddTaskSchema = {
   detailsMarkdown: "",
   assigneeId: null,
   projectId: null,
-  contactId: null,
+  sprintId: null,
   parentTaskId: null,
+  labels: [],
+  estimate: null,
   status: "TODO",
   priority: "MEDIUM",
   dueAt: null,
@@ -70,6 +71,7 @@ export function AddTaskModal({ open, onOpenChange, defaultProjectId }: AddTaskMo
   const createMutation = useCreateTask();
   const addAttachmentMutation = useAddTaskAttachment();
   const uploadFile = useUploadFileMutation();
+  const { data: sprints } = useSprints();
   const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([]);
 
   const form = useForm<AddTaskSchema>({
@@ -119,8 +121,10 @@ export function AddTaskModal({ open, onOpenChange, defaultProjectId }: AddTaskMo
         detailsMarkdown: data.detailsMarkdown?.trim() || undefined,
         assigneeId: data.assigneeId ?? undefined,
         projectId: data.projectId ?? undefined,
-        contactId: data.contactId ?? undefined,
+        sprintId: data.sprintId ?? undefined,
         parentTaskId: data.parentTaskId ?? undefined,
+        labels: data.labels ?? undefined,
+        estimate: data.estimate ?? undefined,
         status: data.status,
         priority: data.priority,
         dueAt: data.dueAt ?? undefined,
@@ -281,16 +285,68 @@ export function AddTaskModal({ open, onOpenChange, defaultProjectId }: AddTaskMo
                   )}
                 />
               </Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel>Sprint</FieldLabel>
+                  <Controller
+                    control={form.control}
+                    name="sprintId"
+                    render={({ field }) => (
+                      <Select
+                        value={field.value ?? "none"}
+                        onValueChange={(v) => field.onChange(v === "none" ? null : v)}
+                      >
+                        <SelectTrigger id="add-task-sprint">
+                          <SelectValue placeholder="No sprint" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No sprint</SelectItem>
+                          {(sprints ?? []).map((s) => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="add-task-estimate">Estimate (points)</FieldLabel>
+                  <Controller
+                    control={form.control}
+                    name="estimate"
+                    render={({ field }) => (
+                      <Input
+                        id="add-task-estimate"
+                        type="number"
+                        min={0}
+                        placeholder="e.g. 3"
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                      />
+                    )}
+                  />
+                </Field>
+              </div>
               <Field>
-                <FieldLabel>Contact</FieldLabel>
+                <FieldLabel htmlFor="add-task-labels">Labels (comma separated)</FieldLabel>
                 <Controller
                   control={form.control}
-                  name="contactId"
+                  name="labels"
                   render={({ field }) => (
-                    <ContactSelect
-                      value={field.value ?? null}
-                      onChange={(id) => field.onChange(id)}
-                      placeholder="Select contact..."
+                    <Input
+                      id="add-task-labels"
+                      placeholder="frontend, bug, design"
+                      value={(field.value ?? []).join(", ")}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value
+                            .split(",")
+                            .map((l) => l.trim())
+                            .filter(Boolean)
+                        )
+                      }
                     />
                   )}
                 />

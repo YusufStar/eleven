@@ -12,12 +12,14 @@ const actionClass: Record<string, string> = {
 };
 
 const entityTypeLabel: Record<string, string> = {
-  CONTACT: "Contact",
-  DEAL: "Deal",
+  SPRINT: "Sprint",
+  MILESTONE: "Milestone",
   PROJECT: "Project",
   TASK: "Task",
-  PIPELINE: "Pipeline",
-  STAGE: "Stage",
+  MESSAGE: "Message",
+  MEETING: "Meeting",
+  MEMBER: "Member",
+  AI_REPORT: "AI report",
   PROJECT_FILE: "File",
   TASK_ATTACHMENT: "Attachment",
   PROJECT_MEMBER: "Member",

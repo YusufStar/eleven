@@ -12,8 +12,22 @@ export interface TeamMember {
   userId: string;
   role: string;
   createdAt: string;
+  statusEmoji: string | null;
+  statusText: string | null;
+  workingOn: string | null;
+  timezone: string | null;
+  skills: string[];
+  lastSeenAt: string | null;
   user: TeamMemberUser;
 }
+
+export type UpdateMePayload = Partial<{
+  statusEmoji: string | null;
+  statusText: string | null;
+  workingOn: string | null;
+  timezone: string | null;
+  skills: string[];
+}>;
 
 export type TeamMembersListParams = {
   page?: number;
