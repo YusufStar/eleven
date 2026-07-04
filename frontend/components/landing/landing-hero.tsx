@@ -19,7 +19,7 @@ export function LandingHero() {
       <div className="mx-auto max-w-6xl px-6 pb-20 pt-36 md:pb-28 md:pt-44">
         <Reveal>
           <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-muted-foreground">
-            Nº 11 — CRM &amp; project management
+            Nº 11 — the work platform for software teams
           </p>
         </Reveal>
 
@@ -31,8 +31,8 @@ export function LandingHero() {
 
         <Reveal delay={0.16}>
           <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-            Eleven puts contacts, deals, pipelines, projects, and tasks in one
-            quiet workspace — so the only thing in color is your judgment.
+            Tasks, sprints, projects, chat, files, and AI reports in one fast
+            workspace — Slack, Jira, Linear, and Notion, without the tab sprawl.
           </p>
         </Reveal>
 

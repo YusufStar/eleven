@@ -8,20 +8,20 @@ import { Reveal } from "./reveal";
 
 const faqs = [
   {
-    q: "Is Eleven a CRM or a project management tool?",
-    a: "Both, deliberately. Deals live next to the projects they become — a won deal turns into a project with its contacts, files, and history intact. No handoff, no re-entry.",
+    q: "What does Eleven replace?",
+    a: "The four-tab tax. Tasks and sprints instead of Jira, chat instead of Slack, docs and files instead of Notion, planning instead of Linear — one workspace, one login, everything next to the work it's about.",
   },
   {
-    q: "Can I import my data from another tool?",
-    a: "Yes. Contacts, companies, and deals import from CSV in minutes, and field mapping is done for you where the columns are obvious.",
+    q: "How do the AI reports work?",
+    a: "Claude reads your real tasks, sprints, and activity through tool calling — no made-up numbers — and writes daily, weekly, and monthly summaries covering velocity, bottlenecks, team load, and risks.",
   },
   {
     q: "How does the free plan differ from Pro?",
-    a: "Starter is fully functional for two seats, 500 contacts, and one pipeline. Pro removes the limits and adds metrics, chat, meetings, and file storage.",
+    a: "Starter is fully functional for two seats and one project. Pro removes the limits and adds AI reports, unlimited chat history, meetings, and file storage.",
   },
   {
     q: "Do you support teams and roles?",
-    a: "Yes. Invite teammates, set roles per workspace, and control who sees which pipelines and projects.",
+    a: "Yes. Invite teammates, set roles per workspace, and control who sees which projects.",
   },
   {
     q: "Can I cancel anytime?",

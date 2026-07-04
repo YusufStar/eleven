@@ -9,9 +9,9 @@ const aside = [
   },
   {
     quote:
-      "The pipeline finally matches reality. Our forecast stopped being fiction.",
+      "The AI reports catch blockers before standup does. Our velocity stopped being a guess.",
     name: "Deniz Aksoy",
-    role: "Head of Sales, Kairos Labs",
+    role: "Eng Lead, Kairos Labs",
   },
 ];
 

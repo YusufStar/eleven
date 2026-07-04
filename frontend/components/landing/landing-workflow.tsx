@@ -3,18 +3,18 @@ import { Reveal } from "./reveal";
 const steps = [
   {
     index: "01",
-    title: "Capture",
-    copy: "A name becomes a contact, a conversation becomes a deal. Nothing lands in a notebook that dies on Friday.",
+    title: "Plan",
+    copy: "Break work into tasks and sprints. Estimates, priorities, and dependencies keep the plan honest, not aspirational.",
   },
   {
     index: "02",
-    title: "Advance",
-    copy: "Deals move through stages you named yourself. The pipeline shows what's real — value, owner, next step.",
+    title: "Build",
+    copy: "Move tasks across the board, talk it through in chat, and share files inline. The whole team stays on the same page.",
   },
   {
     index: "03",
-    title: "Deliver",
-    copy: "A won deal opens as a project with its tasks, files, and people already in place. Metrics keep the score.",
+    title: "Ship",
+    copy: "Burndown, velocity, and AI reports keep the score — so you know what shipped, what's blocked, and what's at risk.",
   },
 ];
 
@@ -27,7 +27,7 @@ export function LandingWorkflow() {
             02 — Method
           </p>
           <h2 className="mt-4 max-w-2xl font-serif text-4xl tracking-tight md:text-5xl">
-            First hello to <em>signed &amp; shipped.</em>
+            Backlog to <em>shipped.</em>
           </h2>
         </Reveal>
 

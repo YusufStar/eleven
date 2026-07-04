@@ -11,34 +11,34 @@ import { Reveal } from "./reveal";
 
 const features = [
   {
-    icon: UserGroupIcon,
-    title: "Contacts",
-    copy: "People and companies with full history — every call, note, and file where you expect it.",
+    icon: CheckListIcon,
+    title: "Tasks & sprints",
+    copy: "Subtasks, labels, priorities, estimates, dependencies, and time tracking — planned on boards or lists.",
   },
   {
     icon: KanbanIcon,
-    title: "Deals & pipeline",
-    copy: "Stages you define, values you trust. Drag a deal forward and the numbers follow.",
-  },
-  {
-    icon: FolderOpenIcon,
     title: "Projects",
-    copy: "Won a deal? It becomes a project without re-typing a thing. Scope, files, and owners carry over.",
-  },
-  {
-    icon: CheckListIcon,
-    title: "Tasks",
-    copy: "List, board, or calendar — the same tasks, arranged the way each person actually works.",
-  },
-  {
-    icon: Analytics01Icon,
-    title: "Metrics",
-    copy: "Revenue, velocity, and workload on one page. No exports, no spreadsheet rituals.",
+    copy: "Progress, health, milestones, burndown, and velocity for every project, in one glance.",
   },
   {
     icon: Message01Icon,
     title: "Chat & meet",
-    copy: "Conversations and calls live next to the work they're about, not in another tab.",
+    copy: "Threads, reactions, mentions, read receipts, and calls — right next to the work they're about.",
+  },
+  {
+    icon: FolderOpenIcon,
+    title: "Files",
+    copy: "Drag-and-drop uploads, previews, folders, and version history — shared across the whole team.",
+  },
+  {
+    icon: Analytics01Icon,
+    title: "AI reports",
+    copy: "Claude reads your real data and writes daily, weekly, and monthly summaries with the risks flagged.",
+  },
+  {
+    icon: UserGroupIcon,
+    title: "Team & presence",
+    copy: "See who's online, what they're working on, their timezone, and their status — no standup required.",
   },
 ];
 

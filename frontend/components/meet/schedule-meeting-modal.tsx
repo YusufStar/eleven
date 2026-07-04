@@ -121,7 +121,7 @@ export function ScheduleMeetingModal({
               id="meeting-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Weekly pipeline review"
+              placeholder="Weekly sprint review"
               maxLength={200}
             />
           </div>

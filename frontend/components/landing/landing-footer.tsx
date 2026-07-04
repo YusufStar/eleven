@@ -32,8 +32,8 @@ export function LandingFooter() {
               <span className="text-[15px] font-medium tracking-tight">Eleven</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              The monochrome workspace for teams that close deals and ship
-              projects.
+              The monochrome workspace for software teams that plan, build, and
+              ship together.
             </p>
           </div>
 
