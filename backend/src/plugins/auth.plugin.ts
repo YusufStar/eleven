@@ -68,4 +68,17 @@ export const authPlugin = new Elysia({ name: "auth" })
                 },
             };
         },
+        // Plan gating: the app unlocks with a one-time payment. Guards write paths
+        // so the frontend paywall can't be bypassed by calling the API directly.
+        requirePaidOrg(_: boolean) {
+            return {
+                beforeHandle({ activeOrganization, set }: any) {
+                    const paid = activeOrganization && (activeOrganization.plan === "PROFESSIONAL" || activeOrganization.paidAt);
+                    if (!paid) {
+                        set.status = 402;
+                        return { message: "This workspace needs an active plan. Upgrade to continue." };
+                    }
+                },
+            };
+        },
     });

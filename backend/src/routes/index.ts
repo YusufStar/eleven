@@ -15,3 +15,5 @@ export { meetSignalRoutes } from "./meet-signal";
 export { sprintsRoutes } from "./sprints";
 export { filesRoutes } from "./files";
 export { aiReportsRoutes } from "./ai-reports";
+export { liveRoutes } from "./live";
+export { searchRoutes } from "./search";

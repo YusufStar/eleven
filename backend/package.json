@@ -42,5 +42,8 @@
     "pg": "^8.22.0",
     "sharp": "^0.35.3",
     "stripe": "^22.3.0"
+  },
+  "patchedDependencies": {
+    "@prisma/adapter-pg@7.8.0": "patches/@prisma%2Fadapter-pg@7.8.0.patch"
   }
 }

@@ -19,6 +19,13 @@ const groups = [
       { label: "Dashboard", href: "/dashboard" },
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
+    ],
+  },
 ];
 
 export function LandingFooter() {

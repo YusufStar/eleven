@@ -167,6 +167,7 @@ model Member {
   notifications      Notification[]       @relation("NotificationRecipient")
   actedNotifications Notification[]       @relation("NotificationActor")
   notificationPreference NotificationPreference?
+  aiReportActionsApplied AiReportAction[] @relation("AiReportActionApplier")
 
   @@index([organizationId])
   @@index([userId])
@@ -672,10 +673,37 @@ model AiReport {
   periodStart DateTime
   periodEnd   DateTime
 
+  actions AiReportAction[]
+
   createdAt DateTime @default(now())
 
   @@index([organizationId, kind, createdAt])
   @@map("ai_reports")
+}
+
+model AiReportAction {
+  id             String       @id @default(cuid())
+  reportId       String
+  report         AiReport     @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  organizationId String
+
+  type        AiReportActionType
+  title       String
+  description String
+  payload     Json   @default("{}")
+  sortOrder   Int    @default(0)
+  status      AiReportActionStatus @default(PENDING)
+  resultMessage String?
+
+  appliedAt         DateTime?
+  appliedByMemberId String?
+  appliedByMember   Member? @relation("AiReportActionApplier", fields: [appliedByMemberId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([reportId, status])
+  @@index([organizationId])
+  @@map("ai_report_actions")
 }
 
 // ─── Enums ───────────────────────────────────────
@@ -747,4 +775,19 @@ enum AiReportKind {
   MINI
   MEDIUM
   HIGH
+}
+
+enum AiReportActionType {
+  CREATE_TASK
+  UPDATE_TASK_STATUS
+  UPDATE_TASK_PRIORITY
+  REASSIGN_TASK
+  ADD_TASK_COMMENT
+}
+
+enum AiReportActionStatus {
+  PENDING
+  APPLIED
+  DISMISSED
+  FAILED
 }

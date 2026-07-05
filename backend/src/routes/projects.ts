@@ -233,7 +233,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
       });
       return project;
     },
-    { requireAuth: true, requireActiveOrg: true }
+    { requireAuth: true, requireActiveOrg: true, requirePaidOrg: true }
   )
   .patch(
     "/:id",

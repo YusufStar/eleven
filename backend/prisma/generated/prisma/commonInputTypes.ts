@@ -440,6 +440,40 @@ export type EnumAiReportKindWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumAiReportKindFilter<$PrismaModel>
 }
 
+export type EnumAiReportActionTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionType | Prisma.EnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionTypeFilter<$PrismaModel> | $Enums.AiReportActionType
+}
+
+export type EnumAiReportActionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionStatus | Prisma.EnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionStatusFilter<$PrismaModel> | $Enums.AiReportActionStatus
+}
+
+export type EnumAiReportActionTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionType | Prisma.EnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionTypeWithAggregatesFilter<$PrismaModel> | $Enums.AiReportActionType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiReportActionTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiReportActionTypeFilter<$PrismaModel>
+}
+
+export type EnumAiReportActionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionStatus | Prisma.EnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionStatusWithAggregatesFilter<$PrismaModel> | $Enums.AiReportActionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiReportActionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiReportActionStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -823,6 +857,40 @@ export type NestedEnumAiReportKindWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAiReportKindFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAiReportKindFilter<$PrismaModel>
+}
+
+export type NestedEnumAiReportActionTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionType | Prisma.EnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionTypeFilter<$PrismaModel> | $Enums.AiReportActionType
+}
+
+export type NestedEnumAiReportActionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionStatus | Prisma.EnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionStatusFilter<$PrismaModel> | $Enums.AiReportActionStatus
+}
+
+export type NestedEnumAiReportActionTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionType | Prisma.EnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionType[] | Prisma.ListEnumAiReportActionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionTypeWithAggregatesFilter<$PrismaModel> | $Enums.AiReportActionType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiReportActionTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiReportActionTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumAiReportActionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiReportActionStatus | Prisma.EnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiReportActionStatus[] | Prisma.ListEnumAiReportActionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiReportActionStatusWithAggregatesFilter<$PrismaModel> | $Enums.AiReportActionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiReportActionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiReportActionStatusFilter<$PrismaModel>
 }
 
 

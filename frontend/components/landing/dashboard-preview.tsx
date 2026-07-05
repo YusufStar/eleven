@@ -1,27 +1,27 @@
 const columns = [
   {
-    stage: "Qualified",
-    total: "$128k",
-    deals: [
-      { name: "Aldergate renewal", value: "$42,000", width: "w-3/4" },
-      { name: "Porcelain Studio", value: "$18,500", width: "w-1/3" },
-      { name: "Meridian pilot", value: "$67,500", width: "w-1/2" },
+    stage: "To do",
+    total: "5",
+    tasks: [
+      { name: "Auth: refresh token rotation", tag: "API", width: "w-1/4" },
+      { name: "Empty states for Files", tag: "UI", width: "w-1/5" },
+      { name: "Rate-limit the webhook", tag: "Infra", width: "w-1/3" },
     ],
   },
   {
-    stage: "Proposal",
-    total: "$96k",
-    deals: [
-      { name: "Obsidian Group", value: "$54,000", width: "w-2/3" },
-      { name: "Kairos expansion", value: "$42,000", width: "w-1/2" },
+    stage: "In progress",
+    total: "3",
+    tasks: [
+      { name: "Sprint burndown chart", tag: "Analytics", width: "w-2/3" },
+      { name: "Thread reactions", tag: "Chat", width: "w-1/2" },
     ],
   },
   {
-    stage: "Closing",
-    total: "$210k",
-    deals: [
-      { name: "Northwind annual", value: "$150,000", width: "w-5/6" },
-      { name: "Atelier onboarding", value: "$60,000", width: "w-2/5" },
+    stage: "In review",
+    total: "2",
+    tasks: [
+      { name: "AI weekly report", tag: "AI", width: "w-5/6" },
+      { name: "Presence heartbeat", tag: "Team", width: "w-4/5" },
     ],
   },
 ];
@@ -39,19 +39,19 @@ export function DashboardPreview() {
         <span className="size-2.5 rounded-full bg-border" />
         <span className="size-2.5 rounded-full bg-border" />
         <span className="ml-4 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-          eleven / deals / pipeline
+          eleven / sprint / board
         </span>
       </div>
 
       <div className="flex">
         {/* sidebar */}
         <div className="hidden w-44 shrink-0 border-r p-4 sm:block">
-          {["Dashboard", "Contacts", "Deals", "Projects", "Tasks", "Metrics"].map(
+          {["Dashboard", "Tasks", "Sprints", "Projects", "Chat", "Analytics"].map(
             (item, i) => (
               <div
                 key={item}
                 className={`mb-1 rounded-md px-3 py-2 text-xs ${
-                  i === 2
+                  i === 1
                     ? "bg-foreground font-medium text-background"
                     : "text-muted-foreground"
                 }`}
@@ -62,7 +62,7 @@ export function DashboardPreview() {
           )}
         </div>
 
-        {/* pipeline board */}
+        {/* task board */}
         <div className="grid flex-1 grid-cols-3 gap-4 p-4 sm:p-6">
           {columns.map((col) => (
             <div key={col.stage} className="min-w-0">
@@ -73,17 +73,17 @@ export function DashboardPreview() {
                 </span>
               </div>
               <div className="space-y-3">
-                {col.deals.map((deal) => (
+                {col.tasks.map((task) => (
                   <div
-                    key={deal.name}
+                    key={task.name}
                     className="rounded-lg border bg-background p-3"
                   >
-                    <p className="truncate text-[11px] font-medium">{deal.name}</p>
+                    <p className="truncate text-[11px] font-medium">{task.name}</p>
                     <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-                      {deal.value}
+                      {task.tag}
                     </p>
                     <div className="mt-2.5 h-1 rounded-full bg-muted">
-                      <div className={`h-1 rounded-full bg-foreground/70 ${deal.width}`} />
+                      <div className={`h-1 rounded-full bg-foreground/70 ${task.width}`} />
                     </div>
                   </div>
                 ))}

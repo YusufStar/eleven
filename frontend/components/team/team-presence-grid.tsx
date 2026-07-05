@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PresenceDot, presenceState } from "@/components/ui/status-badge";
+import { useOnlineUsers } from "@/services/live";
 import { useUpdateMe, type TeamMember } from "@/services/team";
 
 function initials(name: string): string {
@@ -145,10 +146,15 @@ export function TeamPresenceGrid({
   myUserId: string | null;
   onEditStatus: () => void;
 }) {
+  const online = useOnlineUsers();
+  const stateOf = React.useCallback(
+    (m: TeamMember) => (online.has(m.userId) ? "online" : presenceState(m.lastSeenAt)),
+    [online],
+  );
   const sorted = React.useMemo(() => {
     const rank = { online: 0, away: 1, offline: 2 } as const;
-    return [...members].sort((a, b) => rank[presenceState(a.lastSeenAt)] - rank[presenceState(b.lastSeenAt)]);
-  }, [members]);
+    return [...members].sort((a, b) => rank[stateOf(a)] - rank[stateOf(b)]);
+  }, [members, stateOf]);
 
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -163,7 +169,7 @@ export function TeamPresenceGrid({
                   <AvatarImage src={m.user.image ?? undefined} alt={m.user.name} />
                   <AvatarFallback>{initials(m.user.name)}</AvatarFallback>
                 </Avatar>
-                <PresenceDot lastSeenAt={m.lastSeenAt} className="absolute -bottom-0.5 -right-0.5" />
+                <PresenceDot lastSeenAt={m.lastSeenAt} online={online.has(m.userId)} className="absolute -bottom-0.5 -right-0.5" />
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">

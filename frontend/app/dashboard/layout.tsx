@@ -27,6 +27,9 @@ import { PlanDetailsCard } from "@/components/payment";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { PresenceHeartbeat } from "@/components/team/presence-heartbeat";
+import { LiveChannel } from "@/components/live/live-channel";
+import { CommandPalette } from "@/components/search/command-palette";
+import { CommandSearchButton } from "@/components/search/command-search-button";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -57,6 +60,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 {(isSessionPending || isOrganizationsPending || isActiveOrganizationPending) ? <Loading key="loading" /> : organizations && organizations.length > 0 ? (
                     <SidebarProvider>
                         <PresenceHeartbeat />
+                        <LiveChannel />
+                        <CommandPalette />
                         <AppSidebar />
                         <SidebarInset>
                             <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
@@ -85,6 +90,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                                     </Breadcrumb>
                                 </div>
                                 <div className="flex items-center gap-2 px-4">
+                                    <CommandSearchButton />
                                     <NotificationBell />
                                     <ThemeToggle />
                                 </div>

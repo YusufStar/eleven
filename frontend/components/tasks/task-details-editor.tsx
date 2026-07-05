@@ -4,11 +4,21 @@ import * as React from "react";
 import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UploadModal } from "@/components/ui/upload-modal";
 import { MarkdownView } from "@/components/ui/markdown-view";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Image01Icon } from "@hugeicons/core-free-icons";
+import {
+  Image01Icon,
+  TextBoldIcon,
+  TextItalicIcon,
+  Heading01Icon,
+  LeftToRightListBulletIcon,
+  SourceCodeIcon,
+  Link01Icon,
+  QuoteDownIcon,
+} from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 export type TaskDetailsEditorProps = {
@@ -33,6 +43,36 @@ function insertAtCursor(textarea: HTMLTextAreaElement | null, insert: string) {
   return newValue;
 }
 
+/** Wrap the current selection (or insert a placeholder) with markdown syntax.
+ *  `linePrefix` markers (e.g. "## ", "- ") go at the start of the line instead. */
+function applyFormat(
+  textarea: HTMLTextAreaElement | null,
+  fmt: { wrap?: [string, string]; linePrefix?: string; placeholder: string },
+): string | undefined {
+  if (!textarea) return;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  const selected = value.slice(start, end) || fmt.placeholder;
+
+  let insert: string;
+  if (fmt.linePrefix) {
+    insert = selected
+      .split("\n")
+      .map((line) => fmt.linePrefix + line)
+      .join("\n");
+  } else if (fmt.wrap) {
+    insert = fmt.wrap[0] + selected + fmt.wrap[1];
+  } else {
+    insert = selected;
+  }
+  const newValue = value.slice(0, start) + insert + value.slice(end);
+  textarea.value = newValue;
+  textarea.focus();
+  textarea.setSelectionRange(start, start + insert.length);
+  return newValue;
+}
+
 export function TaskDetailsEditor({
   value,
   onChange,
@@ -49,6 +89,21 @@ export function TaskDetailsEditor({
     const newValue = insertAtCursor(textareaRef.current, insert);
     if (newValue !== undefined) onChange(newValue);
   };
+
+  const format = (fmt: Parameters<typeof applyFormat>[1]) => {
+    const newValue = applyFormat(textareaRef.current, fmt);
+    if (newValue !== undefined) onChange(newValue);
+  };
+
+  const TOOLBAR: { icon: typeof TextBoldIcon; label: string; fmt: Parameters<typeof applyFormat>[1] }[] = [
+    { icon: TextBoldIcon, label: "Bold", fmt: { wrap: ["**", "**"], placeholder: "bold text" } },
+    { icon: TextItalicIcon, label: "Italic", fmt: { wrap: ["_", "_"], placeholder: "italic text" } },
+    { icon: Heading01Icon, label: "Heading", fmt: { linePrefix: "## ", placeholder: "Heading" } },
+    { icon: LeftToRightListBulletIcon, label: "Bulleted list", fmt: { linePrefix: "- ", placeholder: "List item" } },
+    { icon: QuoteDownIcon, label: "Quote", fmt: { linePrefix: "> ", placeholder: "Quote" } },
+    { icon: SourceCodeIcon, label: "Code", fmt: { wrap: ["`", "`"], placeholder: "code" } },
+    { icon: Link01Icon, label: "Link", fmt: { wrap: ["[", "](https://)"], placeholder: "link text" } },
+  ];
 
   return (
     <>
@@ -83,7 +138,22 @@ export function TaskDetailsEditor({
             <TabsTrigger value="write">Write</TabsTrigger>
             <TabsTrigger value="preview">Preview</TabsTrigger>
           </TabsList>
-          <TabsContent value="write" className="mt-2">
+          <TabsContent value="write" className="mt-2 space-y-2">
+            <div className="flex flex-wrap items-center gap-0.5 rounded-lg border bg-muted/30 p-1">
+              {TOOLBAR.map((t) => (
+                <IconButton
+                  key={t.label}
+                  type="button"
+                  variant="ghost"
+                  className="size-7"
+                  label={t.label}
+                  disabled={disabled}
+                  onClick={() => format(t.fmt)}
+                >
+                  <HugeiconsIcon icon={t.icon} className="size-4" strokeWidth={2} />
+                </IconButton>
+              ))}
+            </div>
             <Textarea
               ref={textareaRef}
               value={value}

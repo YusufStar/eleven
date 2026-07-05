@@ -20,6 +20,7 @@ import ElevenLogo from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { ScheduleMeetingModal } from "@/components/meet/schedule-meeting-modal";
 import { MeetWeekCalendar } from "@/components/meet/meet-week-calendar";

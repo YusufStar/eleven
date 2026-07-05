@@ -63,6 +63,7 @@ import { useActivitiesList } from "@/services/activities";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { useMentionAutocomplete, MentionSuggestions } from "@/components/mentions/mention-autocomplete";
 import { TaskSelect } from "@/components/tasks/task-select";
 
 const PRIORITIES = ["LOW", "MEDIUM", "HIGH", "URGENT"] as const;
@@ -328,14 +329,20 @@ function CommentsCard({ task, myMemberId }: { task: TaskDetail; myMemberId: stri
   const deleteComment = useDeleteTaskComment();
   const [draft, setDraft] = React.useState("");
   const comments = task.comments ?? [];
+  const mentions = useMentionAutocomplete();
+  const draftRef = React.useRef<HTMLTextAreaElement>(null);
 
   const submit = () => {
     const body = draft.trim();
     if (!body) return;
+    const mentionMemberIds = mentions.resolve(body).map((m) => m.memberId);
     addComment.mutate(
-      { taskId: task.id, body },
+      { taskId: task.id, body, mentionMemberIds: mentionMemberIds.length > 0 ? mentionMemberIds : undefined },
       {
-        onSuccess: () => setDraft(""),
+        onSuccess: () => {
+          setDraft("");
+          mentions.reset();
+        },
         onError: (e) => toast.error(e.message),
       },
     );
@@ -385,16 +392,46 @@ function CommentsCard({ task, myMemberId }: { task: TaskDetail; myMemberId: stri
           ))}
         </ul>
         <div className="space-y-2">
-          <Textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Write a comment…"
-            rows={3}
-            className="resize-none"
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") submit();
-            }}
-          />
+          <div className="relative">
+            <div className="absolute bottom-full left-0 mb-1">
+              <MentionSuggestions
+                candidates={mentions.candidates}
+                onPick={(m) => {
+                  const el = draftRef.current;
+                  const caret = el?.selectionStart ?? draft.length;
+                  const next = mentions.insert(draft, caret, m);
+                  setDraft(next.text);
+                  el?.focus();
+                }}
+              />
+            </div>
+            <Textarea
+              ref={draftRef}
+              value={draft}
+              onChange={(e) => {
+                setDraft(e.target.value);
+                mentions.detect(e.target.value, e.target.selectionStart ?? e.target.value.length);
+              }}
+              placeholder="Write a comment…  use @ to mention"
+              rows={3}
+              className="resize-none"
+              onKeyDown={(e) => {
+                if (mentions.open && mentions.candidates.length > 0 && (e.key === "Tab" || e.key === "Enter")) {
+                  e.preventDefault();
+                  const el = draftRef.current;
+                  const caret = el?.selectionStart ?? draft.length;
+                  const next = mentions.insert(draft, caret, mentions.candidates[0]);
+                  setDraft(next.text);
+                  return;
+                }
+                if (e.key === "Escape" && mentions.open) {
+                  mentions.close();
+                  return;
+                }
+                if ((e.metaKey || e.ctrlKey) && e.key === "Enter") submit();
+              }}
+            />
+          </div>
           <div className="flex justify-end">
             <Button size="sm" onClick={submit} disabled={!draft.trim() || addComment.isPending}>
               {addComment.isPending ? <Spinner className="size-3.5" /> : "Comment"}

@@ -100,3 +100,24 @@ export const AiReportKind = {
 } as const
 
 export type AiReportKind = (typeof AiReportKind)[keyof typeof AiReportKind]
+
+
+export const AiReportActionType = {
+  CREATE_TASK: 'CREATE_TASK',
+  UPDATE_TASK_STATUS: 'UPDATE_TASK_STATUS',
+  UPDATE_TASK_PRIORITY: 'UPDATE_TASK_PRIORITY',
+  REASSIGN_TASK: 'REASSIGN_TASK',
+  ADD_TASK_COMMENT: 'ADD_TASK_COMMENT'
+} as const
+
+export type AiReportActionType = (typeof AiReportActionType)[keyof typeof AiReportActionType]
+
+
+export const AiReportActionStatus = {
+  PENDING: 'PENDING',
+  APPLIED: 'APPLIED',
+  DISMISSED: 'DISMISSED',
+  FAILED: 'FAILED'
+} as const
+
+export type AiReportActionStatus = (typeof AiReportActionStatus)[keyof typeof AiReportActionStatus]

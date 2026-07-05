@@ -83,7 +83,8 @@ export const ModelName = {
   MeetingParticipant: 'MeetingParticipant',
   Notification: 'Notification',
   NotificationPreference: 'NotificationPreference',
-  AiReport: 'AiReport'
+  AiReport: 'AiReport',
+  AiReportAction: 'AiReportAction'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -556,6 +557,25 @@ export const AiReportScalarFieldEnum = {
 } as const
 
 export type AiReportScalarFieldEnum = (typeof AiReportScalarFieldEnum)[keyof typeof AiReportScalarFieldEnum]
+
+
+export const AiReportActionScalarFieldEnum = {
+  id: 'id',
+  reportId: 'reportId',
+  organizationId: 'organizationId',
+  type: 'type',
+  title: 'title',
+  description: 'description',
+  payload: 'payload',
+  sortOrder: 'sortOrder',
+  status: 'status',
+  resultMessage: 'resultMessage',
+  appliedAt: 'appliedAt',
+  appliedByMemberId: 'appliedByMemberId',
+  createdAt: 'createdAt'
+} as const
+
+export type AiReportActionScalarFieldEnum = (typeof AiReportActionScalarFieldEnum)[keyof typeof AiReportActionScalarFieldEnum]
 
 
 export const SortOrder = {

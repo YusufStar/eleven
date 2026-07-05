@@ -277,3 +277,23 @@ svg .svg-elem-5 {
 svg.active .svg-elem-5 {
   fill: var(--primary-foreground);
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .report-print-root,
+  .report-print-root * {
+    visibility: visible;
+  }
+  .report-print-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+  .print\\:hidden {
+    display: none !important;
+  }
+}

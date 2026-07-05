@@ -6,6 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { BellIcon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   useNotificationsList,
   useUnreadCount,
@@ -56,16 +57,21 @@ export function NotificationBell() {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="icon" className="relative" aria-label={`Notifications${count ? ` (${count} unread)` : ""}`}>
-          <HugeiconsIcon icon={BellIcon} className="size-4.5" strokeWidth={1.8} />
-          {count > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 font-mono text-[10px] leading-none text-background">
-              {count > 99 ? "99+" : count}
-            </span>
-          )}
-        </Button>
-      </PopoverTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="icon" className="relative" aria-label={`Notifications${count ? ` (${count} unread)` : ""}`}>
+              <HugeiconsIcon icon={BellIcon} className="size-4.5" strokeWidth={1.8} />
+              {count > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 font-mono text-[10px] leading-none text-background">
+                  {count > 99 ? "99+" : count}
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Notifications</TooltipContent>
+      </Tooltip>
       <PopoverContent align="end" className="w-96 p-0">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <h2 className="text-sm font-medium">Notifications</h2>

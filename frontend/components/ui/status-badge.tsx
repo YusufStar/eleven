@@ -156,15 +156,18 @@ export function StatusBadge({
   );
 }
 
-/** Small colored presence dot used next to avatars. */
+/** Small colored presence dot used next to avatars. `online` (from the live
+ *  socket) forces the green state; otherwise it derives from lastSeenAt. */
 export function PresenceDot({
   lastSeenAt,
+  online,
   className,
 }: {
   lastSeenAt: string | Date | null | undefined;
+  online?: boolean;
   className?: string;
 }) {
-  const state = presenceState(lastSeenAt);
+  const state = online ? "online" : presenceState(lastSeenAt);
   return (
     <span
       aria-label={state}

@@ -6,11 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { Badge } from "@/components/ui/badge";
-import { MarkdownView } from "@/components/ui/markdown-view";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { SparklesIcon, RefreshIcon, AiBrain01Icon, Calendar03Icon } from "@hugeicons/core-free-icons";
-import { useAiReports, useGenerateAiReport, type AiReport, type AiReportKind } from "@/services/ai-reports";
+import { SparklesIcon, RefreshIcon, AiBrain01Icon } from "@hugeicons/core-free-icons";
+import {
+  useAiReports,
+  useAiReport,
+  useGenerateAiReport,
+  type AiReportKind,
+} from "@/services/ai-reports";
+import { ReportDashboardView } from "@/components/reports/report-dashboard";
 
 const KINDS: { kind: AiReportKind; label: string; cadence: string; tone: string }[] = [
   { kind: "MINI", label: "Daily digest", cadence: "Covers the last 24 hours", tone: "from-status-blue/15" },
@@ -58,47 +62,32 @@ function GenerateCard({
   );
 }
 
-function ReportView({ report }: { report: AiReport }) {
-  const metricKeys = Object.keys(report.metrics ?? {});
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <HugeiconsIcon icon={SparklesIcon} className="size-4 text-brand" strokeWidth={2} />
-            {report.title}
-          </CardTitle>
-          <span className="flex items-center gap-2 text-xs text-muted-foreground">
-            <HugeiconsIcon icon={Calendar03Icon} className="size-3.5" strokeWidth={2} />
-            {fmtDate(report.periodStart)} – {fmtDate(report.periodEnd)}
-            {report.model && <Badge variant="secondary" className="text-[10px]">{report.model}</Badge>}
-          </span>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <MarkdownView content={report.content} />
-        {metricKeys.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 border-t pt-3">
-            {metricKeys.map((k) => (
-              <Badge key={k} variant="outline" className="text-[10px]">
-                {k.replace(/_/g, " ")}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function ReportsPage() {
+  const reportViewRef = React.useRef<HTMLDivElement>(null);
   const [activeKind, setActiveKind] = React.useState<AiReportKind>("MINI");
-  const { data, isPending } = useAiReports();
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const { data, isPending: listPending } = useAiReports();
   const generate = useGenerateAiReport();
 
   const aiConfigured = data?.aiConfigured ?? true;
   const reports = data?.data ?? [];
-  const latest = reports.find((r) => r.kind === activeKind);
+  const kindReports = reports.filter((r) => r.kind === activeKind);
+  const latest = kindReports[0];
+
+  const effectiveId = selectedId ?? latest?.id ?? null;
+  const { data: detailData, isPending: detailPending } = useAiReport(effectiveId);
+  const displayedReport = detailData?.report ?? kindReports.find((r) => r.id === effectiveId) ?? latest;
+
+  React.useEffect(() => {
+    setSelectedId(null);
+  }, [activeKind]);
+
+  const selectReport = (id: string) => {
+    setSelectedId(id);
+    requestAnimationFrame(() => {
+      reportViewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
 
   const onGenerate = (kind: AiReportKind, force = false) => {
     generate.mutate(
@@ -106,36 +95,42 @@ export default function ReportsPage() {
       {
         onSuccess: (res) => {
           setActiveKind(kind);
+          setSelectedId(res.report.id);
           toast.success(res.fresh ? "Showing today's report." : "Report generated.");
+          requestAnimationFrame(() => {
+            reportViewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
         },
         onError: (e) => toast.error(e.message),
       },
     );
   };
 
+  const loading = listPending || generate.isPending || (effectiveId != null && detailPending && !displayedReport);
+
   return (
     <div className="container mx-auto space-y-6 py-2">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
             AI Reports
             <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">Claude</span>
           </h1>
           <p className="text-sm text-muted-foreground">
-            Automated summaries of productivity, velocity, bottlenecks, and risks — grounded in your real data via tool calling.
+            Structured dashboards with charts, KPI cards, and one-click recommended actions — grounded in your real data.
           </p>
         </div>
       </div>
 
       {!aiConfigured && (
-        <Card className="border-status-orange/40 bg-status-orange/5">
+        <Card className="border-status-orange/40 bg-status-orange/5 print:hidden">
           <CardContent className="py-4 text-sm text-muted-foreground">
             AI reports are not configured yet. Set <code className="rounded bg-muted px-1">ANTHROPIC_API_KEY</code> on the backend to enable report generation.
           </CardContent>
         </Card>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3 print:hidden">
         {KINDS.map((k) => (
           <GenerateCard
             key={k.kind}
@@ -147,8 +142,7 @@ export default function ReportsPage() {
         ))}
       </div>
 
-      {/* Kind switcher */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 print:hidden">
         <div className="inline-flex rounded-lg border p-0.5">
           {KINDS.map((k) => (
             <button
@@ -177,44 +171,55 @@ export default function ReportsPage() {
         )}
       </div>
 
-      {/* Latest report of active kind */}
-      {isPending ? (
-        <Skeleton className="h-64 w-full rounded-xl" />
-      ) : latest ? (
-        <ReportView report={latest} />
-      ) : (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
-            <HugeiconsIcon icon={AiBrain01Icon} className="size-8 text-muted-foreground" strokeWidth={2} />
-            <p className="text-sm text-muted-foreground">
-              No {KINDS.find((k) => k.kind === activeKind)?.label.toLowerCase()} yet. Generate one to get an AI summary of your team&apos;s work.
-            </p>
-            {aiConfigured && (
-              <Button size="sm" className="gap-1.5" disabled={generate.isPending} onClick={() => onGenerate(activeKind)}>
-                <HugeiconsIcon icon={SparklesIcon} className="size-4" strokeWidth={2} />
-                Generate now
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* History */}
-      {reports.filter((r) => r.kind === activeKind && r.id !== latest?.id).length > 0 && (
-        <div>
-          <h2 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Earlier reports</h2>
-          <ul className="space-y-1.5">
-            {reports
-              .filter((r) => r.kind === activeKind && r.id !== latest?.id)
-              .map((r) => (
-                <li key={r.id} className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm">
-                  <span className="truncate font-medium">{r.title}</span>
-                  <span className="shrink-0 text-xs text-muted-foreground">{fmtDate(r.createdAt)}</span>
+      {kindReports.length > 0 && (
+        <div className="print:hidden">
+          <h2 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Report history
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {kindReports.map((r, i) => {
+              const active = effectiveId === r.id;
+              return (
+                <li key={r.id}>
+                  <button
+                    type="button"
+                    onClick={() => selectReport(r.id)}
+                    className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50 ${
+                      active ? "border-brand/50 bg-brand/10 ring-1 ring-brand/30" : ""
+                    }`}
+                  >
+                    <span className="block font-medium">{i === 0 ? "Latest · " : ""}{fmtDate(r.createdAt)}</span>
+                    <span className="block max-w-[220px] truncate text-xs text-muted-foreground">{r.title}</span>
+                  </button>
                 </li>
-              ))}
+              );
+            })}
           </ul>
         </div>
       )}
+
+      <div ref={reportViewRef}>
+        {loading ? (
+          <Skeleton className="h-96 w-full rounded-xl print:hidden" />
+        ) : displayedReport ? (
+          <ReportDashboardView report={displayedReport} />
+        ) : (
+          <Card className="border-dashed print:hidden">
+            <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+              <HugeiconsIcon icon={AiBrain01Icon} className="size-8 text-muted-foreground" strokeWidth={2} />
+              <p className="text-sm text-muted-foreground">
+                No {KINDS.find((k) => k.kind === activeKind)?.label.toLowerCase()} yet. Generate one to get an AI summary of your team&apos;s work.
+              </p>
+              {aiConfigured && (
+                <Button size="sm" className="gap-1.5" disabled={generate.isPending} onClick={() => onGenerate(activeKind)}>
+                  <HugeiconsIcon icon={SparklesIcon} className="size-4" strokeWidth={2} />
+                  Generate now
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,17 @@ import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 import { ChatType } from "../../prisma/generated/prisma/enums";
 import { notify } from "../lib/notify";
+import { publishToOrg, publishToUsers } from "../lib/ws-hub";
+
+/** Live-push an event to a chat's participants (org chat → the org; DM → the two users). */
+function publishToChat(
+  access: { type: "org"; organizationId: string } | { type: "dm"; participant1Id: string; participant2Id: string },
+  event: Parameters<typeof publishToOrg>[1],
+  exceptUserId?: string,
+) {
+  if (access.type === "org") publishToOrg(access.organizationId, event, exceptUserId);
+  else publishToUsers([access.participant1Id, access.participant2Id], event, exceptUserId);
+}
 
 const R2_PUBLIC_BASE_URL = (process.env.R2_PUBLIC_BASE_URL ?? "").replace(/\/$/, "");
 const ALLOWED_MEDIA_MIMETYPES = [
@@ -338,6 +349,8 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
       });
       // typing indicator is stale the moment a message lands
       typingState.get(chat.id)?.delete(user.id);
+      // live push to other participants; sender reconciles via the POST response
+      publishToChat(access, { type: "chat:message", chatId: chat.id, message }, user.id);
       if (mentionUserIds.length > 0 && access.type === "org") {
         const mentionedMembers = await prisma.member.findMany({
           where: { organizationId: access.organizationId, userId: { in: mentionUserIds } },
@@ -498,6 +511,7 @@ export const chatRoutes = new Elysia({ prefix: "/chat" })
         update: { lastReadAt: new Date() },
         create: { chatId: access.chatId, userId: user.id },
       });
+      publishToChat(access, { type: "chat:read", chatId: access.chatId, userId: user.id }, user.id);
       return { ok: true, lastReadAt: read.lastReadAt };
     },
     { requireAuth: true }

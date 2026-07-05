@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Spinner } from "@/components/ui/spinner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { File02Icon, Upload01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
@@ -131,7 +132,7 @@ export function ImportFileModal({
                 value={selectedProjectId ?? ""}
                 onValueChange={(v) => setSelectedProjectId(v || null)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select project..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,9 +199,9 @@ export function ImportFileModal({
                     {previewFile.type && ` · ${previewFile.type}`}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={clearPreview} aria-label="Remove file">
+                <IconButton variant="ghost" onClick={clearPreview} label="Remove file">
                   <HugeiconsIcon icon={Cancel01Icon} className="size-4" strokeWidth={2} />
-                </Button>
+                </IconButton>
               </div>
             </div>
           )}

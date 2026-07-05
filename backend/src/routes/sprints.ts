@@ -76,7 +76,7 @@ export const sprintsRoutes = new Elysia({ prefix: "/sprints" })
       });
       return sprint;
     },
-    { requireAuth: true, requireActiveOrg: true }
+    { requireAuth: true, requireActiveOrg: true, requirePaidOrg: true }
   )
   .patch(
     "/:id",

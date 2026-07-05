@@ -297,9 +297,9 @@ async function DashboardContent() {
         <StatTile label="Done" value={stats.tasksDone} tone="green" href="/dashboard/tasks" />
       </div>
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 items-start">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 items-stretch">
         {/* Today's focus + my tasks */}
-        <Card size="sm" className="flex flex-col lg:col-span-1">
+        <Card size="sm" className="flex h-full flex-col">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <HugeiconsIcon icon={Target02Icon} className="size-4 text-brand" strokeWidth={2} />
@@ -307,45 +307,47 @@ async function DashboardContent() {
             </CardTitle>
             <CardDescription>Your tasks due today or overdue</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {todaysFocus.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-1">Nothing due today — pick something from your list. 🎉</p>
-            ) : (
-              <ul className="space-y-2">
-                {todaysFocus.map((t) => (
-                  <li key={t.id}>
-                    <Link href={`/dashboard/tasks/${t.id}`} className="group flex items-center justify-between gap-2 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/50">
-                      <span className="truncate text-sm font-medium group-hover:underline">{t.title}</span>
-                      <StatusBadge domain="priority" value={t.priority} size="sm" noTooltip />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="border-t pt-3">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">My open tasks</p>
-              {myTasks.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No open tasks assigned to you.</p>
+          <CardContent className="flex flex-1 flex-col">
+            <div className="flex-1 space-y-3">
+              {todaysFocus.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-1">Nothing due today — pick something from your list. 🎉</p>
               ) : (
-                <ul className="space-y-1.5">
-                  {myTasks.slice(0, 6).map((t) => (
+                <ul className="space-y-2">
+                  {todaysFocus.map((t) => (
                     <li key={t.id}>
-                      <Link href={`/dashboard/tasks/${t.id}`} className="flex items-center gap-2 text-sm hover:underline">
-                        <StatusBadge domain="task" value={t.status} size="sm" showIcon noTooltip label="" className="px-1 py-1" />
-                        <span className="truncate">{t.title}</span>
-                        {t.projectName && <span className="ml-auto shrink-0 text-xs text-muted-foreground">{t.projectName}</span>}
+                      <Link href={`/dashboard/tasks/${t.id}`} className="group flex items-center justify-between gap-2 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/50">
+                        <span className="truncate text-sm font-medium group-hover:underline">{t.title}</span>
+                        <StatusBadge domain="priority" value={t.priority} size="sm" noTooltip />
                       </Link>
                     </li>
                   ))}
                 </ul>
               )}
-              <Link href="/dashboard/tasks" className="mt-2 inline-block text-sm text-primary hover:underline">View all tasks</Link>
+              <div className="border-t pt-3">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">My open tasks</p>
+                {myTasks.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No open tasks assigned to you.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {myTasks.slice(0, 6).map((t) => (
+                      <li key={t.id}>
+                        <Link href={`/dashboard/tasks/${t.id}`} className="flex items-center gap-2 text-sm hover:underline">
+                          <StatusBadge domain="task" value={t.status} size="sm" showIcon noTooltip label="" className="px-1 py-1" />
+                          <span className="truncate">{t.title}</span>
+                          {t.projectName && <span className="ml-auto shrink-0 text-xs text-muted-foreground">{t.projectName}</span>}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
+            <Link href="/dashboard/tasks" className="mt-auto pt-3 inline-block text-sm text-primary hover:underline">View all tasks</Link>
           </CardContent>
         </Card>
 
         {/* Projects */}
-        <Card size="sm" className="flex flex-col">
+        <Card size="sm" className="flex h-full flex-col">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <HugeiconsIcon icon={Folder01Icon} className="size-4 text-status-blue" strokeWidth={2} />
@@ -353,35 +355,37 @@ async function DashboardContent() {
             </CardTitle>
             <CardDescription>Progress across active projects</CardDescription>
           </CardHeader>
-          <CardContent>
-            {projects.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-1">No projects yet. Create one to get started.</p>
-            ) : (
-              <ul className="space-y-3">
-                {projects.map((p) => (
-                  <li key={p.id}>
-                    <Link href={`/dashboard/projects/${p.slug}`} className="group block">
-                      <div className="flex items-center justify-between gap-2 text-sm">
-                        <span className="truncate font-medium group-hover:underline">{p.name}</span>
-                        <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{p.doneCount}/{p.taskCount}</span>
-                      </div>
-                      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-brand to-status-blue transition-all duration-500"
-                          style={{ width: `${p.progress}%` }}
-                        />
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <Link href="/dashboard/projects" className="mt-3 inline-block text-sm text-primary hover:underline">View all projects</Link>
+          <CardContent className="flex flex-1 flex-col">
+            <div className="flex-1">
+              {projects.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-1">No projects yet. Create one to get started.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {projects.map((p) => (
+                    <li key={p.id}>
+                      <Link href={`/dashboard/projects/${p.slug}`} className="group block">
+                        <div className="flex items-center justify-between gap-2 text-sm">
+                          <span className="truncate font-medium group-hover:underline">{p.name}</span>
+                          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{p.doneCount}/{p.taskCount}</span>
+                        </div>
+                        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-brand to-status-blue transition-all duration-500"
+                            style={{ width: `${p.progress}%` }}
+                          />
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <Link href="/dashboard/projects" className="mt-auto pt-3 inline-block text-sm text-primary hover:underline">View all projects</Link>
           </CardContent>
         </Card>
 
         {/* Team presence */}
-        <Card size="sm" className="flex flex-col">
+        <Card size="sm" className="flex h-full flex-col">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <HugeiconsIcon icon={UserGroupIcon} className="size-4 text-status-green" strokeWidth={2} />
@@ -389,38 +393,41 @@ async function DashboardContent() {
             </CardTitle>
             <CardDescription>Who&apos;s online and what they&apos;re doing</CardDescription>
           </CardHeader>
-          <CardContent>
-            {team.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-1">No teammates yet.</p>
-            ) : (
-              <ul className="space-y-2.5">
-                {team.slice(0, 7).map((m) => (
-                  <li key={m.id} className="flex items-center gap-2.5">
-                    <span className="relative inline-flex">
-                      <Avatar className="size-7">
-                        <AvatarImage src={m.image ?? undefined} alt={m.name} />
-                        <AvatarFallback className="text-[10px]">{initials(m.name)}</AvatarFallback>
-                      </Avatar>
-                      <PresenceDot lastSeenAt={m.lastSeenAt} className="absolute -bottom-0.5 -right-0.5 size-2" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium leading-tight">
-                        {m.name} {m.statusEmoji && <span>{m.statusEmoji}</span>}
-                      </p>
-                      {(m.workingOn || m.statusText) && (
-                        <p className="truncate text-xs text-muted-foreground">{m.workingOn ?? m.statusText}</p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <Link href="/dashboard/team" className="mt-3 inline-block text-sm text-primary hover:underline">View team</Link>
+          <CardContent className="flex flex-1 flex-col">
+            <div className="flex-1">
+              {team.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-1">No teammates yet.</p>
+              ) : (
+                <ul className="space-y-2.5">
+                  {team.slice(0, 7).map((m) => (
+                    <li key={m.id} className="flex items-center gap-2.5">
+                      <span className="relative inline-flex">
+                        <Avatar className="size-7">
+                          <AvatarImage src={m.image ?? undefined} alt={m.name} />
+                          <AvatarFallback className="text-[10px]">{initials(m.name)}</AvatarFallback>
+                        </Avatar>
+                        <PresenceDot lastSeenAt={m.lastSeenAt} className="absolute -bottom-0.5 -right-0.5 size-2" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium leading-tight">
+                          {m.name} {m.statusEmoji && <span>{m.statusEmoji}</span>}
+                        </p>
+                        {(m.workingOn || m.statusText) && (
+                          <p className="truncate text-xs text-muted-foreground">{m.workingOn ?? m.statusText}</p>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <Link href="/dashboard/team" className="mt-auto pt-3 inline-block text-sm text-primary hover:underline">View team</Link>
           </CardContent>
         </Card>
+      </div>
 
-        {/* Activity */}
-        <Card size="sm" className="flex flex-col lg:col-span-2">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 items-stretch">
+        <Card size="sm" className="flex h-full flex-col lg:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <HugeiconsIcon icon={Activity01Icon} className="size-4 text-status-purple" strokeWidth={2} />
@@ -428,34 +435,36 @@ async function DashboardContent() {
             </CardTitle>
             <CardDescription>Latest changes across the workspace</CardDescription>
           </CardHeader>
-          <CardContent>
-            {!recentActivities?.length ? (
-              <p className="text-sm text-muted-foreground py-1">No recent activity.</p>
-            ) : (
-              <ul className="space-y-2">
-                {recentActivities.slice(0, 8).map((a) => (
-                  <li key={a.id} className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
-                    <Avatar className="size-5">
-                      <AvatarImage src={a.memberImage ?? undefined} alt={a.memberName} />
-                      <AvatarFallback className="text-[9px]">{initials(a.memberName)}</AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium">{a.memberName}</span>
-                    <Badge variant="secondary" className={`text-xs ${actionBadge[a.action] ?? ""}`}>
-                      {a.action.toLowerCase()}
-                    </Badge>
-                    <span className="text-muted-foreground">{entityLabel[a.entityType] ?? a.entityType}</span>
-                    <span className="truncate min-w-0">{a.entityTitle ?? ""}</span>
-                    <span className="ml-auto shrink-0 text-xs text-muted-foreground">{formatRelative(a.createdAt)}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <Link href="/dashboard/activities" className="mt-2 inline-block text-sm text-primary hover:underline">View all activity</Link>
+          <CardContent className="flex flex-1 flex-col">
+            <div className="flex-1">
+              {!recentActivities?.length ? (
+                <p className="text-sm text-muted-foreground py-1">No recent activity.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {recentActivities.slice(0, 8).map((a) => (
+                    <li key={a.id} className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
+                      <Avatar className="size-5">
+                        <AvatarImage src={a.memberImage ?? undefined} alt={a.memberName} />
+                        <AvatarFallback className="text-[9px]">{initials(a.memberName)}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium">{a.memberName}</span>
+                      <Badge variant="secondary" className={`text-xs ${actionBadge[a.action] ?? ""}`}>
+                        {a.action.toLowerCase()}
+                      </Badge>
+                      <span className="text-muted-foreground">{entityLabel[a.entityType] ?? a.entityType}</span>
+                      <span className="truncate min-w-0">{a.entityTitle ?? ""}</span>
+                      <span className="ml-auto shrink-0 text-xs text-muted-foreground">{formatRelative(a.createdAt)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <Link href="/dashboard/activities" className="mt-auto pt-3 inline-block text-sm text-primary hover:underline">View all activity</Link>
           </CardContent>
         </Card>
 
         {/* Mentions + meetings */}
-        <Card size="sm" className="flex flex-col">
+        <Card size="sm" className="flex h-full flex-col">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <HugeiconsIcon icon={AiVideoIcon} className="size-4 text-status-orange" strokeWidth={2} />
@@ -463,40 +472,42 @@ async function DashboardContent() {
             </CardTitle>
             <CardDescription>Meetings and mentions</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">Meetings today</p>
-              {todayMeetings.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No meetings scheduled today.</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {todayMeetings.map((m) => (
-                    <li key={m.id}>
-                      <Link href={`/meet/${m.code}`} target="_blank" className="flex items-center justify-between gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors hover:bg-muted/50">
-                        <span className="truncate font-medium">{m.title}</span>
-                        <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{formatTime(m.startsAt)}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div>
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">Mentions</p>
-              {mentions.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No one mentioned you recently.</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {mentions.map((n) => (
-                    <li key={n.id}>
-                      <Link href={n.link ?? "/dashboard/notifications"} className="block rounded-lg border px-3 py-1.5 text-sm transition-colors hover:bg-muted/50">
-                        <span className={`block truncate ${n.readAt ? "" : "font-semibold"}`}>{n.body ?? n.title}</span>
-                        <span className="text-xs text-muted-foreground">{formatRelative(n.createdAt)}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
+          <CardContent className="flex flex-1 flex-col">
+            <div className="flex-1 space-y-4">
+              <div>
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">Meetings today</p>
+                {todayMeetings.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No meetings scheduled today.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {todayMeetings.map((m) => (
+                      <li key={m.id}>
+                        <Link href={`/meet/${m.code}`} target="_blank" className="flex items-center justify-between gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors hover:bg-muted/50">
+                          <span className="truncate font-medium">{m.title}</span>
+                          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{formatTime(m.startsAt)}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">Mentions</p>
+                {mentions.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No one mentioned you recently.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {mentions.map((n) => (
+                      <li key={n.id}>
+                        <Link href={n.link ?? "/dashboard/notifications"} className="block rounded-lg border px-3 py-1.5 text-sm transition-colors hover:bg-muted/50">
+                          <span className={`block truncate ${n.readAt ? "" : "font-semibold"}`}>{n.body ?? n.title}</span>
+                          <span className="text-xs text-muted-foreground">{formatRelative(n.createdAt)}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>

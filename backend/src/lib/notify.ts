@@ -2,6 +2,7 @@ import type { PrismaClient } from "../../prisma/generated/prisma/client";
 import type { NotificationType } from "../../prisma/generated/prisma/enums";
 import { renderEmail, notificationCta } from "./email-templates";
 import { enqueueEmail } from "../queue/email";
+import { publishToUsers } from "./ws-hub";
 
 export type NotifyParams = {
   prisma: PrismaClient;
@@ -63,7 +64,7 @@ export async function notify(params: NotifyParams): Promise<void> {
     select: {
       id: true,
       timezone: true,
-      user: { select: { email: true } },
+      user: { select: { id: true, email: true } },
       notificationPreference: true,
     },
   });
@@ -86,6 +87,8 @@ export async function notify(params: NotifyParams): Promise<void> {
         link: link ?? null,
       })),
     });
+    // live nudge so the bell/inbox refetch without waiting for the poll
+    publishToUsers(inAppRecipients.map((m) => m.user.id), { type: "notification" });
   }
 
   // email fan-out — enqueued, never awaited by the caller's request path

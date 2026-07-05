@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -136,11 +137,10 @@ function VersionsDialog({ file, onClose }: { file: OrgFileRow | null; onClose: (
 function DeleteFileButton({ file }: { file: OrgFileRow }) {
   const del = useDeleteProjectFile(file.projectId);
   return (
-    <Button
+    <IconButton
       variant="ghost"
-      size="icon"
       className="size-7 text-muted-foreground hover:text-destructive"
-      aria-label={`Delete ${file.fileName}`}
+      label="Delete file"
       onClick={() => {
         if (!confirm(`Delete "${file.fileName}"?`)) return;
         del.mutate(file.id, {
@@ -150,7 +150,7 @@ function DeleteFileButton({ file }: { file: OrgFileRow }) {
       }}
     >
       <HugeiconsIcon icon={Delete02Icon} className="size-4" strokeWidth={2} />
-    </Button>
+    </IconButton>
   );
 }
 
@@ -352,15 +352,14 @@ export default function FilesPage() {
                     <TableCell className="text-sm text-muted-foreground">{fmtDate(f.updatedAt)}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                        <Button
+                        <IconButton
                           variant="ghost"
-                          size="icon"
                           className="size-7"
-                          aria-label="Preview"
+                          label="Preview"
                           onClick={() => setPreview(f)}
                         >
                           <HugeiconsIcon icon={EyeIcon} className="size-4" strokeWidth={2} />
-                        </Button>
+                        </IconButton>
                         <Button variant="ghost" size="icon" className="size-7" aria-label="Download" asChild>
                           <a href={projectsApi.getFileDownloadUrl(f.projectId, f.id)}>
                             <HugeiconsIcon icon={Download01Icon} className="size-4" strokeWidth={2} />

@@ -17,6 +17,7 @@ export type {
 } from "./types";
 export { chatApi } from "./api";
 export { chatQueryKeys } from "./query-keys";
+export { mergeChatMessages, infiniteKey, CHAT_DEFAULT_PAGE_SIZE } from "./use-chat";
 export {
   useChat,
   useChatMessages,

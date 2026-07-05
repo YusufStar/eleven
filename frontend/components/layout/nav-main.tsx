@@ -34,31 +34,31 @@ function isPathActive(pathname: string, url: string) {
   return false
 }
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: React.ReactNode
-    isActive?: boolean
-    openInNewTab?: boolean
-    items?: { title: string; url: string }[]
-  }[]
-}) {
+export type NavMainItem = {
+  title: string
+  url: string
+  icon?: React.ReactNode
+  isActive?: boolean
+  items?: { title: string; url: string }[]
+}
+
+export function NavMain({ items }: { items: NavMainItem[] }) {
   const pathname = usePathname()
   const { state } = useSidebar()
   const isCollapsed = state === "collapsed"
   const [openSections, setOpenSections] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    const active = items.find(
-      (item) =>
+    for (const item of items) {
+      const subItems = item.items ?? []
+      const isMulti = subItems.length > 1
+      if (!isMulti) continue
+      const active =
         isPathActive(pathname, item.url) ||
-        item.items?.some((sub) => isPathActive(pathname, sub.url))
-    )
-    if (active) {
-      setOpenSections((prev) => new Set(prev).add(active.title))
+        subItems.some((sub) => isPathActive(pathname, sub.url))
+      if (active) {
+        setOpenSections((prev) => new Set(prev).add(item.title))
+      }
     }
   }, [pathname, items])
 
@@ -67,33 +67,28 @@ export function NavMain({
       <SidebarGroupLabel>Main</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
+          const subItems = item.items ?? []
+          const isMulti = subItems.length > 1
+          const href = subItems.length === 1 ? subItems[0]!.url : item.url
           const active =
-            (isPathActive(pathname, item.url) ||
-              item.items?.some((sub) => isPathActive(pathname, sub.url))) ??
-            false
-          const isOpen = openSections.has(item.title)
-          const isNewTabLink =
-            item.openInNewTab && item.items?.length === 1
-          const newTabUrl = isNewTabLink ? item.items![0].url : null
+            isPathActive(pathname, href) ||
+            (isMulti && subItems.some((sub) => isPathActive(pathname, sub.url)))
 
-          if (isNewTabLink && newTabUrl) {
+          // Single destination — direct link, no chevron
+          if (!isMulti) {
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild tooltip={item.title} isActive={false}>
-                  <a
-                    href={newTabUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full"
-                  >
+                <SidebarMenuButton asChild tooltip={item.title} isActive={active}>
+                  <Link href={href} className="w-full">
                     {item.icon}
                     <span>{item.title}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )
           }
 
+          // Collapsed sidebar — dropdown for multi-item groups
           if (isCollapsed) {
             return (
               <DropdownMenu key={item.title}>
@@ -105,19 +100,9 @@ export function NavMain({
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right" align="start" sideOffset={8}>
-                    {item.items?.map((subItem) => (
+                    {subItems.map((subItem) => (
                       <DropdownMenuItem key={subItem.title} asChild>
-                        {item.openInNewTab ? (
-                          <a
-                            href={subItem.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {subItem.title}
-                          </a>
-                        ) : (
-                          <Link href={subItem.url}>{subItem.title}</Link>
-                        )}
+                        <Link href={subItem.url}>{subItem.title}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -126,6 +111,8 @@ export function NavMain({
             )
           }
 
+          // Expanded sidebar — collapsible for multi-item groups
+          const isOpen = openSections.has(item.title)
           return (
             <Collapsible
               key={item.title}
@@ -146,30 +133,23 @@ export function NavMain({
                   <SidebarMenuButton tooltip={item.title} isActive={active}>
                     {item.icon}
                     <span>{item.title}</span>
-                    <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    <HugeiconsIcon
+                      icon={ArrowRight01Icon}
+                      strokeWidth={2}
+                      className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                    />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items?.map((subItem) => {
-                      const isSubActive = pathname === subItem.url
+                    {subItems.map((subItem) => {
+                      const isSubActive = isPathActive(pathname, subItem.url)
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild isActive={isSubActive}>
-                            {item.openInNewTab ? (
-                              <a
-                                href={subItem.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full"
-                              >
-                                <span>{subItem.title}</span>
-                              </a>
-                            ) : (
-                              <Link href={subItem.url} className="w-full">
-                                <span>{subItem.title}</span>
-                              </Link>
-                            )}
+                            <Link href={subItem.url} className="w-full">
+                              <span>{subItem.title}</span>
+                            </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       )

@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -96,9 +97,9 @@ function SortableLinkRow({
         onChange={(e) => onUpdate(link.title, e.target.value)}
         className="flex-1 min-w-0"
       />
-      <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={onRemove} aria-label="Remove link">
+      <IconButton type="button" variant="ghost" className="shrink-0" onClick={onRemove} label="Remove link">
         <HugeiconsIcon icon={Delete02Icon} className="size-4 text-destructive" />
-      </Button>
+      </IconButton>
     </div>
   );
 }

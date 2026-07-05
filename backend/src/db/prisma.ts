@@ -7,7 +7,7 @@ const superAdapter = new PrismaPg({
 });
 export const prisma = new PrismaClient({ adapter: superAdapter });
 
-// RLS rolü — CRM sorguları için
+// RLS rolü — org-scoped sorguları için
 const appAdapter = new PrismaPg({
     connectionString: process.env.DATABASE_APP_URL!,
 });
@@ -18,14 +18,16 @@ export function dbForOrg(organizationId: string) {
     return appClient.$extends({
         query: {
             $allModels: {
-                async $allOperations({ args, query }) {
-                    const [, result] = await appClient.$transaction([
-                        appClient.$executeRaw`
+                async $allOperations({ model, operation, args }) {
+                    return appClient.$transaction(async (tx) => {
+                        await tx.$executeRaw`
               SELECT set_config('app.current_organization_id', ${organizationId}, true)
-            `,
-                        query(args),
-                    ]);
-                    return result;
+            `;
+                        const delegate = (tx as unknown as Record<string, Record<string, (a: unknown) => Promise<unknown>>>)[
+                            model.slice(0, 1).toLowerCase() + model.slice(1)
+                        ];
+                        return delegate[operation](args);
+                    });
                 },
             },
         },

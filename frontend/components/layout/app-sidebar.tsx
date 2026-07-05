@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { NavMain } from "@/components/layout/nav-main"
+import { NavMain, type NavMainItem } from "@/components/layout/nav-main"
 import { NavUser } from "@/components/layout/nav-user"
 import { TeamSwitcher } from "@/components/layout/team-switcher"
 import {
@@ -28,60 +28,41 @@ import {
   RocketIcon,
 } from "@hugeicons/core-free-icons"
 
-const navMain = [
+const navMain: NavMainItem[] = [
   {
     title: "Chat",
     url: "/chat",
     icon: <HugeiconsIcon icon={BubbleChatQuestionIcon} strokeWidth={2} />,
-    openInNewTab: true,
-    items: [{ title: "Open Chat", url: "/chat" }],
   },
   {
     title: "Meet",
     url: "/meet",
     icon: <HugeiconsIcon icon={AiVideoIcon} strokeWidth={2} />,
-    openInNewTab: true,
-    items: [{ title: "Open Meet", url: "/meet" }],
   },
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: <HugeiconsIcon icon={Home02Icon} strokeWidth={2} />,
-    items: [
-      { title: "Overview", url: "/dashboard" },
-    ],
   },
   {
     title: "Tasks",
     url: "/dashboard/tasks",
     icon: <HugeiconsIcon icon={Task01Icon} strokeWidth={2} />,
-    items: [
-      { title: "All tasks", url: "/dashboard/tasks" },
-    ],
   },
   {
     title: "Sprints",
     url: "/dashboard/sprints",
     icon: <HugeiconsIcon icon={RocketIcon} strokeWidth={2} />,
-    items: [
-      { title: "All sprints", url: "/dashboard/sprints" },
-    ],
   },
   {
     title: "Projects",
     url: "/dashboard/projects",
     icon: <HugeiconsIcon icon={Folder01Icon} strokeWidth={2} />,
-    items: [
-      { title: "All projects", url: "/dashboard/projects" },
-    ],
   },
   {
     title: "Files",
     url: "/dashboard/files",
     icon: <HugeiconsIcon icon={File02Icon} strokeWidth={2} />,
-    items: [
-      { title: "All files", url: "/dashboard/files" },
-    ],
   },
   {
     title: "Team",
@@ -96,9 +77,6 @@ const navMain = [
     title: "Activity",
     url: "/dashboard/activities",
     icon: <HugeiconsIcon icon={Activity01Icon} strokeWidth={2} />,
-    items: [
-      { title: "All activity", url: "/dashboard/activities" },
-    ],
   },
   {
     title: "Analytics",

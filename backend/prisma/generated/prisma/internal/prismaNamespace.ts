@@ -416,7 +416,8 @@ export const ModelName = {
   MeetingParticipant: 'MeetingParticipant',
   Notification: 'Notification',
   NotificationPreference: 'NotificationPreference',
-  AiReport: 'AiReport'
+  AiReport: 'AiReport',
+  AiReportAction: 'AiReportAction'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -432,7 +433,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userGithubProfile" | "session" | "account" | "verification" | "organization" | "organizationGithubConnection" | "member" | "invitation" | "activity" | "project" | "projectMember" | "projectFile" | "sprint" | "milestone" | "task" | "taskAttachment" | "taskComment" | "taskWatcher" | "taskDependency" | "timeEntry" | "chat" | "message" | "messageMedia" | "messageReaction" | "chatRead" | "meeting" | "meetingAttendance" | "meetingRecording" | "meetingParticipant" | "notification" | "notificationPreference" | "aiReport"
+    modelProps: "user" | "userGithubProfile" | "session" | "account" | "verification" | "organization" | "organizationGithubConnection" | "member" | "invitation" | "activity" | "project" | "projectMember" | "projectFile" | "sprint" | "milestone" | "task" | "taskAttachment" | "taskComment" | "taskWatcher" | "taskDependency" | "timeEntry" | "chat" | "message" | "messageMedia" | "messageReaction" | "chatRead" | "meeting" | "meetingAttendance" | "meetingRecording" | "meetingParticipant" | "notification" | "notificationPreference" | "aiReport" | "aiReportAction"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2878,6 +2879,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AiReportAction: {
+      payload: Prisma.$AiReportActionPayload<ExtArgs>
+      fields: Prisma.AiReportActionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AiReportActionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AiReportActionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>
+        }
+        findFirst: {
+          args: Prisma.AiReportActionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AiReportActionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>
+        }
+        findMany: {
+          args: Prisma.AiReportActionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>[]
+        }
+        create: {
+          args: Prisma.AiReportActionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>
+        }
+        createMany: {
+          args: Prisma.AiReportActionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AiReportActionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>[]
+        }
+        delete: {
+          args: Prisma.AiReportActionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>
+        }
+        update: {
+          args: Prisma.AiReportActionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>
+        }
+        deleteMany: {
+          args: Prisma.AiReportActionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AiReportActionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AiReportActionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>[]
+        }
+        upsert: {
+          args: Prisma.AiReportActionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReportActionPayload>
+        }
+        aggregate: {
+          args: Prisma.AiReportActionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAiReportAction>
+        }
+        groupBy: {
+          args: Prisma.AiReportActionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiReportActionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AiReportActionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiReportActionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3373,6 +3448,25 @@ export const AiReportScalarFieldEnum = {
 export type AiReportScalarFieldEnum = (typeof AiReportScalarFieldEnum)[keyof typeof AiReportScalarFieldEnum]
 
 
+export const AiReportActionScalarFieldEnum = {
+  id: 'id',
+  reportId: 'reportId',
+  organizationId: 'organizationId',
+  type: 'type',
+  title: 'title',
+  description: 'description',
+  payload: 'payload',
+  sortOrder: 'sortOrder',
+  status: 'status',
+  resultMessage: 'resultMessage',
+  appliedAt: 'appliedAt',
+  appliedByMemberId: 'appliedByMemberId',
+  createdAt: 'createdAt'
+} as const
+
+export type AiReportActionScalarFieldEnum = (typeof AiReportActionScalarFieldEnum)[keyof typeof AiReportActionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3603,6 +3697,34 @@ export type ListEnumAiReportKindFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'AiReportActionType'
+ */
+export type EnumAiReportActionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiReportActionType'>
+    
+
+
+/**
+ * Reference to a field of type 'AiReportActionType[]'
+ */
+export type ListEnumAiReportActionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiReportActionType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AiReportActionStatus'
+ */
+export type EnumAiReportActionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiReportActionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AiReportActionStatus[]'
+ */
+export type ListEnumAiReportActionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiReportActionStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -3758,6 +3880,7 @@ export type GlobalOmitConfig = {
   notification?: Prisma.NotificationOmit
   notificationPreference?: Prisma.NotificationPreferenceOmit
   aiReport?: Prisma.AiReportOmit
+  aiReportAction?: Prisma.AiReportActionOmit
 }
 
 /* Types for Logging */

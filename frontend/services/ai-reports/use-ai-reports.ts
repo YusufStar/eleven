@@ -12,6 +12,14 @@ export function useAiReports(kind?: AiReportKind) {
   });
 }
 
+export function useAiReport(id: string | null) {
+  return useQuery({
+    queryKey: [...key, "detail", id],
+    queryFn: () => aiReportsApi.get(id!),
+    enabled: !!id,
+  });
+}
+
 export function useGenerateAiReport() {
   const qc = useQueryClient();
   return useMutation({
@@ -20,3 +28,35 @@ export function useGenerateAiReport() {
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
   });
 }
+
+export function useApplyAiReportAction(reportId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (actionId: string) => aiReportsApi.applyAction(reportId, actionId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: key });
+      qc.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+}
+
+export function useApplyAllAiReportActions(reportId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => aiReportsApi.applyAllActions(reportId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: key });
+      qc.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+}
+
+export type {
+  AiReport,
+  AiReportKind,
+  AiReportAction,
+  ReportDashboard,
+  ReportKpi,
+  ReportChart,
+} from "./api";
+export { getReportDashboard } from "./api";

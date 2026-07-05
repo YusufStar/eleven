@@ -1,129 +1,130 @@
 # Eleven — Next Phases
 
-> Proje içi araştırma sonucu çıkarılan yol haritası. (Temmuz 2026)
-> Kapsam: eksik sayfalar, tamamlanması gereken API'ler, redesign ihtiyaçları ve yeni özellik önerileri.
+> Ürün pivotu sonrası yol haritası. (Temmuz 2026)
+> Eleven artık bir CRM değil: **yazılım ekipleri için Slack + Jira + Linear + Notion** karışımı bir çalışma platformu.
+> Kapsam: pivotta tamamlananlar, bilinen boşluklar, ölçeklenme borçları ve sonraki özellikler.
 
 ---
 
-## Mevcut Durum Özeti
+## Ürün Vizyonu
 
-**Stack:** Next 16 + React 19 + Tailwind v4 + shadcn (frontend) · Elysia + Prisma + Bun (backend) · better-auth (organization plugin) · Stripe · TanStack Query.
+Yazılım ekiplerinin tek çalışma alanı: **Tasks · Sprints · Projects · Chat · Files · Team · Activity · AI Analytics · Notifications.** Odak; hız, canlı işbirliği ve gerçek veriye dayalı AI içgörüleri. CRM (deals/pipelines/leads/contacts) tamamen kaldırıldı.
 
-**Çalışan modüller:** Contacts (people/companies + detay), Deals (pipeline/stage kanban + list + detay), Projects (+üyeler, +dosyalar), Tasks (list/kanban/calendar + attachments + markdown editor), Metrics (temel), Activities, Files (project finder), Team (+invite +rol değiştirme), Chat (polling ile), Settings (yalnız GitHub bağlantısı), Profile, Payments (Stripe checkout + webhook, FREE/PROFESSIONAL), Landing (yeni monokrom tasarım).
-
-**API yüzeyi:** `backend/src/routes/` altında 14 route dosyası; contacts/deals/projects/tasks CRUD'ları sağlam ve org-scoped.
+**Stack:** Next 16 + React 19 + Tailwind v4 + shadcn (frontend) · Elysia + Prisma 7 + Bun (backend) · better-auth (organization plugin) · BullMQ/Redis · `@anthropic-ai/sdk` (Claude) · Stripe · TanStack Query.
 
 ---
 
-## Faz 1 — Yarım Kalanları Tamamlama (öncelik: yüksek)
+## Pivotta Tamamlananlar ✅
 
-### 1.1 Meet sayfası ~~tamamen boş~~ → frontend tamamlandı ✅
-- **Yapıldı (frontend-only):** `app/meet` (lobi: yeni toplantı + kodla katılım + günün toplantıları) ve `app/meet/[roomId]` (pre-join kamera önizlemesi → görüşme ekranı → ayrılma ekranı). Gerçek getUserMedia/getDisplayMedia kullanıyor; katılımcılar, chat ve konuşmacı rotasyonu mock (`components/meet/`).
-- **Kalan (API fazı):** Oda oturumu + sinyalleşme (WebRTC SFU ya da hazır SDK: LiveKit / Daily.co önerilir — sıfırdan WebRTC yazma), gerçek katılımcı/chat verisi, takvim senkronu. Sunumdaki "Microsoft Teams Entegrasyonu" hedefi bu faza bağlanabilir.
+Bu batch'te bitenler (hepsi org-scoped, `bunx tsc --noEmit` iki tarafta da temiz):
 
-### 1.2 Metrics API ✅ (tamamlandı)
-- `/metrics/pipeline-summary` (status/stage/pipeline dağılımı + win rate + ortalama döngü), `/metrics/tasks-throughput` (haftalık tamamlanan + kişi bazlı yük), `/metrics/revenue` (aylık kazanılan değer, boş aylar doldurulmuş) eklendi.
-- Metrics sayfası tamamen sunucu aggregate'lerine geçti (artık ilk 100 deal sınırı yok); KPI'lar: pipeline value, win rate, revenue won, avg cycle. Monokrom chart rampasıyla doğrulandı.
-- **Not:** Döngü süresi ve aylık revenue, `closedAt` kolonu olmadığı için WON deal'in `updatedAt`'ini kapanış tarihi sayıyor — ileride gerçek `closedAt` eklenebilir.
-
-### 1.3 Chat polling → gerçek zamanlı
-- `frontend/services/chat/use-chat.ts` `refetchInterval` ile poll ediyor. Sunum yol haritasında "WebSocket tabanlı anlık bildirim" zaten hedef.
-- **Yapılacak:** Elysia/Bun native WebSocket ile `/ws` kanalı; mesaj + typing + presence. Poll fallback korunabilir.
-
-### 1.4 Settings sayfası tek karttan ibaret
-- `frontend/app/dashboard/settings/page.tsx` yalnız GitHub org bağlantısı gösteriyor.
-- **Eklenecek bölümler:** Org adı/logo düzenleme, üye & rol yönetimi kısayolu, billing (plan görüntüle/yönet), danger zone (org silme), pipeline/stage varsayılanları.
-
-### 1.5 Billing yönetimi eksik
-- Checkout + webhook var (`backend/src/routes/payments.ts`), ama:
-  - Plan iptal/downgrade yok → **Stripe Customer Portal** linki eklenmeli (en az maliyetli çözüm).
-  - Fatura geçmişi yok.
-  - **Plan gating hiçbir route'ta enforce edilmiyor** — `plan: PROFESSIONAL` sadece yazılıyor, hiçbir limit kontrolü yok. FREE plan limitleri (üye sayısı, contact sayısı vb.) backend'de kontrol edilmeli.
-- Landing pricing (Starter/Pro/Enterprise) ile schema (`FREE`/`PROFESSIONAL`) uyumsuz — ya schema'ya plan eklenmeli ya landing copy sadeleşmeli.
-
-### 1.6 Landing copy'nin verdiği sözler
-Yeni landing'de yazılan ama üründe olmayan şeyler (ya yapılmalı ya copy düzeltilmeli):
-- "CSV import for contacts" (FAQ) → contacts CSV import endpoint'i + modal yok.
-- "Cancel anytime from settings" (FAQ) → billing yönetim UI'ı yok (bkz. 1.5).
-- "Your data stays exportable" → veri export özelliği yok.
-
-### 1.7 Küçük temizlikler
-- `frontend/app/dashboard/team/team/invite/page.tsx` → redirect shim; linkler düzeltilip silinmeli.
-- Legal sayfalar yok: `/privacy`, `/terms` — landing footer'a eklenecek (Stripe kullanan üründe fiilen zorunlu).
+- **Schema pivotu:** Contact/Pipeline/Stage/Deal ve enum'ları kaldırıldı. Eklenen modeller: `Sprint`, `Milestone`, `TaskComment`, `TaskWatcher`, `TaskDependency`, `TimeEntry`, `MessageReaction`, `ChatRead`, `NotificationPreference`, `AiReport`. `Member` presence alanları (statusEmoji/statusText/workingOn/timezone/skills/lastSeenAt), `Message` (replyToId/pinnedAt/editedAt/mentionUserIds), `ProjectFile` (folder/versionHistory), `Notification` (category/priority/archivedAt/snoozedUntil). `TaskStatus`: TODO/IN_PROGRESS/IN_REVIEW/BLOCKED/DONE/CANCELLED.
+- **Status Badge design system:** `components/ui/status-badge.tsx` — tüm uygulamada ortak, semantik renk token'ları (`--status-*` light/dark), ikon + tooltip + `role="status"`. `PresenceDot` + `presenceState()`.
+- **Dashboard:** Dev-team hub — Today's Focus, presence, recent activity, projeler (progress bar), mentions, meetings; renkli gradient/kartlar.
+- **Tasks (Jira seviyesi):** Subtasks, labels, priority, estimate, sprint, milestone, dependencies, watchers, time tracking, comments, activity timeline, bulk actions, board/list.
+- **Sprints:** CRUD + state (upcoming/active/done) + velocity.
+- **Team:** Presence heartbeat, status/emoji/workingOn/timezone/skills, üye profilleri.
+- **Chat (Slack seviyesi):** Reactions, reply threads, typing indicator, read receipts, mentions, emoji picker, message search, pinned messages, artımlı polling (`after=`).
+- **Files:** Org-geneli liste, preview (image/video/audio/pdf), folder desteği, version history, drag&drop upload, recent files.
+- **Projects:** Sekmeli detay (Overview/Board/List/Files/Members) — progress ring, health badge, milestones, burn-up + velocity mini-chart (`/projects/:id/insights`).
+- **Activities:** Filtre + arama + gün bazlı timeline (entity ikonlarıyla) / tablo görünümü.
+- **AI Analytics:** Claude tool-calling motoru (`ai-reports.ts`) — MINI/MEDIUM/HIGH raporları, staleness ile gate'li üretim. Frontend: Reports sayfası (markdown render, generate/regenerate) + yeniden tasarlanmış Metrics (throughput/velocity/cycle-time/team-load).
+- **Notifications:** `/dashboard/notifications` (kategori tab'ları, read/unread, archive, snooze, priority, mark-all) + `/preferences` (kategori bazlı in-app/email, quiet hours, digest).
+- **Landing + copy:** Tüm CRM copy'si dev-team platform vizyonuna çevrildi; monokrom tema korundu.
 
 ---
 
-## Faz 2 — Ürünleştirme (öncelik: orta)
+## Faz 1 — Pivotu Sağlamlaştırma ✅ (tamamlandı)
 
-### 2.1 Bildirim sistemi ✅ (tamamlandı)
-- `Notification` modeli + `/notifications` API + zil/popover UI + 30sn polling kuruldu.
-- Tetikleyiciler: task atandı/tamamlandı, deal atandı/stage değişti/kazanıldı, contact atandı, projeye üye/dosya eklendi, meeting daveti, contacts import.
-- E-posta fan-out: her bildirim BullMQ `emails` kuyruğu üzerinden mail atar (API beklemez). **Kalan:** polling → WebSocket push (1.3 altyapısı hazır).
+### 1.1 AI raporları — gerçek dünya sağlaması ✅
+- Token/maliyet loglama eklendi (`[ai-reports]` — turn, in/out token, ~$ tahmini, süre). `ANTHROPIC_PRICE_IN/OUT` env ile ayarlanır.
+- **Cron:** `src/queue/ai-reports.ts` — BullMQ repeatable job (MINI günlük 06:00 / MEDIUM Pzt 06:00 / HIGH ayın 1'i 06:00). Her org için staleness kontrolüyle fan-out; `ANTHROPIC_API_KEY` yoksa no-op (uyarı loglar).
+- Model `ANTHROPIC_MODEL ?? "claude-sonnet-5"`; prod'da dated snapshot pinlemek için env override yorumu bırakıldı.
 
-### 2.2 Global arama (⌘K)
-- `components/ui/command.tsx` kurulu ama hiçbir yerde CommandDialog kullanılmıyor.
-- **Yapılacak:** ⌘K palette — contacts/deals/projects/tasks arası arama + hızlı aksiyonlar ("yeni görev", "yeni deal"). Backend'e tek bir `/search?q=` endpoint'i.
+### 1.2 Gerçek zamanlı: polling → WebSocket ✅
+- `src/lib/ws-hub.ts` (org-scoped in-memory hub) + `src/routes/live.ts` (`/ws/live`, session cookie auth). Publish noktaları: chat mesajı, chat okundu, mention/notification, presence.
+- Frontend: `services/live` (`useLiveChannel`, `useOnlineUsers`, `liveSendTyping`) + `components/live/live-channel.tsx` dashboard layout'a mount edildi. Chat mesajları `mergeChatMessages` ile cache'e anında; typing/presence canlı; notification invalidation. Polling fallback korunuyor.
+- `PresenceDot` artık canlı `online` bayrağını da kabul ediyor; team presence grid WS online setini kullanıyor.
+- **Ceiling:** hub + typing state tek-process in-memory (ponytail). Çok-process'te Redis pub/sub gerekir.
 
-### 2.3 E-posta bildirimleri ✅ (altyapı tamamlandı)
-- BullMQ + Redis kuyruk (`src/queue/email.ts`, in-process worker, 3x retry) ve monokrom şablon (`src/lib/email-templates.ts`) kuruldu; doğrulama/davet/bildirim mailleri buradan geçiyor.
-- **Dikkat:** `.env`'deki Gmail app password reddediliyor (535 BadCredentials) — yeni app password gerekli, yoksa hiçbir mail çıkmaz.
-- **Kalan:** haftalık özet (digest), kullanıcı bazlı opt-out ayarları, worker'ı ayrı prosese alma.
+### 1.3 Bildirim tetikleyicileri + digest ✅
+- Kapsam denetlendi: TASK_ASSIGNED/COMPLETED/COMMENT, MENTION (chat + comment), PROJECT_MEMBER_ADDED, PROJECT_FILE_ADDED, MEETING_INVITED, SPRINT_STARTED. Watcher'lar `taskAudience()` üzerinden fan-out'a dahil.
+- **Digest:** `src/queue/digest.ts` — günlük 08:00 / haftalık Pzt 08:00 repeatable job; `NotificationPreference.digest` = daily/weekly olan ve `emailEnabled` üyelere tek özet mail (kuyruk üzerinden).
 
-### 2.4 Aktivite akışının derinleştirilmesi
-- `activities` route yalnız düz liste. Detay sayfalarında entity bazlı timeline var mı tutarlı değil.
-- **Yapılacak:** entity bazlı filtre (`?entityType=DEAL&entityId=`), yorum ekleme (activity + comment birleşimi), @mention.
+### 1.4 Settings sayfası ✅
+- Sekmeli: General (ad/logo/slug) · Integrations (GitHub) · Members (sayaç + kısayol) · Notifications (tercihler linki) · Billing (plan + upgrade) · Danger zone (slug onaylı org silme).
+
+### 1.5 Billing — plan gating ✅
+- **Gerçeklik:** ürün tek-seferlik ödeme modeli (bir kez öde → PROFESSIONAL, kalıcı). Frontend zaten ödenmemiş FREE org'u tüm dashboard'dan bloke ediyordu ama **backend hiçbir şey enforce etmiyordu** → doğrudan API çağrısıyla bypass edilebiliyordu.
+- `requirePaidOrg` macro'su (auth.plugin) eklendi; ana yazma uçlarına (project/task/sprint create) uygulandı → ödenmemiş org 402 alır. Bypass kapatıldı.
+- **Not (Stripe Customer Portal):** Portal abonelik modeli içindir; tek-seferlik ödemede yönetilecek yinelenen bir şey yok → uygulanmadı (YAGNI). Billing sekmesi plan + ödeme tarihini gösteriyor. Gerçek abonelik modeline geçilirse portal + `stripeCustomerId` + fatura geçmişi eklenir.
+
+### 1.6 Temizlikler ✅
+- `/privacy` + `/terms` sayfaları eklendi (`components/legal/legal-shell.tsx`, landing nav+footer ile) ve footer'a "Legal" grubu linklendi.
+- `team/team/invite` redirect shim ve contacts `imports` route'u zaten pivotta kaldırılmıştı — doğrulandı, artık yok.
+
+---
+
+## Faz 2 — Derinleştirme (öncelik: orta)
+
+### 2.1 Global arama (⌘K)
+- `components/ui/command.tsx` kurulu, kullanılmıyor. Tasks/projects/sprints/files/people arası palette + hızlı aksiyonlar ("yeni görev", "yeni sprint"). Tek `/search?q=` endpoint'i.
+
+### 2.2 Rich text & collaboration
+- Task detay markdown editörü var. Notion-benzeri blok editör, `@mention` autocomplete (comment + chat ortak), inline dosya embed.
+- Sprint/proje için doc/wiki sayfaları (Notion tarafı henüz zayıf).
+
+### 2.3 Projects — kalan görünümler
+- Calendar + Timeline (Gantt) sekmeleri henüz yok (Overview/Board/List/Files/Members tamam). Due date + milestone bazlı timeline.
+
+### 2.4 Meet — API fazı
+- Frontend + kendi WebRTC sinyalleşmesi var. Ölçek için hazır SFU (LiveKit/Daily) değerlendirmesi, kayıt (recording modeli eklendi), takvim senkronu.
 
 ### 2.5 Testler ve kalite
-- **Projede hiç test yok** (0 adet `*.test.*`).
-- **`bun run lint` şu an kırık:** ESLint 10 + eslint-plugin-react uyumsuzluğu (`contextOrFilename.getFilename is not a function`). Plugin güncellenmeli veya flat config'e taşınmalı.
-- Asgari: backend route'ları için bun:test ile org-scope/permission testleri (en kritik: başka org'un verisine erişememe), payments webhook testi.
-- CI: lint + tsc + test pipeline'ı (GitHub Actions).
+- **Projede hâlâ test yok.** Asgari: backend route'ları için `bun:test` ile org-scope/permission testleri (kritik: başka org verisine erişememe), AI tool-calling motoru için deterministik tool-output testi, notify fan-out testi.
+- **`bun run lint` kırık** (ESLint 10 + eslint-plugin-react). Flat config'e taşınmalı.
+- CI: lint + tsc + test (GitHub Actions).
 
-### 2.6 Güvenlik/sağlamlaştırma denetimi
-- Rate limiting yok (özellikle auth ve upload).
-- Upload route'unda dosya tipi/boyut limitleri gözden geçirilmeli.
-- Webhook imza doğrulaması var mı kontrol edilip yoksa eklenmeli (`payments.ts /stripe`).
-
----
-
-## Faz 3 — Yeni Özellikler (sunum yol haritası + öneriler)
-
-| Özellik | Kaynak | Not |
-|---|---|---|
-| AI entegrasyonu | sunum 07/07 | Deal/proje özetleme, sonraki adım önerisi, e-posta taslağı. Claude API ile; önce tek yüzey (deal detayında "Summarize") ile başla. |
-| Finans & raporlama | sunum 07/07 | Bütçe takibi, fatura/makbuz yükleme + doğrulama akışı. Yeni Prisma modelleri gerekir. |
-| Microsoft Teams | sunum 07/07 | Meet (1.1) ile birlikte planla. |
-| Performans analizleri | sunum 07/07 | Metrics API'nin (1.2) doğal devamı — kişi bazlı raporlar. |
-| Contacts CSV import/export | landing sözü | 1.6 ile aynı iş. |
-| Takvim entegrasyonu | öneri | Tasks calendar view var; Google/Outlook sync ile toplantı + due date senkronu. |
-| Otomasyonlar | öneri | "Deal X stage'e gelince görev aç" tarzı kurallar — basit trigger/action tablosuyla başla. |
-| Public API + API keys | öneri | Enterprise satışı için ön koşul. |
+### 2.6 Güvenlik/sağlamlaştırma
+- Rate limiting yok (auth, upload, AI generate — özellikle AI maliyet DoS'a açık).
+- Upload dosya tipi/boyut limitleri gözden geçirilmeli.
+- Stripe webhook imza doğrulaması kontrol edilmeli.
 
 ---
 
-## Tasarım / Redesign İhtiyaçları
+## Faz 3 — Yeni Özellikler
 
-Yeni monokrom tema (siyah/beyaz/gri, Instrument Serif + Geist) landing'e uygulandı. Dashboard tarafında gözden geçirilmesi gerekenler:
+| Özellik | Not |
+|---|---|
+| AI: task/sprint asistanı | Tool-calling motoru genişletilerek "bu sprint'i planla", "blocker'ları özetle", "PR açıklaması yaz". Tek yüzeyle başla (task detayında "Summarize/Suggest"). |
+| Delivery forecast & risk | AI raporlarındaki metrikleri (velocity, burn rate) proaktif uyarıya çevir — "bu sprint %70 ihtimalle kaçacak". |
+| GitHub derin entegrasyonu | Commit/PR → task otomatik bağlama, branch adından task, PR merge → task done. |
+| Otomasyonlar | "Task BLOCKED olunca watcher'lara bildir", "sprint bitince rapor üret" — basit trigger/action tablosu. |
+| Takvim entegrasyonu | Google/Outlook sync — due date + meeting. |
+| Public API + API keys | Enterprise ön koşulu. |
+| Mobil / responsive denetim | Board/list/chat dar ekran davranışı sistematik test edilmedi. |
 
-1. **Settings** (`dashboard/settings`) — tek kart, boş görünüyor. Sekmeli/section'lı yapı (General · Integrations · Billing · Danger zone).
-2. **Team** (`dashboard/team`) — işlevsel ama sade tablo; davet durumları (pending/expired) ve rol açıklamaları eklenmeli.
-3. **Chat boş durumu** (`app/chat/page.tsx`) — "Select a conversation" düz yazı; boş durum tasarımı + org chat'e otomatik yönlendirme zaten var, gecikmede skeleton gösterilmeli.
-4. **Meet** — 1.1'e bağlı; ne olursa olsun mevcut placeholder kalkmalı.
-5. **Metrics** — yeni gri chart paletiyle kontrast/okunabilirlik kontrolü; boş-veri durumları.
-6. **Activities** — düz liste; gün bazlı gruplama + entity ikonları ile timeline görünümü.
-7. **Genel denetim** — yeni temada `--primary` artık siyah/beyaz: renkli primary'ye güvenen eski ekran parçaları (badge, chart, durum renkleri) tek tek gözden geçirilmeli. Durum bildiren yerlerde (task status/priority) griden fazlası gerekiyorsa tema dışı semantik tonlar tanımlanabilir.
-8. **Mobil** — dashboard'un dar ekran davranışı sistematik test edilmedi; en az contacts/deals/tasks için kontrol.
+---
+
+## Teknik Borç (Technical Debt)
+
+- **Multi-process ceiling:** WS hub + typing state tek-process in-memory (Faz 1'de WS geldi ama tek instance). Yatay ölçekte Redis pub/sub şart — her instance subscribe olup kendi local socket'lerine relay eder.
+- **AI rate-limit yok:** Token/maliyet artık loglanıyor ama `/ai-reports/generate` ve cron'da hız/bütçe sınırı yok → kötüye kullanım/maliyet DoS'a açık.
+- **Cycle time yaklaşımı:** `completedAt` üzerinden hesap; edge case'ler (yeniden açılan task) ele alınmıyor.
+- **Test kapsamı sıfır:** Regresyon güvenliği yok. WS hub, notify fan-out, plan gating, AI tool loop öncelikli.
+- **Lint kırık:** ESLint 10 uyumsuzluğu.
+- **File storage:** Version history JSON kolonda; büyük dosya/çok versiyonda ayrı tabloya (veya S3 + metadata) taşınmalı.
+- **Billing modeli:** Tek-seferlik ödeme; abonelik/portal/fatura geçmişi yok (ürün kararı). Abonelik gerekirse `stripeCustomerId` + portal eklenir.
 
 ---
 
 ## Önerilen Sıra (özet)
 
-1. Meet kararı + placeholder kaldırma (1.1)
-2. Plan gating + Stripe Customer Portal (1.5) — para akışının bütünlüğü
-3. Landing sözlerini kapatma: CSV import, export, billing UI (1.6)
-4. WebSocket altyapısı → chat + notifications (1.3 + 2.1)
-5. Metrics API + sayfa revizyonu (1.2)
-6. Settings redesign (1.4)
-7. Global arama ⌘K (2.2)
-8. Test + CI tabanı (2.5)
-9. Faz 3 özellikleri (AI ile başla)
+Faz 1 tamamlandı (AI cron + token log, WebSocket realtime, digest, settings sekmeleri, plan gating, legal sayfalar). Sıradaki:
+
+1. Global arama ⌘K (2.1)
+2. Test + CI tabanı + lint onarımı (2.5)
+3. Güvenlik sertleştirme: rate limiting (auth/upload/AI), webhook denetimi (2.6)
+4. WS'i çok-process'e taşı (Redis pub/sub) — ölçek gerektiğinde
+5. Projects Calendar/Timeline (2.3) + rich collaboration (2.2)
+6. Faz 3: AI task asistanı + GitHub entegrasyonu

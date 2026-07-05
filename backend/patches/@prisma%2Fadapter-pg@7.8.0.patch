@@ -1,0 +1,80 @@
+diff --git a/dist/index.js b/dist/index.js
+index d595ae4e431481f48576c64ec986f15a3996a067..670da8c0c8267c27668a28582027ad555ab983b5 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -651,23 +651,20 @@ var PgQueryable = class {
+     const { sql, args } = query;
+     const values = args.map((arg, i) => mapArg(arg, query.argTypes[i]));
+     try {
+-      const result = await this.client.query(
+-        {
+-          name: this.pgOptions?.statementNameGenerator?.(query),
+-          text: sql,
+-          values,
+-          rowMode: "array",
+-          types: {
+-            getTypeParser: (oid, format) => {
+-              if (format === "text" && customParsers[oid]) {
+-                return customParsers[oid];
+-              }
+-              return types2.getTypeParser(oid, format);
++      const result = await this.client.query({
++        name: this.pgOptions?.statementNameGenerator?.(query),
++        text: sql,
++        values,
++        rowMode: "array",
++        types: {
++          getTypeParser: (oid, format) => {
++            if (format === "text" && customParsers[oid]) {
++              return customParsers[oid];
+             }
++            return types2.getTypeParser(oid, format);
+           }
+-        },
+-        values
+-      );
++        }
++      });
+       return result;
+     } catch (e) {
+       this.onError(e);
+diff --git a/dist/index.mjs b/dist/index.mjs
+index c7ae0dc8dc18701ce3d6c00d158e9bae3ae051e5..68d120ffd4d15cdc95f5e6c23319c01263882597 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -615,23 +615,20 @@ var PgQueryable = class {
+     const { sql, args } = query;
+     const values = args.map((arg, i) => mapArg(arg, query.argTypes[i]));
+     try {
+-      const result = await this.client.query(
+-        {
+-          name: this.pgOptions?.statementNameGenerator?.(query),
+-          text: sql,
+-          values,
+-          rowMode: "array",
+-          types: {
+-            getTypeParser: (oid, format) => {
+-              if (format === "text" && customParsers[oid]) {
+-                return customParsers[oid];
+-              }
+-              return types2.getTypeParser(oid, format);
++      const result = await this.client.query({
++        name: this.pgOptions?.statementNameGenerator?.(query),
++        text: sql,
++        values,
++        rowMode: "array",
++        types: {
++          getTypeParser: (oid, format) => {
++            if (format === "text" && customParsers[oid]) {
++              return customParsers[oid];
+             }
++            return types2.getTypeParser(oid, format);
+           }
+-        },
+-        values
+-      );
++        }
++      });
+       return result;
+     } catch (e) {
+       this.onError(e);

@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type ThemeToggleProps = {
   className?: string;
@@ -32,26 +33,31 @@ export function ThemeToggle({ className, align = "end" }: ThemeToggleProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className={cn("relative", className)}
-          aria-label="Toggle theme"
-        >
-          <HugeiconsIcon
-            icon={Sun03Icon}
-            className="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
-            strokeWidth={2}
-          />
-          <HugeiconsIcon
-            icon={Moon02Icon}
-            className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
-            strokeWidth={2}
-          />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn("relative", className)}
+              aria-label="Toggle theme"
+            >
+              <HugeiconsIcon
+                icon={Sun03Icon}
+                className="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
+                strokeWidth={2}
+              />
+              <HugeiconsIcon
+                icon={Moon02Icon}
+                className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
+                strokeWidth={2}
+              />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Toggle theme</TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align={align}>
         {options.map((option) => (
           <DropdownMenuItem

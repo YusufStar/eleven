@@ -243,6 +243,7 @@ export type MemberWhereInput = {
   notifications?: Prisma.NotificationListRelationFilter
   actedNotifications?: Prisma.NotificationListRelationFilter
   notificationPreference?: Prisma.XOR<Prisma.NotificationPreferenceNullableScalarRelationFilter, Prisma.NotificationPreferenceWhereInput> | null
+  aiReportActionsApplied?: Prisma.AiReportActionListRelationFilter
 }
 
 export type MemberOrderByWithRelationInput = {
@@ -274,6 +275,7 @@ export type MemberOrderByWithRelationInput = {
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   actedNotifications?: Prisma.NotificationOrderByRelationAggregateInput
   notificationPreference?: Prisma.NotificationPreferenceOrderByWithRelationInput
+  aiReportActionsApplied?: Prisma.AiReportActionOrderByRelationAggregateInput
 }
 
 export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -308,6 +310,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   notifications?: Prisma.NotificationListRelationFilter
   actedNotifications?: Prisma.NotificationListRelationFilter
   notificationPreference?: Prisma.XOR<Prisma.NotificationPreferenceNullableScalarRelationFilter, Prisma.NotificationPreferenceWhereInput> | null
+  aiReportActionsApplied?: Prisma.AiReportActionListRelationFilter
 }, "id">
 
 export type MemberOrderByWithAggregationInput = {
@@ -371,6 +374,7 @@ export type MemberCreateInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateInput = {
@@ -400,6 +404,7 @@ export type MemberUncheckedCreateInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUpdateInput = {
@@ -429,6 +434,7 @@ export type MemberUpdateInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateInput = {
@@ -458,6 +464,7 @@ export type MemberUncheckedUpdateInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateManyInput = {
@@ -879,6 +886,22 @@ export type MemberUpdateOneRequiredWithoutNotificationPreferenceNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutNotificationPreferenceInput, Prisma.MemberUpdateWithoutNotificationPreferenceInput>, Prisma.MemberUncheckedUpdateWithoutNotificationPreferenceInput>
 }
 
+export type MemberCreateNestedOneWithoutAiReportActionsAppliedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutAiReportActionsAppliedInput, Prisma.MemberUncheckedCreateWithoutAiReportActionsAppliedInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutAiReportActionsAppliedInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneWithoutAiReportActionsAppliedNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutAiReportActionsAppliedInput, Prisma.MemberUncheckedCreateWithoutAiReportActionsAppliedInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutAiReportActionsAppliedInput
+  upsert?: Prisma.MemberUpsertWithoutAiReportActionsAppliedInput
+  disconnect?: Prisma.MemberWhereInput | boolean
+  delete?: Prisma.MemberWhereInput | boolean
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutAiReportActionsAppliedInput, Prisma.MemberUpdateWithoutAiReportActionsAppliedInput>, Prisma.MemberUncheckedUpdateWithoutAiReportActionsAppliedInput>
+}
+
 export type MemberCreateWithoutUserInput = {
   id: string
   role?: string
@@ -905,6 +928,7 @@ export type MemberCreateWithoutUserInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutUserInput = {
@@ -933,6 +957,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutUserInput = {
@@ -1004,6 +1029,7 @@ export type MemberCreateWithoutOrganizationInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutOrganizationInput = {
@@ -1032,6 +1058,7 @@ export type MemberUncheckedCreateWithoutOrganizationInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutOrganizationInput = {
@@ -1086,6 +1113,7 @@ export type MemberCreateWithoutActivityLogsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutActivityLogsInput = {
@@ -1114,6 +1142,7 @@ export type MemberUncheckedCreateWithoutActivityLogsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutActivityLogsInput = {
@@ -1158,6 +1187,7 @@ export type MemberUpdateWithoutActivityLogsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutActivityLogsInput = {
@@ -1186,6 +1216,7 @@ export type MemberUncheckedUpdateWithoutActivityLogsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutProjectMembersInput = {
@@ -1214,6 +1245,7 @@ export type MemberCreateWithoutProjectMembersInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutProjectMembersInput = {
@@ -1242,6 +1274,7 @@ export type MemberUncheckedCreateWithoutProjectMembersInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutProjectMembersInput = {
@@ -1286,6 +1319,7 @@ export type MemberUpdateWithoutProjectMembersInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutProjectMembersInput = {
@@ -1314,6 +1348,7 @@ export type MemberUncheckedUpdateWithoutProjectMembersInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutProjectFilesUploadedInput = {
@@ -1342,6 +1377,7 @@ export type MemberCreateWithoutProjectFilesUploadedInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutProjectFilesUploadedInput = {
@@ -1370,6 +1406,7 @@ export type MemberUncheckedCreateWithoutProjectFilesUploadedInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutProjectFilesUploadedInput = {
@@ -1414,6 +1451,7 @@ export type MemberUpdateWithoutProjectFilesUploadedInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutProjectFilesUploadedInput = {
@@ -1442,6 +1480,7 @@ export type MemberUncheckedUpdateWithoutProjectFilesUploadedInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutAssignedTasksInput = {
@@ -1470,6 +1509,7 @@ export type MemberCreateWithoutAssignedTasksInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutAssignedTasksInput = {
@@ -1498,6 +1538,7 @@ export type MemberUncheckedCreateWithoutAssignedTasksInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutAssignedTasksInput = {
@@ -1531,6 +1572,7 @@ export type MemberCreateWithoutCreatedTasksInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutCreatedTasksInput = {
@@ -1559,6 +1601,7 @@ export type MemberUncheckedCreateWithoutCreatedTasksInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutCreatedTasksInput = {
@@ -1603,6 +1646,7 @@ export type MemberUpdateWithoutAssignedTasksInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutAssignedTasksInput = {
@@ -1631,6 +1675,7 @@ export type MemberUncheckedUpdateWithoutAssignedTasksInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUpsertWithoutCreatedTasksInput = {
@@ -1670,6 +1715,7 @@ export type MemberUpdateWithoutCreatedTasksInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutCreatedTasksInput = {
@@ -1698,6 +1744,7 @@ export type MemberUncheckedUpdateWithoutCreatedTasksInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutTaskCommentsInput = {
@@ -1726,6 +1773,7 @@ export type MemberCreateWithoutTaskCommentsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutTaskCommentsInput = {
@@ -1754,6 +1802,7 @@ export type MemberUncheckedCreateWithoutTaskCommentsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutTaskCommentsInput = {
@@ -1798,6 +1847,7 @@ export type MemberUpdateWithoutTaskCommentsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutTaskCommentsInput = {
@@ -1826,6 +1876,7 @@ export type MemberUncheckedUpdateWithoutTaskCommentsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutWatchedTasksInput = {
@@ -1854,6 +1905,7 @@ export type MemberCreateWithoutWatchedTasksInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutWatchedTasksInput = {
@@ -1882,6 +1934,7 @@ export type MemberUncheckedCreateWithoutWatchedTasksInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutWatchedTasksInput = {
@@ -1926,6 +1979,7 @@ export type MemberUpdateWithoutWatchedTasksInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutWatchedTasksInput = {
@@ -1954,6 +2008,7 @@ export type MemberUncheckedUpdateWithoutWatchedTasksInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutTimeEntriesInput = {
@@ -1982,6 +2037,7 @@ export type MemberCreateWithoutTimeEntriesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutTimeEntriesInput = {
@@ -2010,6 +2066,7 @@ export type MemberUncheckedCreateWithoutTimeEntriesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutTimeEntriesInput = {
@@ -2054,6 +2111,7 @@ export type MemberUpdateWithoutTimeEntriesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutTimeEntriesInput = {
@@ -2082,6 +2140,7 @@ export type MemberUncheckedUpdateWithoutTimeEntriesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutCreatedMeetingsInput = {
@@ -2110,6 +2169,7 @@ export type MemberCreateWithoutCreatedMeetingsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutCreatedMeetingsInput = {
@@ -2138,6 +2198,7 @@ export type MemberUncheckedCreateWithoutCreatedMeetingsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutCreatedMeetingsInput = {
@@ -2182,6 +2243,7 @@ export type MemberUpdateWithoutCreatedMeetingsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutCreatedMeetingsInput = {
@@ -2210,6 +2272,7 @@ export type MemberUncheckedUpdateWithoutCreatedMeetingsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutMeetingAttendanceInput = {
@@ -2238,6 +2301,7 @@ export type MemberCreateWithoutMeetingAttendanceInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutMeetingAttendanceInput = {
@@ -2266,6 +2330,7 @@ export type MemberUncheckedCreateWithoutMeetingAttendanceInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutMeetingAttendanceInput = {
@@ -2310,6 +2375,7 @@ export type MemberUpdateWithoutMeetingAttendanceInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutMeetingAttendanceInput = {
@@ -2338,6 +2404,7 @@ export type MemberUncheckedUpdateWithoutMeetingAttendanceInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutMeetingRecordingsInput = {
@@ -2366,6 +2433,7 @@ export type MemberCreateWithoutMeetingRecordingsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutMeetingRecordingsInput = {
@@ -2394,6 +2462,7 @@ export type MemberUncheckedCreateWithoutMeetingRecordingsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutMeetingRecordingsInput = {
@@ -2438,6 +2507,7 @@ export type MemberUpdateWithoutMeetingRecordingsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutMeetingRecordingsInput = {
@@ -2466,6 +2536,7 @@ export type MemberUncheckedUpdateWithoutMeetingRecordingsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutMeetingInvitesInput = {
@@ -2494,6 +2565,7 @@ export type MemberCreateWithoutMeetingInvitesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutMeetingInvitesInput = {
@@ -2522,6 +2594,7 @@ export type MemberUncheckedCreateWithoutMeetingInvitesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutMeetingInvitesInput = {
@@ -2566,6 +2639,7 @@ export type MemberUpdateWithoutMeetingInvitesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutMeetingInvitesInput = {
@@ -2594,6 +2668,7 @@ export type MemberUncheckedUpdateWithoutMeetingInvitesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutNotificationsInput = {
@@ -2622,6 +2697,7 @@ export type MemberCreateWithoutNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingCreateNestedManyWithoutCreatedByInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutNotificationsInput = {
@@ -2650,6 +2726,7 @@ export type MemberUncheckedCreateWithoutNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutCreatedByInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutNotificationsInput = {
@@ -2683,6 +2760,7 @@ export type MemberCreateWithoutActedNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingCreateNestedManyWithoutCreatedByInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutActedNotificationsInput = {
@@ -2711,6 +2789,7 @@ export type MemberUncheckedCreateWithoutActedNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutCreatedByInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutActedNotificationsInput = {
@@ -2755,6 +2834,7 @@ export type MemberUpdateWithoutNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingUpdateManyWithoutCreatedByNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutNotificationsInput = {
@@ -2783,6 +2863,7 @@ export type MemberUncheckedUpdateWithoutNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutCreatedByNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUpsertWithoutActedNotificationsInput = {
@@ -2822,6 +2903,7 @@ export type MemberUpdateWithoutActedNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingUpdateManyWithoutCreatedByNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutActedNotificationsInput = {
@@ -2850,6 +2932,7 @@ export type MemberUncheckedUpdateWithoutActedNotificationsInput = {
   meetingRecordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutCreatedByNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberCreateWithoutNotificationPreferenceInput = {
@@ -2878,6 +2961,7 @@ export type MemberCreateWithoutNotificationPreferenceInput = {
   meetingRecordings?: Prisma.MeetingRecordingCreateNestedManyWithoutCreatedByInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
+  aiReportActionsApplied?: Prisma.AiReportActionCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberUncheckedCreateWithoutNotificationPreferenceInput = {
@@ -2906,6 +2990,7 @@ export type MemberUncheckedCreateWithoutNotificationPreferenceInput = {
   meetingRecordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutCreatedByInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutAppliedByMemberInput
 }
 
 export type MemberCreateOrConnectWithoutNotificationPreferenceInput = {
@@ -2950,6 +3035,7 @@ export type MemberUpdateWithoutNotificationPreferenceInput = {
   meetingRecordings?: Prisma.MeetingRecordingUpdateManyWithoutCreatedByNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutNotificationPreferenceInput = {
@@ -2978,6 +3064,139 @@ export type MemberUncheckedUpdateWithoutNotificationPreferenceInput = {
   meetingRecordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutCreatedByNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
+}
+
+export type MemberCreateWithoutAiReportActionsAppliedInput = {
+  id: string
+  role?: string
+  createdAt: Date | string
+  statusEmoji?: string | null
+  statusText?: string | null
+  workingOn?: string | null
+  timezone?: string | null
+  skills?: Prisma.MemberCreateskillsInput | string[]
+  lastSeenAt?: Date | string | null
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMembersInput
+  activityLogs?: Prisma.ActivityCreateNestedManyWithoutMemberInput
+  assignedTasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatorInput
+  taskComments?: Prisma.TaskCommentCreateNestedManyWithoutAuthorInput
+  watchedTasks?: Prisma.TaskWatcherCreateNestedManyWithoutMemberInput
+  timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutMemberInput
+  projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
+  projectFilesUploaded?: Prisma.ProjectFileCreateNestedManyWithoutUploadedByInput
+  createdMeetings?: Prisma.MeetingCreateNestedManyWithoutCreatedByInput
+  meetingInvites?: Prisma.MeetingParticipantCreateNestedManyWithoutMemberInput
+  meetingAttendance?: Prisma.MeetingAttendanceCreateNestedManyWithoutMemberInput
+  meetingRecordings?: Prisma.MeetingRecordingCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  actedNotifications?: Prisma.NotificationCreateNestedManyWithoutActorInput
+  notificationPreference?: Prisma.NotificationPreferenceCreateNestedOneWithoutMemberInput
+}
+
+export type MemberUncheckedCreateWithoutAiReportActionsAppliedInput = {
+  id: string
+  organizationId: string
+  userId: string
+  role?: string
+  createdAt: Date | string
+  statusEmoji?: string | null
+  statusText?: string | null
+  workingOn?: string | null
+  timezone?: string | null
+  skills?: Prisma.MemberCreateskillsInput | string[]
+  lastSeenAt?: Date | string | null
+  activityLogs?: Prisma.ActivityUncheckedCreateNestedManyWithoutMemberInput
+  assignedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatorInput
+  taskComments?: Prisma.TaskCommentUncheckedCreateNestedManyWithoutAuthorInput
+  watchedTasks?: Prisma.TaskWatcherUncheckedCreateNestedManyWithoutMemberInput
+  timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutMemberInput
+  projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
+  projectFilesUploaded?: Prisma.ProjectFileUncheckedCreateNestedManyWithoutUploadedByInput
+  createdMeetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutCreatedByInput
+  meetingInvites?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMemberInput
+  meetingAttendance?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMemberInput
+  meetingRecordings?: Prisma.MeetingRecordingUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  actedNotifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutActorInput
+  notificationPreference?: Prisma.NotificationPreferenceUncheckedCreateNestedOneWithoutMemberInput
+}
+
+export type MemberCreateOrConnectWithoutAiReportActionsAppliedInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutAiReportActionsAppliedInput, Prisma.MemberUncheckedCreateWithoutAiReportActionsAppliedInput>
+}
+
+export type MemberUpsertWithoutAiReportActionsAppliedInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutAiReportActionsAppliedInput, Prisma.MemberUncheckedUpdateWithoutAiReportActionsAppliedInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutAiReportActionsAppliedInput, Prisma.MemberUncheckedCreateWithoutAiReportActionsAppliedInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutAiReportActionsAppliedInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutAiReportActionsAppliedInput, Prisma.MemberUncheckedUpdateWithoutAiReportActionsAppliedInput>
+}
+
+export type MemberUpdateWithoutAiReportActionsAppliedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  statusEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statusText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workingOn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.MemberUpdateskillsInput | string[]
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMembersNestedInput
+  activityLogs?: Prisma.ActivityUpdateManyWithoutMemberNestedInput
+  assignedTasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  createdTasks?: Prisma.TaskUpdateManyWithoutCreatorNestedInput
+  taskComments?: Prisma.TaskCommentUpdateManyWithoutAuthorNestedInput
+  watchedTasks?: Prisma.TaskWatcherUpdateManyWithoutMemberNestedInput
+  timeEntries?: Prisma.TimeEntryUpdateManyWithoutMemberNestedInput
+  projectMembers?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
+  projectFilesUploaded?: Prisma.ProjectFileUpdateManyWithoutUploadedByNestedInput
+  createdMeetings?: Prisma.MeetingUpdateManyWithoutCreatedByNestedInput
+  meetingInvites?: Prisma.MeetingParticipantUpdateManyWithoutMemberNestedInput
+  meetingAttendance?: Prisma.MeetingAttendanceUpdateManyWithoutMemberNestedInput
+  meetingRecordings?: Prisma.MeetingRecordingUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
+  notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutAiReportActionsAppliedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  statusEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statusText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workingOn?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.MemberUpdateskillsInput | string[]
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activityLogs?: Prisma.ActivityUncheckedUpdateManyWithoutMemberNestedInput
+  assignedTasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatorNestedInput
+  taskComments?: Prisma.TaskCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  watchedTasks?: Prisma.TaskWatcherUncheckedUpdateManyWithoutMemberNestedInput
+  timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutMemberNestedInput
+  projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
+  projectFilesUploaded?: Prisma.ProjectFileUncheckedUpdateManyWithoutUploadedByNestedInput
+  createdMeetings?: Prisma.MeetingUncheckedUpdateManyWithoutCreatedByNestedInput
+  meetingInvites?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMemberNestedInput
+  meetingAttendance?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMemberNestedInput
+  meetingRecordings?: Prisma.MeetingRecordingUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
+  notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
 }
 
 export type MemberCreateManyUserInput = {
@@ -3019,6 +3238,7 @@ export type MemberUpdateWithoutUserInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutUserInput = {
@@ -3047,6 +3267,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutUserInput = {
@@ -3101,6 +3322,7 @@ export type MemberUpdateWithoutOrganizationInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutOrganizationInput = {
@@ -3129,6 +3351,7 @@ export type MemberUncheckedUpdateWithoutOrganizationInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   actedNotifications?: Prisma.NotificationUncheckedUpdateManyWithoutActorNestedInput
   notificationPreference?: Prisma.NotificationPreferenceUncheckedUpdateOneWithoutMemberNestedInput
+  aiReportActionsApplied?: Prisma.AiReportActionUncheckedUpdateManyWithoutAppliedByMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
@@ -3164,6 +3387,7 @@ export type MemberCountOutputType = {
   meetingRecordings: number
   notifications: number
   actedNotifications: number
+  aiReportActionsApplied: number
 }
 
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3181,6 +3405,7 @@ export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   meetingRecordings?: boolean | MemberCountOutputTypeCountMeetingRecordingsArgs
   notifications?: boolean | MemberCountOutputTypeCountNotificationsArgs
   actedNotifications?: boolean | MemberCountOutputTypeCountActedNotificationsArgs
+  aiReportActionsApplied?: boolean | MemberCountOutputTypeCountAiReportActionsAppliedArgs
 }
 
 /**
@@ -3291,6 +3516,13 @@ export type MemberCountOutputTypeCountActedNotificationsArgs<ExtArgs extends run
   where?: Prisma.NotificationWhereInput
 }
 
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountAiReportActionsAppliedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AiReportActionWhereInput
+}
+
 
 export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3321,6 +3553,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   notifications?: boolean | Prisma.Member$notificationsArgs<ExtArgs>
   actedNotifications?: boolean | Prisma.Member$actedNotificationsArgs<ExtArgs>
   notificationPreference?: boolean | Prisma.Member$notificationPreferenceArgs<ExtArgs>
+  aiReportActionsApplied?: boolean | Prisma.Member$aiReportActionsAppliedArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
 
@@ -3389,6 +3622,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   notifications?: boolean | Prisma.Member$notificationsArgs<ExtArgs>
   actedNotifications?: boolean | Prisma.Member$actedNotificationsArgs<ExtArgs>
   notificationPreference?: boolean | Prisma.Member$notificationPreferenceArgs<ExtArgs>
+  aiReportActionsApplied?: boolean | Prisma.Member$aiReportActionsAppliedArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3420,6 +3654,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     actedNotifications: Prisma.$NotificationPayload<ExtArgs>[]
     notificationPreference: Prisma.$NotificationPreferencePayload<ExtArgs> | null
+    aiReportActionsApplied: Prisma.$AiReportActionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3844,6 +4079,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   notifications<T extends Prisma.Member$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   actedNotifications<T extends Prisma.Member$actedNotificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$actedNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notificationPreference<T extends Prisma.Member$notificationPreferenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$notificationPreferenceArgs<ExtArgs>>): Prisma.Prisma__NotificationPreferenceClient<runtime.Types.Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  aiReportActionsApplied<T extends Prisma.Member$aiReportActionsAppliedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$aiReportActionsAppliedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiReportActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4637,6 +4873,30 @@ export type Member$notificationPreferenceArgs<ExtArgs extends runtime.Types.Exte
    */
   include?: Prisma.NotificationPreferenceInclude<ExtArgs> | null
   where?: Prisma.NotificationPreferenceWhereInput
+}
+
+/**
+ * Member.aiReportActionsApplied
+ */
+export type Member$aiReportActionsAppliedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AiReportAction
+   */
+  select?: Prisma.AiReportActionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AiReportAction
+   */
+  omit?: Prisma.AiReportActionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AiReportActionInclude<ExtArgs> | null
+  where?: Prisma.AiReportActionWhereInput
+  orderBy?: Prisma.AiReportActionOrderByWithRelationInput | Prisma.AiReportActionOrderByWithRelationInput[]
+  cursor?: Prisma.AiReportActionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AiReportActionScalarFieldEnum | Prisma.AiReportActionScalarFieldEnum[]
 }
 
 /**

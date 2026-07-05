@@ -27,7 +27,10 @@ import {
   KanbanIcon,
   Task01Icon,
   ChartLineData01Icon,
+  Calendar03Icon,
+  ChartGanttIcon,
 } from "@hugeicons/core-free-icons";
+import { ProjectCalendar, ProjectTimeline } from "@/components/projects/project-schedule";
 import { initials } from "@/lib/string";
 
 function formatDate(s: string | null | undefined) {
@@ -283,6 +286,14 @@ export function ProjectDetailContent() {
             <HugeiconsIcon icon={Task01Icon} className="size-4" strokeWidth={2} />
             Tasks
           </TabsTrigger>
+          <TabsTrigger value="calendar" className="gap-1.5">
+            <HugeiconsIcon icon={Calendar03Icon} className="size-4" strokeWidth={2} />
+            Calendar
+          </TabsTrigger>
+          <TabsTrigger value="timeline" className="gap-1.5">
+            <HugeiconsIcon icon={ChartGanttIcon} className="size-4" strokeWidth={2} />
+            Timeline
+          </TabsTrigger>
           <TabsTrigger value="files" className="gap-1.5">
             <HugeiconsIcon icon={File02Icon} className="size-4" strokeWidth={2} />
             Files
@@ -299,6 +310,14 @@ export function ProjectDetailContent() {
 
         <TabsContent value="board" className="mt-4">
           <ProjectBoard projectId={project.id} />
+        </TabsContent>
+
+        <TabsContent value="calendar" className="mt-4">
+          <ProjectCalendar projectId={project.id} tasks={project.tasks} />
+        </TabsContent>
+
+        <TabsContent value="timeline" className="mt-4">
+          <ProjectTimeline projectId={project.id} tasks={project.tasks} />
         </TabsContent>
 
         <TabsContent value="list" className="mt-4">

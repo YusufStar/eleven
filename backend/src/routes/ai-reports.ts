@@ -3,9 +3,22 @@ import Anthropic from "@anthropic-ai/sdk";
 import { prisma } from "../db/prisma";
 import { authPlugin } from "../plugins/auth.plugin";
 import { logActivity } from "../lib/activity-log";
-import { ActivityAction, ActivityEntityType, AiReportKind } from "../../prisma/generated/prisma/enums";
+import { applyAiReportAction } from "../lib/ai-report-actions";
+import { parseSubmitReport, reportMarkdownFromSubmit } from "../lib/ai-report-schema";
+import {
+  ActivityAction,
+  ActivityEntityType,
+  AiReportActionStatus,
+  AiReportActionType,
+  AiReportKind,
+} from "../../prisma/generated/prisma/enums";
 
+// ponytail: env override lets prod pin a dated snapshot (e.g. claude-sonnet-5-20260514)
 const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5";
+
+// Rough public per-MTok pricing (USD) for cost estimation in logs. Override via env if it drifts.
+const PRICE_IN = Number(process.env.ANTHROPIC_PRICE_IN ?? 3) / 1_000_000;
+const PRICE_OUT = Number(process.env.ANTHROPIC_PRICE_OUT ?? 15) / 1_000_000;
 
 const KIND_CONFIG: Record<AiReportKind, { days: number; maxTokens: number; label: string }> = {
   MINI: { days: 1, maxTokens: 1500, label: "Daily mini report" },
@@ -15,6 +28,10 @@ const KIND_CONFIG: Record<AiReportKind, { days: number; maxTokens: number; label
 
 const json = (message: string, status: number) =>
   new Response(JSON.stringify({ message }), { status, headers: { "Content-Type": "application/json" } });
+
+const reportInclude = {
+  actions: { orderBy: { sortOrder: "asc" as const } },
+} as const;
 
 // ─── Data tools (org-scoped, deterministic) ───────
 
@@ -170,6 +187,131 @@ const TOOLS: Anthropic.Tool[] = [
     description: "Workspace activity in the period: counts by action/entity and per member.",
     input_schema: { type: "object" as const, properties: {}, required: [] },
   },
+  {
+    name: "submit_report",
+    description:
+      "REQUIRED final step. Submit the completed report as structured JSON for the dashboard UI, charts, and actionable recommendations. Call only after all data tools have returned.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        title: { type: "string", description: "Short report title override (optional)" },
+        summary: { type: "string", description: "Executive summary paragraph" },
+        sections: {
+          type: "array",
+          description: "Markdown body sections (h2 titles as section.title)",
+          items: {
+            type: "object",
+            properties: {
+              title: { type: "string" },
+              body: { type: "string", description: "Markdown content for this section" },
+            },
+            required: ["title", "body"],
+          },
+        },
+        dashboard: {
+          type: "object",
+          properties: {
+            kpis: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  label: { type: "string" },
+                  value: { type: ["string", "number"] },
+                  tone: { type: "string", enum: ["neutral", "blue", "green", "orange", "red"] },
+                  sub: { type: "string" },
+                },
+                required: ["id", "label", "value"],
+              },
+            },
+            charts: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  type: { type: "string", enum: ["bar", "line", "pie"] },
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  xKey: { type: "string" },
+                  data: { type: "array", items: { type: "object" } },
+                  series: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        key: { type: "string" },
+                        label: { type: "string" },
+                        color: { type: "string" },
+                      },
+                      required: ["key", "label"],
+                    },
+                  },
+                },
+                required: ["id", "type", "title", "data", "series"],
+              },
+            },
+            highlights: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  title: { type: "string" },
+                  body: { type: "string" },
+                  severity: { type: "string", enum: ["info", "warning", "critical"] },
+                },
+                required: ["id", "title", "body"],
+              },
+            },
+            risks: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  title: { type: "string" },
+                  body: { type: "string" },
+                },
+                required: ["id", "title", "body"],
+              },
+            },
+          },
+          required: ["kpis", "charts"],
+        },
+        actions: {
+          type: "array",
+          description: "2-6 concrete, actionable recommendations the team can apply in one click",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              type: {
+                type: "string",
+                enum: [
+                  "CREATE_TASK",
+                  "UPDATE_TASK_STATUS",
+                  "UPDATE_TASK_PRIORITY",
+                  "REASSIGN_TASK",
+                  "ADD_TASK_COMMENT",
+                ],
+              },
+              title: { type: "string" },
+              description: { type: "string" },
+              payload: {
+                type: "object",
+                description:
+                  "Action payload. Use taskId/assigneeId when known; otherwise taskTitle/assigneeName. CREATE_TASK: title, description?, priority?, status?, projectId?, assigneeName?. UPDATE_TASK_STATUS: taskId|taskTitle, status. UPDATE_TASK_PRIORITY: taskId|taskTitle, priority. REASSIGN_TASK: taskId|taskTitle, assigneeId|assigneeName. ADD_TASK_COMMENT: taskId|taskTitle, body.",
+              },
+            },
+            required: ["id", "type", "title", "description", "payload"],
+          },
+        },
+      },
+      required: ["summary", "sections", "dashboard", "actions"],
+    },
+  },
 ];
 
 async function runTool(name: string, orgId: string, days: number): Promise<unknown> {
@@ -189,7 +331,7 @@ async function runTool(name: string, orgId: string, days: number): Promise<unkno
   }
 }
 
-async function generateReport(orgId: string, orgName: string, kind: AiReportKind) {
+export async function generateReport(orgId: string, orgName: string, kind: AiReportKind) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not configured");
   const client = new Anthropic({ apiKey });
@@ -200,11 +342,14 @@ Write a ${cfg.label} for the team "${orgName}" covering the last ${cfg.days} day
 
 Rules:
 - FIRST call the data tools to gather real numbers. Never invent data. Every number in the report must come from a tool result.
-- Then write the report in clean markdown (no top-level h1; start with h2 sections).
-- Sections to cover when data allows: Summary, Productivity & Velocity, Team Load, Project Health, Bottlenecks & Risks (blocked/overdue), Suggestions (2-4 concrete, actionable).
-- ${kind === "MINI" ? "Keep it short and scannable — a standup-style digest, max ~200 words." : ""}
-- ${kind === "MEDIUM" ? "Medium depth — include velocity trend and per-member load." : ""}
-- ${kind === "HIGH" ? "Deep dive — include sprint velocity history, delivery forecast, risk detection and team health assessment." : ""}
+- AFTER gathering data, you MUST call submit_report with structured JSON (summary, sections, dashboard with kpis+charts, and actions). Do not finish with plain text.
+- Build dashboard.kpis from real counts (open tasks, completed, blocked, overdue, velocity, etc.).
+- Build dashboard.charts from tool data: e.g. task status bar chart, team load bar chart, sprint velocity line chart, project health pie chart. Use chart.data arrays with numeric values.
+- sections: Summary, Productivity & Velocity, Team Load, Project Health, Bottlenecks & Risks when data allows.
+- actions: 2-6 concrete recommendations with valid type and payload so the team can apply them in the product (create tasks, reassign, change status/priority, add comments). Reference real task titles and member names from tool results.
+- ${kind === "MINI" ? "Keep summary and sections short — standup-style digest." : ""}
+- ${kind === "MEDIUM" ? "Medium depth — include velocity trend and per-member load charts." : ""}
+- ${kind === "HIGH" ? "Deep dive — sprint velocity history, delivery forecast, risk detection." : ""}
 - If a data source is empty, say so briefly instead of speculating.`;
 
   const messages: Anthropic.MessageParam[] = [
@@ -212,8 +357,14 @@ Rules:
   ];
 
   const collectedMetrics: Record<string, unknown> = {};
+  let submitted: ReturnType<typeof parseSubmitReport> = null;
   let finalText = "";
-  for (let turn = 0; turn < 8; turn++) {
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let turns = 0;
+  const startedAt = Date.now();
+  for (let turn = 0; turn < 10; turn++) {
+    turns = turn + 1;
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: cfg.maxTokens,
@@ -221,11 +372,24 @@ Rules:
       tools: TOOLS,
       messages,
     });
+    inputTokens += response.usage.input_tokens;
+    outputTokens += response.usage.output_tokens;
     if (response.stop_reason === "tool_use") {
       messages.push({ role: "assistant", content: response.content });
       const results: Anthropic.ToolResultBlockParam[] = [];
       for (const block of response.content) {
         if (block.type !== "tool_use") continue;
+        if (block.name === "submit_report") {
+          submitted = parseSubmitReport(block.input);
+          results.push({
+            type: "tool_result",
+            tool_use_id: block.id,
+            content: submitted
+              ? JSON.stringify({ ok: true, message: "Report structure accepted" })
+              : JSON.stringify({ ok: false, error: "Invalid submit_report payload — fix JSON shape and retry" }),
+          });
+          continue;
+        }
         const result = await runTool(block.name, orgId, cfg.days);
         collectedMetrics[block.name] = result;
         results.push({
@@ -235,6 +399,10 @@ Rules:
         });
       }
       messages.push({ role: "user", content: results });
+      if (submitted) {
+        finalText = reportMarkdownFromSubmit(submitted);
+        break;
+      }
       continue;
     }
     finalText = response.content
@@ -245,26 +413,54 @@ Rules:
   }
   if (!finalText.trim()) throw new Error("Model returned no report text");
 
+  const estCost = inputTokens * PRICE_IN + outputTokens * PRICE_OUT;
+  console.log(
+    `[ai-reports] ${kind} for "${orgName}" — ${turns} turn(s), ` +
+      `${inputTokens} in / ${outputTokens} out tokens, ~$${estCost.toFixed(4)}, ${Date.now() - startedAt}ms`,
+  );
+
   const periodEnd = new Date();
   const periodStart = new Date(periodEnd);
   periodStart.setDate(periodStart.getDate() - cfg.days);
 
-  return prisma.aiReport.create({
+  const metricsPayload = {
+    tools: collectedMetrics,
+    ...(submitted ? { dashboard: submitted.dashboard } : {}),
+  };
+
+  const report = await prisma.aiReport.create({
     data: {
       organizationId: orgId,
       kind,
-      title: `${cfg.label} — ${periodEnd.toISOString().slice(0, 10)}`,
+      title: submitted?.title || `${cfg.label} — ${periodEnd.toISOString().slice(0, 10)}`,
       content: finalText,
-      metrics: collectedMetrics as object,
+      metrics: metricsPayload as object,
       model: MODEL,
       periodStart,
       periodEnd,
+      ...(submitted && submitted.actions.length > 0
+        ? {
+            actions: {
+              create: submitted.actions.map((a, i) => ({
+                organizationId: orgId,
+                type: a.type as AiReportActionType,
+                title: a.title,
+                description: a.description,
+                payload: a.payload as object,
+                sortOrder: i,
+              })),
+            },
+          }
+        : {}),
     },
+    include: reportInclude,
   });
+
+  return report;
 }
 
 /** A report is fresh if one of the same kind was created inside the current period window. */
-function freshnessCutoff(kind: AiReportKind): Date {
+export function freshnessCutoff(kind: AiReportKind): Date {
   const d = new Date();
   if (kind === "MINI") {
     d.setHours(0, 0, 0, 0); // today
@@ -291,8 +487,95 @@ export const aiReportsRoutes = new Elysia({ prefix: "/ai-reports" })
         where: { organizationId: activeOrganizationId!, ...(kind && { kind }) },
         orderBy: { createdAt: "desc" },
         take: 20,
+        include: reportInclude,
       });
       return { data, aiConfigured: !!process.env.ANTHROPIC_API_KEY };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .get(
+    "/:id",
+    async ({ activeOrganizationId, params, set }) => {
+      const report = await prisma.aiReport.findFirst({
+        where: { id: params.id, organizationId: activeOrganizationId! },
+        include: reportInclude,
+      });
+      if (!report) {
+        set.status = 404;
+        return { message: "Report not found" };
+      }
+      return { report };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .post(
+    "/:id/actions/:actionId/apply",
+    async ({ activeOrganizationId, activeMember, params, set }) => {
+      const action = await prisma.aiReportAction.findFirst({
+        where: {
+          id: params.actionId,
+          reportId: params.id,
+          organizationId: activeOrganizationId!,
+        },
+      });
+      if (!action) {
+        set.status = 404;
+        return { message: "Action not found" };
+      }
+      const result = await applyAiReportAction(action, {
+        prisma,
+        organizationId: activeOrganizationId!,
+        memberId: activeMember!.id,
+      });
+      const status = result.ok ? AiReportActionStatus.APPLIED : AiReportActionStatus.FAILED;
+      const updated = await prisma.aiReportAction.update({
+        where: { id: action.id },
+        data: {
+          status,
+          resultMessage: result.message,
+          appliedAt: result.ok ? new Date() : null,
+          appliedByMemberId: result.ok ? activeMember!.id : null,
+        },
+      });
+      if (!result.ok) {
+        set.status = 400;
+      }
+      return { action: updated, ...result };
+    },
+    { requireAuth: true, requireActiveOrg: true }
+  )
+  .post(
+    "/:id/actions/apply-all",
+    async ({ activeOrganizationId, activeMember, params, set }) => {
+      const report = await prisma.aiReport.findFirst({
+        where: { id: params.id, organizationId: activeOrganizationId! },
+        include: { actions: { where: { status: AiReportActionStatus.PENDING }, orderBy: { sortOrder: "asc" } } },
+      });
+      if (!report) {
+        set.status = 404;
+        return { message: "Report not found" };
+      }
+      const results: Array<{ actionId: string; ok: boolean; message: string }> = [];
+      for (const action of report.actions) {
+        const result = await applyAiReportAction(action, {
+          prisma,
+          organizationId: activeOrganizationId!,
+          memberId: activeMember!.id,
+        });
+        await prisma.aiReportAction.update({
+          where: { id: action.id },
+          data: {
+            status: result.ok ? AiReportActionStatus.APPLIED : AiReportActionStatus.FAILED,
+            resultMessage: result.message,
+            appliedAt: result.ok ? new Date() : null,
+            appliedByMemberId: result.ok ? activeMember!.id : null,
+          },
+        });
+        results.push({ actionId: action.id, ok: result.ok, message: result.message });
+      }
+      const failed = results.filter((r) => !r.ok).length;
+      if (failed > 0 && failed === results.length) set.status = 400;
+      return { results, applied: results.filter((r) => r.ok).length, failed };
     },
     { requireAuth: true, requireActiveOrg: true }
   )
@@ -316,6 +599,7 @@ export const aiReportsRoutes = new Elysia({ prefix: "/ai-reports" })
             createdAt: { gte: freshnessCutoff(kind) },
           },
           orderBy: { createdAt: "desc" },
+          include: reportInclude,
         });
         if (existing) return { report: existing, fresh: true };
       }

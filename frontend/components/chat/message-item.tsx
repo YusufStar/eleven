@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Textarea } from "@/components/ui/textarea";
 import { MarkdownView } from "@/components/ui/markdown-view";
 import { EmojiPicker } from "@/components/chat/emoji-picker";
@@ -260,26 +261,24 @@ export function MessageItem({
           )}
         >
           <EmojiPicker onPick={react}>
-            <Button variant="ghost" size="icon" className="size-7" aria-label="React">
+            <Button variant="ghost" size="icon" className="size-7" aria-label="React" title="React">
               <HugeiconsIcon icon={SmileIcon} className="size-4" strokeWidth={2} />
             </Button>
           </EmojiPicker>
           {!inThread && (
-            <Button
+            <IconButton
               variant="ghost"
-              size="icon"
               className="size-7"
-              aria-label="Reply in thread"
+              label="Reply in thread"
               onClick={() => onReply?.(message)}
             >
               <HugeiconsIcon icon={Comment01Icon} className="size-4" strokeWidth={2} />
-            </Button>
+            </IconButton>
           )}
-          <Button
+          <IconButton
             variant="ghost"
-            size="icon"
             className="size-7"
-            aria-label={message.pinnedAt ? "Unpin" : "Pin"}
+            label={message.pinnedAt ? "Unpin" : "Pin"}
             onClick={() =>
               togglePin.mutate(
                 { chatId: message.chatId, messageId: message.id },
@@ -291,26 +290,24 @@ export function MessageItem({
             }
           >
             <HugeiconsIcon icon={PinIcon} className="size-4" strokeWidth={2} />
-          </Button>
+          </IconButton>
           {isOwn && (
             <>
-              <Button
+              <IconButton
                 variant="ghost"
-                size="icon"
                 className="size-7"
-                aria-label="Edit"
+                label="Edit"
                 onClick={() => {
                   setDraft(content ?? "");
                   setEditing(true);
                 }}
               >
                 <HugeiconsIcon icon={Edit02Icon} className="size-4" strokeWidth={2} />
-              </Button>
-              <Button
+              </IconButton>
+              <IconButton
                 variant="ghost"
-                size="icon"
                 className="size-7 text-destructive"
-                aria-label="Delete"
+                label="Delete"
                 onClick={() =>
                   deleteMessage.mutate(
                     { chatId: message.chatId, messageId: message.id },
@@ -319,7 +316,7 @@ export function MessageItem({
                 }
               >
                 <HugeiconsIcon icon={Delete02Icon} className="size-4" strokeWidth={2} />
-              </Button>
+              </IconButton>
             </>
           )}
         </div>

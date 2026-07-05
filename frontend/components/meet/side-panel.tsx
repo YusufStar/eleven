@@ -10,6 +10,7 @@ import {
   WavingHand01Icon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import type { CallChatMessage } from "./use-webrtc";
 

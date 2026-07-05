@@ -131,7 +131,7 @@ export const tasksRoutes = new Elysia({ prefix: "/tasks" })
       }
       return created;
     },
-    { requireAuth: true, requireActiveOrg: true }
+    { requireAuth: true, requireActiveOrg: true, requirePaidOrg: true }
   )
   .get(
     "/",

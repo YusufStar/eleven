@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { chatApi } from "./api";
 import { chatQueryKeys } from "./query-keys";
+import { liveSendTyping } from "@/services/live/socket";
 import type { ChatMessagesParams, ChatMessagesResponse, Message, SendMessagePayload } from "./types";
 
 const DEFAULT_PAGE_SIZE = 100;
@@ -25,8 +26,30 @@ export function useChat(chatId: string | null) {
   });
 }
 
-function infiniteKey(chatId: string, pageSize: number) {
+export const CHAT_DEFAULT_PAGE_SIZE = DEFAULT_PAGE_SIZE;
+
+export function infiniteKey(chatId: string, pageSize: number = DEFAULT_PAGE_SIZE) {
   return [...chatQueryKeys.messages(chatId), "infinite", pageSize] as const;
+}
+
+/** Append new messages to the newest cached page, de-duping by id. Shared by the
+ *  incremental poll and the WebSocket live channel so both stay idempotent. */
+export function mergeChatMessages(
+  queryClient: ReturnType<typeof useQueryClient>,
+  chatId: string,
+  incoming: Message[],
+  pageSize: number = DEFAULT_PAGE_SIZE,
+) {
+  if (incoming.length === 0) return;
+  queryClient.setQueryData<InfiniteData<ChatMessagesResponse>>(infiniteKey(chatId, pageSize), (old) => {
+    if (!old || old.pages.length === 0) return old;
+    const existing = new Set(old.pages.flatMap((p) => p.data.map((m) => m.id)));
+    const fresh = incoming.filter((m) => !existing.has(m.id));
+    if (fresh.length === 0) return old;
+    const pages = [...old.pages];
+    pages[0] = { ...pages[0], data: [...pages[0].data, ...fresh] };
+    return { ...old, pages };
+  });
 }
 
 export function useChatMessagesInfinite(
@@ -59,18 +82,7 @@ export function useChatMessagesInfinite(
       try {
         const res = await chatApi.getMessages(chatId, latestId ? { after: latestId, limit: 100 } : { limit: 1 });
         if (stopped || res.data.length === 0) return;
-        queryClient.setQueryData<InfiniteData<ChatMessagesResponse>>(
-          infiniteKey(chatId, pageSize),
-          (old) => {
-            if (!old || old.pages.length === 0) return old;
-            const existing = new Set(old.pages.flatMap((p) => p.data.map((m) => m.id)));
-            const fresh = res.data.filter((m) => !existing.has(m.id));
-            if (fresh.length === 0) return old;
-            const pages = [...old.pages];
-            pages[0] = { ...pages[0], data: [...pages[0].data, ...fresh] };
-            return { ...old, pages };
-          }
-        );
+        mergeChatMessages(queryClient, chatId, res.data, pageSize);
       } catch {
         // transient poll errors are ignored; the next tick retries
       }
@@ -212,7 +224,8 @@ export function useTypingNotifier(chatId: string | null) {
     const now = Date.now();
     if (now - lastSent.current < 2500) return;
     lastSent.current = now;
-    chatApi.postTyping(chatId).catch(() => {});
+    liveSendTyping(chatId); // instant when the socket is up
+    chatApi.postTyping(chatId).catch(() => {}); // HTTP fallback / cross-instance
   }, [chatId]);
 }
 

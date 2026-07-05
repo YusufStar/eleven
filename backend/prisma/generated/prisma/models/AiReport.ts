@@ -219,6 +219,7 @@ export type AiReportWhereInput = {
   periodEnd?: Prisma.DateTimeFilter<"AiReport"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"AiReport"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  actions?: Prisma.AiReportActionListRelationFilter
 }
 
 export type AiReportOrderByWithRelationInput = {
@@ -233,6 +234,7 @@ export type AiReportOrderByWithRelationInput = {
   periodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
+  actions?: Prisma.AiReportActionOrderByRelationAggregateInput
 }
 
 export type AiReportWhereUniqueInput = Prisma.AtLeast<{
@@ -250,6 +252,7 @@ export type AiReportWhereUniqueInput = Prisma.AtLeast<{
   periodEnd?: Prisma.DateTimeFilter<"AiReport"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"AiReport"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  actions?: Prisma.AiReportActionListRelationFilter
 }, "id">
 
 export type AiReportOrderByWithAggregationInput = {
@@ -295,6 +298,7 @@ export type AiReportCreateInput = {
   periodEnd: Date | string
   createdAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutAiReportsInput
+  actions?: Prisma.AiReportActionCreateNestedManyWithoutReportInput
 }
 
 export type AiReportUncheckedCreateInput = {
@@ -308,6 +312,7 @@ export type AiReportUncheckedCreateInput = {
   periodStart: Date | string
   periodEnd: Date | string
   createdAt?: Date | string
+  actions?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutReportInput
 }
 
 export type AiReportUpdateInput = {
@@ -321,6 +326,7 @@ export type AiReportUpdateInput = {
   periodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAiReportsNestedInput
+  actions?: Prisma.AiReportActionUpdateManyWithoutReportNestedInput
 }
 
 export type AiReportUncheckedUpdateInput = {
@@ -334,6 +340,7 @@ export type AiReportUncheckedUpdateInput = {
   periodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   periodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  actions?: Prisma.AiReportActionUncheckedUpdateManyWithoutReportNestedInput
 }
 
 export type AiReportCreateManyInput = {
@@ -421,6 +428,11 @@ export type AiReportMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
+export type AiReportScalarRelationFilter = {
+  is?: Prisma.AiReportWhereInput
+  isNot?: Prisma.AiReportWhereInput
+}
+
 export type AiReportCreateNestedManyWithoutOrganizationInput = {
   create?: Prisma.XOR<Prisma.AiReportCreateWithoutOrganizationInput, Prisma.AiReportUncheckedCreateWithoutOrganizationInput> | Prisma.AiReportCreateWithoutOrganizationInput[] | Prisma.AiReportUncheckedCreateWithoutOrganizationInput[]
   connectOrCreate?: Prisma.AiReportCreateOrConnectWithoutOrganizationInput | Prisma.AiReportCreateOrConnectWithoutOrganizationInput[]
@@ -467,6 +479,20 @@ export type EnumAiReportKindFieldUpdateOperationsInput = {
   set?: $Enums.AiReportKind
 }
 
+export type AiReportCreateNestedOneWithoutActionsInput = {
+  create?: Prisma.XOR<Prisma.AiReportCreateWithoutActionsInput, Prisma.AiReportUncheckedCreateWithoutActionsInput>
+  connectOrCreate?: Prisma.AiReportCreateOrConnectWithoutActionsInput
+  connect?: Prisma.AiReportWhereUniqueInput
+}
+
+export type AiReportUpdateOneRequiredWithoutActionsNestedInput = {
+  create?: Prisma.XOR<Prisma.AiReportCreateWithoutActionsInput, Prisma.AiReportUncheckedCreateWithoutActionsInput>
+  connectOrCreate?: Prisma.AiReportCreateOrConnectWithoutActionsInput
+  upsert?: Prisma.AiReportUpsertWithoutActionsInput
+  connect?: Prisma.AiReportWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AiReportUpdateToOneWithWhereWithoutActionsInput, Prisma.AiReportUpdateWithoutActionsInput>, Prisma.AiReportUncheckedUpdateWithoutActionsInput>
+}
+
 export type AiReportCreateWithoutOrganizationInput = {
   id?: string
   kind: $Enums.AiReportKind
@@ -477,6 +503,7 @@ export type AiReportCreateWithoutOrganizationInput = {
   periodStart: Date | string
   periodEnd: Date | string
   createdAt?: Date | string
+  actions?: Prisma.AiReportActionCreateNestedManyWithoutReportInput
 }
 
 export type AiReportUncheckedCreateWithoutOrganizationInput = {
@@ -489,6 +516,7 @@ export type AiReportUncheckedCreateWithoutOrganizationInput = {
   periodStart: Date | string
   periodEnd: Date | string
   createdAt?: Date | string
+  actions?: Prisma.AiReportActionUncheckedCreateNestedManyWithoutReportInput
 }
 
 export type AiReportCreateOrConnectWithoutOrganizationInput = {
@@ -533,6 +561,74 @@ export type AiReportScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"AiReport"> | Date | string
 }
 
+export type AiReportCreateWithoutActionsInput = {
+  id?: string
+  kind: $Enums.AiReportKind
+  title: string
+  content: string
+  metrics?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  model?: string | null
+  periodStart: Date | string
+  periodEnd: Date | string
+  createdAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutAiReportsInput
+}
+
+export type AiReportUncheckedCreateWithoutActionsInput = {
+  id?: string
+  organizationId: string
+  kind: $Enums.AiReportKind
+  title: string
+  content: string
+  metrics?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  model?: string | null
+  periodStart: Date | string
+  periodEnd: Date | string
+  createdAt?: Date | string
+}
+
+export type AiReportCreateOrConnectWithoutActionsInput = {
+  where: Prisma.AiReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.AiReportCreateWithoutActionsInput, Prisma.AiReportUncheckedCreateWithoutActionsInput>
+}
+
+export type AiReportUpsertWithoutActionsInput = {
+  update: Prisma.XOR<Prisma.AiReportUpdateWithoutActionsInput, Prisma.AiReportUncheckedUpdateWithoutActionsInput>
+  create: Prisma.XOR<Prisma.AiReportCreateWithoutActionsInput, Prisma.AiReportUncheckedCreateWithoutActionsInput>
+  where?: Prisma.AiReportWhereInput
+}
+
+export type AiReportUpdateToOneWithWhereWithoutActionsInput = {
+  where?: Prisma.AiReportWhereInput
+  data: Prisma.XOR<Prisma.AiReportUpdateWithoutActionsInput, Prisma.AiReportUncheckedUpdateWithoutActionsInput>
+}
+
+export type AiReportUpdateWithoutActionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumAiReportKindFieldUpdateOperationsInput | $Enums.AiReportKind
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  metrics?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  periodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutAiReportsNestedInput
+}
+
+export type AiReportUncheckedUpdateWithoutActionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumAiReportKindFieldUpdateOperationsInput | $Enums.AiReportKind
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  metrics?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  periodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type AiReportCreateManyOrganizationInput = {
   id?: string
   kind: $Enums.AiReportKind
@@ -555,6 +651,7 @@ export type AiReportUpdateWithoutOrganizationInput = {
   periodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   periodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  actions?: Prisma.AiReportActionUpdateManyWithoutReportNestedInput
 }
 
 export type AiReportUncheckedUpdateWithoutOrganizationInput = {
@@ -567,6 +664,7 @@ export type AiReportUncheckedUpdateWithoutOrganizationInput = {
   periodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   periodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  actions?: Prisma.AiReportActionUncheckedUpdateManyWithoutReportNestedInput
 }
 
 export type AiReportUncheckedUpdateManyWithoutOrganizationInput = {
@@ -582,6 +680,35 @@ export type AiReportUncheckedUpdateManyWithoutOrganizationInput = {
 }
 
 
+/**
+ * Count Type AiReportCountOutputType
+ */
+
+export type AiReportCountOutputType = {
+  actions: number
+}
+
+export type AiReportCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  actions?: boolean | AiReportCountOutputTypeCountActionsArgs
+}
+
+/**
+ * AiReportCountOutputType without action
+ */
+export type AiReportCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AiReportCountOutputType
+   */
+  select?: Prisma.AiReportCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * AiReportCountOutputType without action
+ */
+export type AiReportCountOutputTypeCountActionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AiReportActionWhereInput
+}
+
 
 export type AiReportSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -595,6 +722,8 @@ export type AiReportSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   periodEnd?: boolean
   createdAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  actions?: boolean | Prisma.AiReport$actionsArgs<ExtArgs>
+  _count?: boolean | Prisma.AiReportCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiReport"]>
 
 export type AiReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -641,6 +770,8 @@ export type AiReportSelectScalar = {
 export type AiReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "kind" | "title" | "content" | "metrics" | "model" | "periodStart" | "periodEnd" | "createdAt", ExtArgs["result"]["aiReport"]>
 export type AiReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  actions?: boolean | Prisma.AiReport$actionsArgs<ExtArgs>
+  _count?: boolean | Prisma.AiReportCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AiReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -653,6 +784,7 @@ export type $AiReportPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "AiReport"
   objects: {
     organization: Prisma.$OrganizationPayload<ExtArgs>
+    actions: Prisma.$AiReportActionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1060,6 +1192,7 @@ readonly fields: AiReportFieldRefs;
 export interface Prisma__AiReportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  actions<T extends Prisma.AiReport$actionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AiReport$actionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiReportActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1497,6 +1630,30 @@ export type AiReportDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many AiReports to delete.
    */
   limit?: number
+}
+
+/**
+ * AiReport.actions
+ */
+export type AiReport$actionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AiReportAction
+   */
+  select?: Prisma.AiReportActionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AiReportAction
+   */
+  omit?: Prisma.AiReportActionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AiReportActionInclude<ExtArgs> | null
+  where?: Prisma.AiReportActionWhereInput
+  orderBy?: Prisma.AiReportActionOrderByWithRelationInput | Prisma.AiReportActionOrderByWithRelationInput[]
+  cursor?: Prisma.AiReportActionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AiReportActionScalarFieldEnum | Prisma.AiReportActionScalarFieldEnum[]
 }
 
 /**

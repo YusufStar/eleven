@@ -182,3 +182,8 @@ export type NotificationPreference = Prisma.NotificationPreferenceModel
  * 
  */
 export type AiReport = Prisma.AiReportModel
+/**
+ * Model AiReportAction
+ * 
+ */
+export type AiReportAction = Prisma.AiReportActionModel

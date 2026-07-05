@@ -41,8 +41,14 @@ Full-stack **CRM and project management** app: organizations, contacts, deals, p
 
 ## Learned User Preferences
 
-<!-- Add durable user preferences here as plain bullets. -->
+- User may ask in Turkish; keep all project UI, copy, code comments, and docs in English unless explicitly told otherwise.
+- Use Bun (`bun run`, `bun install`, `bun patch`) for backend scripts and dependency patches—not npm.
 
 ## Learned Workspace Facts
 
-<!-- Add stable workspace facts here as plain bullets. -->
+- Product is pivoting from CRM to a team work platform (tasks, sprints, projects, chat, files, AI reports); CRM entities (contacts, deals, pipelines) are being removed.
+- Prisma uses `@prisma/adapter-pg` with a Bun patch at `backend/patches/@prisma%2Fadapter-pg@7.8.0.patch` fixing duplicate `values` passed to `pg.client.query` in `performIO`.
+- Do not use explicit `pg.Pool` with Bun + PrismaPg—it conflicts with the Bun runtime.
+- Two Postgres URLs: `DATABASE_URL` (superuser, Better Auth) and `DATABASE_APP_URL` (RLS org-scoped via `dbForOrg()` in `backend/src/db/prisma.ts`).
+- AI Reports: Claude tool-calling returns structured JSON via `submit_report` (KPIs, Recharts charts, recommended actions); actions persist in `AiReportAction` with apply endpoints; legacy markdown reports render read-only via the legacy dashboard.
+- Real-time updates use a WebSocket hub (`backend/src/lib/ws-hub.ts`, `/live` routes); chat may still fall back to polling.
