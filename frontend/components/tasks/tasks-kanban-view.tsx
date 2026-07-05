@@ -139,18 +139,17 @@ function KanbanCard({
   return (
     <div className={cn("relative rounded-xl border bg-card p-3 shadow-sm", priorityBorder)}>
       {canOpenDetail && onDetailClick && (
-        <Button
+        <IconButton
           variant="ghost"
-          size="icon"
           className="absolute right-1 top-1 h-7 w-7 text-muted-foreground hover:text-foreground"
-          aria-label="View details"
+          label="View details"
           onClick={(e) => {
             e.stopPropagation();
             onDetailClick(task);
           }}
         >
           <HugeiconsIcon icon={ViewIcon} className="size-4" strokeWidth={2} />
-        </Button>
+        </IconButton>
       )}
       {content}
     </div>

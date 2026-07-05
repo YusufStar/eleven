@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
+import { useMyRole } from "@/lib/use-my-role";
 import { MyStatusDialog, TeamPresenceGrid } from "@/components/team/team-presence-grid";
 import { useDebouncedCallback } from "@/lib/use-debounced-callback";
 
@@ -66,6 +67,7 @@ export default function TeamMembersPage() {
   const members = data?.data ?? [];
   const total = data?.total ?? 0;
   const { data: session } = authClient.useSession();
+  const { isAdmin } = useMyRole();
   const me = (allData?.data ?? []).find((m) => m.userId === session?.user?.id) ?? null;
   const [statusOpen, setStatusOpen] = useState(false);
 
@@ -94,12 +96,14 @@ export default function TeamMembersPage() {
               {me.statusEmoji ? `${me.statusEmoji} ` : ""}My status
             </Button>
           )}
-          <Button asChild className="gap-2">
-            <Link href="/dashboard/team/invite">
-              <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2} />
-              Invite employee
-            </Link>
-          </Button>
+          {isAdmin && (
+            <Button asChild className="gap-2">
+              <Link href="/dashboard/team/invite">
+                <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2} />
+                Invite employee
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
       {(allData?.data ?? []).length > 0 && (

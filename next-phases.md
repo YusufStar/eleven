@@ -67,15 +67,16 @@ Bu batch'te bitenler (hepsi org-scoped, `bunx tsc --noEmit` iki tarafta da temiz
 
 ## Faz 2 — Derinleştirme (öncelik: orta)
 
-### 2.1 Global arama (⌘K)
-- `components/ui/command.tsx` kurulu, kullanılmıyor. Tasks/projects/sprints/files/people arası palette + hızlı aksiyonlar ("yeni görev", "yeni sprint"). Tek `/search?q=` endpoint'i.
+### 2.1 Global arama (⌘K) ✅
+- Backend `/search?q=` (tasks/projects/sprints/files/people, org-scoped, grup başına cap). Frontend `CommandPalette` (`⌘/Ctrl+K` veya header'daki `CommandSearchButton`), gruplu sonuçlar + "Go to" hızlı navigasyon. `services/search`.
 
-### 2.2 Rich text & collaboration
-- Task detay markdown editörü var. Notion-benzeri blok editör, `@mention` autocomplete (comment + chat ortak), inline dosya embed.
-- Sprint/proje için doc/wiki sayfaları (Notion tarafı henüz zayıf).
+### 2.2 Rich text & collaboration ✅
+- Paylaşımlı `@mention` autocomplete: `components/mentions/mention-autocomplete.tsx` (hook + `MentionSuggestions`); hem chat-input hem task yorum kutusu bunu kullanıyor (chat → userId, comment → memberId). Chat-input'un eski kopya mention mantığı buna refactor edildi.
+- Task details editörüne markdown biçimlendirme toolbar'ı (bold/italic/heading/list/quote/code/link, seçimi sarar) + mevcut inline görsel ekleme korundu.
+- **Kalan (Faz 3):** gerçek Notion-benzeri blok editör + sprint/proje doc/wiki sayfaları.
 
-### 2.3 Projects — kalan görünümler
-- Calendar + Timeline (Gantt) sekmeleri henüz yok (Overview/Board/List/Files/Members tamam). Due date + milestone bazlı timeline.
+### 2.3 Projects — Calendar + Timeline ✅
+- `components/projects/project-schedule.tsx`: `ProjectCalendar` (ay grid'i, task+milestone due date'leri) ve `ProjectTimeline` (yatay Gantt-vari, min→max aralığında task/milestone markerları + "bugün" çizgisi). Proje detayına Calendar + Timeline sekmeleri eklendi.
 
 ### 2.4 Meet — API fazı
 - Frontend + kendi WebRTC sinyalleşmesi var. Ölçek için hazır SFU (LiveKit/Daily) değerlendirmesi, kayıt (recording modeli eklendi), takvim senkronu.
@@ -89,6 +90,15 @@ Bu batch'te bitenler (hepsi org-scoped, `bunx tsc --noEmit` iki tarafta da temiz
 - Rate limiting yok (auth, upload, AI generate — özellikle AI maliyet DoS'a açık).
 - Upload dosya tipi/boyut limitleri gözden geçirilmeli.
 - Stripe webhook imza doğrulaması kontrol edilmeli.
+
+### UX standardı: icon-only buton tooltip'leri ✅
+- `components/ui/icon-button.tsx` (`IconButton`) — zorunlu `label` prop'u hem `aria-label` hem tooltip verir. Uygulamadaki tüm icon-only butonlar (files, chat, kanban, meet, modallar, task editör toolbar'ı) buna veya trigger'larda `Tooltip` sarmalayıcısına (theme-toggle, notification bell) çevrildi.
+
+### Rol tabanlı erişim denetimi (audit sonucu)
+- **better-auth** org mutasyonları (org update/delete, invite/remove member, updateMemberRole) zaten sunucu tarafında owner/admin ile enforce ediliyor — bu en hassas işlemler korunuyor.
+- **Bizim custom route'lar** bilinçli olarak "flat" (her üye task/proje/sprint CRUD yapabilir — işbirlikçi araç için normal). İstisnalar: settings/GitHub → owner; comment silme → yazar veya admin; **yeni:** proje silme (cascade) → `requireAdmin`.
+- **Frontend UI gating eklendi** (`lib/use-my-role.ts`, better-auth `useActiveMember`): settings General edit + Billing upgrade admin-only, Danger (org silme) sekmesi owner-only, Team member row-actions (rol değiştir/çıkar) ve "Invite" butonu admin-only. Sidebar navigasyonu herkese açık (görüntüleme serbest; mutasyonlar gate'li).
+- **Kalan:** custom route'lar için daha ince RBAC gerekirse better-auth access-control rolleriyle veya `requireAdmin` yayarak genişletilebilir; test kapsamına permission testleri eklenmeli.
 
 ---
 

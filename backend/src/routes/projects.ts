@@ -299,7 +299,8 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
       });
       return { ok: true };
     },
-    { requireAuth: true, requireActiveOrg: true }
+    // deleting a whole project (cascades tasks & files) is an admin/owner action
+    { requireAuth: true, requireActiveOrg: true, requireAdmin: true }
   )
   .get(
     "/:id/members",

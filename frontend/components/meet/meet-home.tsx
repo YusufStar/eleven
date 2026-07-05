@@ -163,24 +163,22 @@ export function MeetHome() {
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b px-6 py-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
-            <Button
+            <IconButton
               variant="ghost"
-              size="icon"
               className="size-8 rounded-full"
-              aria-label="Previous week"
+              label="Previous week"
               onClick={() => setWeekAnchor((d) => addDays(d, -7))}
             >
               <HugeiconsIcon icon={ArrowLeft02Icon} className="size-4" strokeWidth={2} />
-            </Button>
-            <Button
+            </IconButton>
+            <IconButton
               variant="ghost"
-              size="icon"
               className="size-8 rounded-full"
-              aria-label="Next week"
+              label="Next week"
               onClick={() => setWeekAnchor((d) => addDays(d, 7))}
             >
               <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" strokeWidth={2} />
-            </Button>
+            </IconButton>
           </div>
           <Button variant="outline" size="sm" className="rounded-full" onClick={() => setWeekAnchor(new Date())}>
             Today

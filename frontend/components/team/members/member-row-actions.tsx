@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ViewIcon, Delete02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import type { TeamMember } from "@/services/team";
 import { authClient } from "@/lib/auth-client";
+import { useMyRole } from "@/lib/use-my-role";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ const ROLE_OPTIONS = [
 
 export function MemberRowActions({ member }: { member: TeamMember }) {
   const queryClient = useQueryClient();
+  const { isAdmin } = useMyRole();
   const [removeTarget, setRemoveTarget] = useState<TeamMember | null>(null);
   const [roleTarget, setRoleTarget] = useState<TeamMember | null>(null);
   const [newRole, setNewRole] = useState<string>(member.role);
@@ -92,6 +94,9 @@ export function MemberRowActions({ member }: { member: TeamMember }) {
   };
 
   const summary = `${member.user?.name?.trim() ?? "—"}${member.user?.email ? ` (${member.user.email})` : ""}`;
+
+  // Only owners/admins manage members; better-auth also enforces this server-side.
+  if (!isAdmin) return null;
 
   return (
     <>

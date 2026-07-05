@@ -65,9 +65,9 @@ export function SidePanel({
         <h2 className="text-sm font-medium">
           {tab === "chat" ? "In-call messages" : `People (${participants.length})`}
         </h2>
-        <Button variant="ghost" size="icon" className="size-7 rounded-full" onClick={onClose} aria-label="Close panel">
+        <IconButton variant="ghost" className="size-7 rounded-full" onClick={onClose} label="Close panel">
           <HugeiconsIcon icon={Cancel01Icon} className="size-4" strokeWidth={2} />
-        </Button>
+        </IconButton>
       </div>
 
       {tab === "chat" ? (
@@ -100,15 +100,14 @@ export function SidePanel({
               className="h-9 rounded-full"
               aria-label="Message"
             />
-            <Button
-              size="icon"
+            <IconButton
               className="size-9 shrink-0 rounded-full"
               disabled={!draft.trim()}
               onClick={send}
-              aria-label="Send message"
+              label="Send message"
             >
               <HugeiconsIcon icon={SentIcon} className="size-4" strokeWidth={1.8} />
-            </Button>
+            </IconButton>
           </div>
         </>
       ) : (

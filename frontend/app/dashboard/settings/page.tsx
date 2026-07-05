@@ -8,6 +8,8 @@ import { authClient } from "@/lib/auth-client";
 import { useSettingsGithub } from "@/services/settings/use-settings-github";
 import { useActiveOrgPaymentStatus, paymentsApi } from "@/services/payments";
 import { useTeamMembersList } from "@/services/team";
+import { useMyRole } from "@/lib/use-my-role";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +41,7 @@ import {
 
 function GeneralTab() {
   const { data: org } = authClient.useActiveOrganization();
+  const { isAdmin } = useMyRole();
   const [name, setName] = useState("");
   const [logo, setLogo] = useState<string | undefined>(undefined);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -87,20 +90,28 @@ function GeneralTab() {
           <CardDescription>Your organization&apos;s name and logo.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
+          {!isAdmin && (
+            <p className="rounded-lg border border-status-blue/30 bg-status-blue/5 p-3 text-xs text-muted-foreground">
+              Only owners and admins can change organization details.
+            </p>
+          )}
           <div className="flex items-center gap-4">
-            <Avatar className="size-16 cursor-pointer rounded-lg" onClick={() => setUploadOpen(true)}>
+            <Avatar
+              className={cn("size-16 rounded-lg", isAdmin && "cursor-pointer")}
+              onClick={() => isAdmin && setUploadOpen(true)}
+            >
               <AvatarImage src={logo} className="rounded-lg" />
               <AvatarFallback className="rounded-lg">
                 <HugeiconsIcon icon={Building06Icon} className="size-6" strokeWidth={2} />
               </AvatarFallback>
             </Avatar>
-            <Button variant="outline" size="sm" onClick={() => setUploadOpen(true)}>
+            <Button variant="outline" size="sm" onClick={() => setUploadOpen(true)} disabled={!isAdmin}>
               Change logo
             </Button>
           </div>
           <div className="space-y-2">
             <Label htmlFor="org-name">Name</Label>
-            <Input id="org-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
+            <Input id="org-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} disabled={!isAdmin} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="org-slug">Slug</Label>
@@ -108,7 +119,7 @@ function GeneralTab() {
             <p className="text-xs text-muted-foreground">The slug is fixed once the organization is created.</p>
           </div>
           <div className="flex justify-end">
-            <Button onClick={save} disabled={!dirty || saving}>
+            <Button onClick={save} disabled={!dirty || saving || !isAdmin}>
               {saving ? "Saving…" : "Save changes"}
             </Button>
           </div>
@@ -219,6 +230,7 @@ function NotificationsTab() {
 
 function BillingTab({ organizationId }: { organizationId: string }) {
   const { data: status, isPending } = useActiveOrgPaymentStatus(organizationId);
+  const { isAdmin } = useMyRole();
   const [loading, setLoading] = useState(false);
   const isPro = status?.plan === "PROFESSIONAL" || !!status?.paidAt;
 
@@ -267,11 +279,14 @@ function BillingTab({ organizationId }: { organizationId: string }) {
                 {isPro ? "Professional" : "Free"}
               </span>
             </div>
-            {!isPro && (
-              <Button onClick={pay} disabled={loading}>
-                {loading ? "Redirecting…" : "Upgrade to Professional"}
-              </Button>
-            )}
+            {!isPro &&
+              (isAdmin ? (
+                <Button onClick={pay} disabled={loading}>
+                  {loading ? "Redirecting…" : "Upgrade to Professional"}
+                </Button>
+              ) : (
+                <p className="text-xs text-muted-foreground">Only owners and admins can manage billing.</p>
+              ))}
           </>
         )}
       </CardContent>
@@ -340,6 +355,7 @@ function DangerTab({ organizationId }: { organizationId: string }) {
 export default function SettingsPage() {
   const searchParams = useSearchParams();
   const { data: org } = authClient.useActiveOrganization();
+  const { isOwner } = useMyRole();
 
   useEffect(() => {
     const status = searchParams.get("github");
@@ -360,7 +376,7 @@ export default function SettingsPage() {
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
-          <TabsTrigger value="danger">Danger</TabsTrigger>
+          {isOwner && <TabsTrigger value="danger">Danger</TabsTrigger>}
         </TabsList>
         <TabsContent value="general">
           <GeneralTab />
@@ -375,7 +391,7 @@ export default function SettingsPage() {
           <NotificationsTab />
         </TabsContent>
         <TabsContent value="billing">{org && <BillingTab organizationId={org.id} />}</TabsContent>
-        <TabsContent value="danger">{org && <DangerTab organizationId={org.id} />}</TabsContent>
+        {isOwner && <TabsContent value="danger">{org && <DangerTab organizationId={org.id} />}</TabsContent>}
       </Tabs>
     </div>
   );
