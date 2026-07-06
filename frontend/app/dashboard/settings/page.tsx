@@ -352,10 +352,18 @@ function DangerTab({ organizationId }: { organizationId: string }) {
   );
 }
 
+const SETTINGS_TABS = ["general", "integrations", "members", "notifications", "billing", "danger"];
+
 export default function SettingsPage() {
   const searchParams = useSearchParams();
   const { data: org } = authClient.useActiveOrganization();
   const { isOwner } = useMyRole();
+  const queryTab = searchParams.get("tab");
+  const [tab, setTab] = useState(queryTab && SETTINGS_TABS.includes(queryTab) ? queryTab : "general");
+
+  useEffect(() => {
+    if (queryTab && SETTINGS_TABS.includes(queryTab)) setTab(queryTab);
+  }, [queryTab]);
 
   useEffect(() => {
     const status = searchParams.get("github");
@@ -369,7 +377,7 @@ export default function SettingsPage() {
       <h1 className="mb-1 text-2xl font-semibold tracking-tight">Organization settings</h1>
       <p className="mb-6 text-sm text-muted-foreground">Manage your organization, integrations, and billing.</p>
 
-      <Tabs defaultValue="general">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-4 flex-wrap">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="integrations">Integrations</TabsTrigger>

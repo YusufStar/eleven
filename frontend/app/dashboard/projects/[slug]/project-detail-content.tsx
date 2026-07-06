@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from "recharts";
@@ -29,7 +29,12 @@ import {
   ChartLineData01Icon,
   Calendar03Icon,
   ChartGanttIcon,
+  PencilEdit02Icon,
+  SourceCodeIcon,
 } from "@hugeicons/core-free-icons";
+import { Button } from "@/components/ui/button";
+import { AddProjectModal } from "@/components/projects/add-project-modal";
+import { GithubPanel } from "@/components/github/github-panel";
 import { ProjectCalendar, ProjectTimeline } from "@/components/projects/project-schedule";
 import { initials } from "@/lib/string";
 
@@ -197,6 +202,7 @@ export function ProjectDetailContent() {
   const router = useRouter();
   const idOrSlug = typeof params.slug === "string" ? params.slug : null;
   const { data: project, isPending, error } = useProjectDetail(idOrSlug);
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     if (!idOrSlug) router.replace("/dashboard/projects");
@@ -243,8 +249,13 @@ export function ProjectDetailContent() {
           <h1 className="text-2xl font-semibold tracking-tight">{project.name?.trim() ?? "—"}</h1>
           {project.description && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{project.description}</p>}
         </div>
-        {(linksList.length > 0 || project.githubRepoUrl) && (
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+            <HugeiconsIcon icon={PencilEdit02Icon} className="size-4 mr-1.5" strokeWidth={2} />
+            Edit
+          </Button>
+          {(linksList.length > 0 || project.githubRepoUrl) && (
+            <>
             {project.githubRepoUrl && (
               <a
                 href={project.githubRepoUrl}
@@ -268,9 +279,11 @@ export function ProjectDetailContent() {
                 {link.title || link.url}
               </a>
             ))}
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
+      <AddProjectModal open={editOpen} onOpenChange={setEditOpen} project={project} />
 
       <Tabs defaultValue="overview">
         <TabsList>
@@ -298,6 +311,10 @@ export function ProjectDetailContent() {
             <HugeiconsIcon icon={File02Icon} className="size-4" strokeWidth={2} />
             Files
           </TabsTrigger>
+          <TabsTrigger value="code" className="gap-1.5">
+            <HugeiconsIcon icon={SourceCodeIcon} className="size-4" strokeWidth={2} />
+            Code
+          </TabsTrigger>
           <TabsTrigger value="members" className="gap-1.5">
             <HugeiconsIcon icon={UserGroupIcon} className="size-4" strokeWidth={2} />
             Members
@@ -306,6 +323,15 @@ export function ProjectDetailContent() {
 
         <TabsContent value="overview" className="mt-4">
           <InsightsPanel projectId={project.id} />
+        </TabsContent>
+
+        <TabsContent value="code" className="mt-4">
+          <GithubPanel
+            projectId={project.id}
+            slug={project.slug || project.id}
+            hasRepo={!!project.githubRepoFullName}
+            repoUrl={project.githubRepoUrl}
+          />
         </TabsContent>
 
         <TabsContent value="board" className="mt-4">

@@ -19,7 +19,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useCreateProject } from "@/services/projects";
+import { useCreateProject, useUpdateProject, type Project } from "@/services/projects";
 import { useSettingsGithubRepos } from "@/services/settings/use-settings-github";
 import { addProjectSchema, type AddProjectSchema } from "@/lib/schema";
 import { toast } from "sonner";
@@ -52,6 +52,8 @@ import type { GithubRepoItem } from "@/services/settings/api";
 export type AddProjectModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** When set, the modal edits this project instead of creating a new one. */
+  project?: Project | null;
 };
 
 const defaultValues: AddProjectSchema = {
@@ -104,8 +106,11 @@ function SortableLinkRow({
   );
 }
 
-export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
+export function AddProjectModal({ open, onOpenChange, project }: AddProjectModalProps) {
+  const isEdit = !!project;
   const createMutation = useCreateProject();
+  const updateMutation = useUpdateProject(project?.id ?? "");
+  const pending = isEdit ? updateMutation.isPending : createMutation.isPending;
   const { data: reposData } = useSettingsGithubRepos();
   const [selectedRepo, setSelectedRepo] = useState<GithubRepoItem | null>(null);
   const form = useForm<AddProjectSchema>({
@@ -119,8 +124,22 @@ export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
     if (!open) {
       form.reset(defaultValues);
       setSelectedRepo(null);
+      return;
     }
-  }, [open, form]);
+    if (project) {
+      form.reset({
+        name: project.name,
+        description: project.description ?? "",
+        memberIds: [],
+        links: project.links ?? [],
+      });
+      setSelectedRepo(
+        project.githubRepoFullName && project.githubRepoUrl
+          ? { id: -1, name: project.githubRepoFullName, fullName: project.githubRepoFullName, htmlUrl: project.githubRepoUrl }
+          : null
+      );
+    }
+  }, [open, project, form]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -136,6 +155,25 @@ export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
 
   const onSubmit = (data: AddProjectSchema) => {
     const validLinks = data.links?.filter((l) => l.title.trim() && l.url.trim()).map((l) => ({ title: l.title.trim(), url: l.url.trim() })) ?? [];
+    if (isEdit) {
+      updateMutation.mutate(
+        {
+          name: data.name.trim(),
+          description: data.description?.trim() || "",
+          links: validLinks,
+          githubRepoFullName: selectedRepo?.fullName ?? null,
+          githubRepoUrl: selectedRepo?.htmlUrl ?? null,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Project updated.");
+            onOpenChange(false);
+          },
+          onError: (err) => toast.error(err.message ?? "Failed to update project."),
+        }
+      );
+      return;
+    }
     createMutation.mutate(
       {
         name: data.name.trim(),
@@ -159,8 +197,10 @@ export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Create project</DialogTitle>
-          <DialogDescription>Add a new project. You will be added as a member.</DialogDescription>
+          <DialogTitle>{isEdit ? "Edit project" : "Create project"}</DialogTitle>
+          <DialogDescription>
+            {isEdit ? "Update project details. Manage members from the project page." : "Add a new project. You will be added as a member."}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} id="add-project-form">
           <FieldGroup>
@@ -184,20 +224,22 @@ export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
               />
               <FieldError>{form.formState.errors.description?.message}</FieldError>
             </Field>
-            <Field>
-              <FieldLabel>Members (optional)</FieldLabel>
-              <Controller
-                control={form.control}
-                name="memberIds"
-                render={({ field }) => (
-                  <OrgMemberMultiSelect
-                    value={field.value ?? []}
-                    onChange={field.onChange}
-                    placeholder="Select members to add to project..."
-                  />
-                )}
-              />
-            </Field>
+            {!isEdit && (
+              <Field>
+                <FieldLabel>Members (optional)</FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="memberIds"
+                  render={({ field }) => (
+                    <OrgMemberMultiSelect
+                      value={field.value ?? []}
+                      onChange={field.onChange}
+                      placeholder="Select members to add to project..."
+                    />
+                  )}
+                />
+              </Field>
+            )}
             <Field>
               <FieldLabel className="inline-flex items-center gap-2">
                 <HugeiconsIcon icon={Github01Icon} className="size-4" />
@@ -265,11 +307,11 @@ export function AddProjectModal({ open, onOpenChange }: AddProjectModalProps) {
             </Field>
           </FieldGroup>
           <DialogFooter className="mt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={createMutation.isPending}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
               Cancel
             </Button>
-            <Button type="submit" form="add-project-form" disabled={createMutation.isPending}>
-              {createMutation.isPending ? <Spinner className="size-4" /> : "Create"}
+            <Button type="submit" form="add-project-form" disabled={pending}>
+              {pending ? <Spinner className="size-4" /> : isEdit ? "Save" : "Create"}
             </Button>
           </DialogFooter>
         </form>

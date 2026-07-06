@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/table";
 import { ImportFileModal } from "@/components/files/import-file-modal";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Upload01Icon, Delete02Icon, Folder01Icon, EyeIcon, Clock01Icon, Download01Icon } from "@hugeicons/core-free-icons";
+import { Upload01Icon, Delete02Icon, Folder01Icon, FolderAddIcon, EyeIcon, Clock01Icon, Download01Icon } from "@hugeicons/core-free-icons";
 import { getFileTypeConfig } from "@/lib/file-types";
 import { initials } from "@/lib/string";
 import { useDebouncedCallback } from "@/lib/use-debounced-callback";
@@ -160,15 +160,20 @@ export default function FilesPage() {
   const [search, setSearch] = React.useState("");
   const debouncedSetSearch = useDebouncedCallback((v: string) => setSearch(v), 350);
   const [projectId, setProjectId] = React.useState<string | null>(null);
-  const [folder, setFolder] = React.useState<string | null>(null);
+  // Current folder path when browsing a single project ("/" = root). Nested via "/a/b".
+  const [path, setPath] = React.useState("/");
+  // Client-created empty folders (persist once a file is uploaded into them).
+  const [extraFolders, setExtraFolders] = React.useState<string[]>([]);
   const [page, setPage] = React.useState(1);
   const [preview, setPreview] = React.useState<OrgFileRow | null>(null);
   const [versionsOf, setVersionsOf] = React.useState<OrgFileRow | null>(null);
 
+  // Folder navigation only applies within a single project (paths collide across projects).
+  const browsing = !!projectId;
   const { data, isPending } = useOrgFiles({
     search: search || undefined,
     projectId,
-    folder,
+    folder: browsing ? path : null,
     page,
     pageSize: 25,
   });
@@ -178,6 +183,36 @@ export default function FilesPage() {
   const files = data?.data ?? [];
   const folders = data?.folders ?? [];
   const totalPages = Math.max(1, Math.ceil((data?.total ?? 0) / 25));
+
+  // All known folder paths for this project (from files + client-created empties).
+  const allFolderPaths = React.useMemo(
+    () => Array.from(new Set<string>(["/", ...folders.map((f) => f.folder), ...extraFolders])),
+    [folders, extraFolders]
+  );
+  // Direct child folders of the current path.
+  const subfolders = React.useMemo(() => {
+    const prefix = path === "/" ? "/" : path + "/";
+    const set = new Set<string>();
+    for (const f of allFolderPaths) {
+      if (f === path) continue;
+      const under = path === "/" ? f !== "/" : f.startsWith(prefix);
+      if (!under) continue;
+      const rest = path === "/" ? f.replace(/^\//, "") : f.slice(prefix.length);
+      const seg = rest.split("/")[0];
+      if (seg) set.add(path === "/" ? "/" + seg : prefix + seg);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [allFolderPaths, path]);
+  const crumbs = path === "/" ? [] : path.replace(/^\//, "").split("/");
+
+  const newFolder = () => {
+    const name = window.prompt("New folder name");
+    const clean = name?.split("/").map((s) => s.trim()).filter(Boolean).join("/");
+    if (!clean) return;
+    const np = (path === "/" ? "" : path) + "/" + clean;
+    setExtraFolders((prev) => Array.from(new Set([...prev, np])));
+    setPath(np);
+  };
 
   return (
     <div className="container mx-auto space-y-6 py-2">
@@ -236,7 +271,8 @@ export default function FilesPage() {
           value={projectId ?? "all"}
           onValueChange={(v) => {
             setProjectId(v === "all" ? null : v);
-            setFolder(null);
+            setPath("/");
+            setExtraFolders([]);
             setPage(1);
           }}
         >
@@ -252,36 +288,58 @@ export default function FilesPage() {
             ))}
           </SelectContent>
         </Select>
-        {folders.length > 1 && (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setFolder(null)}
-              className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
-                folder == null ? "border-brand/40 bg-brand/10 text-brand" : "hover:bg-muted"
-              }`}
-            >
-              All folders
-            </button>
-            {folders.map((f) => (
-              <button
-                key={f.folder}
-                type="button"
-                onClick={() => {
-                  setFolder(f.folder === folder ? null : f.folder);
-                  setPage(1);
-                }}
-                className={`flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
-                  folder === f.folder ? "border-brand/40 bg-brand/10 text-brand" : "hover:bg-muted"
-                }`}
-              >
-                <HugeiconsIcon icon={Folder01Icon} className="size-3" strokeWidth={2} />
-                {f.folder} ({f.count})
-              </button>
-            ))}
-          </div>
+        {browsing && (
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={newFolder}>
+            <HugeiconsIcon icon={FolderAddIcon} className="size-4" strokeWidth={2} />
+            New folder
+          </Button>
         )}
       </div>
+
+      {/* Folder navigation (single project) */}
+      {browsing && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-1 text-sm">
+            <button
+              type="button"
+              onClick={() => { setPath("/"); setPage(1); }}
+              className={`rounded px-1.5 py-0.5 hover:bg-muted ${path === "/" ? "font-medium" : "text-muted-foreground"}`}
+            >
+              Root
+            </button>
+            {crumbs.map((seg, i) => {
+              const crumbPath = "/" + crumbs.slice(0, i + 1).join("/");
+              return (
+                <React.Fragment key={crumbPath}>
+                  <span className="text-muted-foreground">/</span>
+                  <button
+                    type="button"
+                    onClick={() => { setPath(crumbPath); setPage(1); }}
+                    className={`rounded px-1.5 py-0.5 hover:bg-muted ${i === crumbs.length - 1 ? "font-medium" : "text-muted-foreground"}`}
+                  >
+                    {seg}
+                  </button>
+                </React.Fragment>
+              );
+            })}
+          </div>
+          {subfolders.length > 0 && (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+              {subfolders.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => { setPath(f); setPage(1); }}
+                  className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
+                >
+                  <HugeiconsIcon icon={Folder01Icon} className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+                  <span className="truncate">{f.split("/").pop()}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Table */}
       <div className="overflow-hidden rounded-lg border bg-card">
@@ -403,6 +461,8 @@ export default function FilesPage() {
         open={importModalOpen}
         onOpenChange={setImportModalOpen}
         fixedProjectId={projectId}
+        defaultFolder={browsing ? path : undefined}
+        folders={browsing ? allFolderPaths : undefined}
         onSuccess={() => toast.success("File uploaded.")}
       />
       <PreviewDialog file={preview} onClose={() => setPreview(null)} />

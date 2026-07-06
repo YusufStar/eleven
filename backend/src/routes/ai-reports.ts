@@ -5,6 +5,7 @@ import { authPlugin } from "../plugins/auth.plugin";
 import { logActivity } from "../lib/activity-log";
 import { applyAiReportAction } from "../lib/ai-report-actions";
 import { parseSubmitReport, reportMarkdownFromSubmit } from "../lib/ai-report-schema";
+import { getGithubOverview } from "./github";
 import {
   ActivityAction,
   ActivityEntityType,
@@ -188,6 +189,12 @@ const TOOLS: Anthropic.Tool[] = [
     input_schema: { type: "object" as const, properties: {}, required: [] },
   },
   {
+    name: "get_github_activity",
+    description:
+      "Real GitHub code activity across the org's linked repos: per team member commit count, lines added and deleted. Empty if GitHub is not connected. Use to report engineering throughput/velocity from actual code, not just tasks.",
+    input_schema: { type: "object" as const, properties: {}, required: [] },
+  },
+  {
     name: "submit_report",
     description:
       "REQUIRED final step. Submit the completed report as structured JSON for the dashboard UI, charts, and actionable recommendations. Call only after all data tools have returned.",
@@ -326,6 +333,8 @@ async function runTool(name: string, orgId: string, days: number): Promise<unkno
       return getSprintStats(orgId);
     case "get_activity_summary":
       return getActivitySummary(orgId, days);
+    case "get_github_activity":
+      return getGithubOverview(orgId);
     default:
       return { error: `Unknown tool ${name}` };
   }
@@ -345,6 +354,7 @@ Rules:
 - AFTER gathering data, you MUST call submit_report with structured JSON (summary, sections, dashboard with kpis+charts, and actions). Do not finish with plain text.
 - Build dashboard.kpis from real counts (open tasks, completed, blocked, overdue, velocity, etc.).
 - Build dashboard.charts from tool data: e.g. task status bar chart, team load bar chart, sprint velocity line chart, project health pie chart. Use chart.data arrays with numeric values.
+- Call get_github_activity too; when it returns data, add an engineering-throughput view (per-member commits and lines added/deleted) and factor real code activity into velocity and team-load analysis. If it is empty (GitHub not connected), skip it silently.
 - sections: Summary, Productivity & Velocity, Team Load, Project Health, Bottlenecks & Risks when data allows.
 - actions: 2-6 concrete recommendations with valid type and payload so the team can apply them in the product (create tasks, reassign, change status/priority, add comments). Reference real task titles and member names from tool results.
 - ${kind === "MINI" ? "Keep summary and sections short — standup-style digest." : ""}

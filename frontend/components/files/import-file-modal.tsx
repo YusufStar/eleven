@@ -3,6 +3,21 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { useProjectsList, useAddProjectFile } from "@/services/projects";
+import { useOrgFiles } from "@/services/files";
+
+// Join a base folder path with a new sub-folder name → normalized "/a/b" path.
+function joinFolder(base: string, name: string): string {
+  const clean = name.split("/").map((s) => s.trim()).filter(Boolean).join("/");
+  if (!clean) return base || "/";
+  const b = base && base !== "/" ? base : "";
+  return `${b}/${clean}`;
+}
+
+function folderLabel(path: string): string {
+  return path === "/" ? "Root" : path.replace(/^\//, "");
+}
+
+const NEW_FOLDER = "__new_folder__";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +32,7 @@ import { File02Icon, Upload01Icon, Cancel01Icon } from "@hugeicons/core-free-ico
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -36,6 +52,10 @@ export type ImportFileModalProps = {
   onOpenChange: (open: boolean) => void;
   /** When set, project selector is hidden and this project is used (e.g. from card). */
   fixedProjectId?: string | null;
+  /** Folder the upload should target by default (e.g. the folder currently being browsed). */
+  defaultFolder?: string;
+  /** Known folder paths for the project, so the user can pick an existing one. */
+  folders?: string[];
   onSuccess?: () => void;
 };
 
@@ -43,11 +63,16 @@ export function ImportFileModal({
   open,
   onOpenChange,
   fixedProjectId,
+  defaultFolder,
+  folders,
   onSuccess,
 }: ImportFileModalProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [targetFolder, setTargetFolder] = useState<string>(defaultFolder || "/");
+  const [creatingFolder, setCreatingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
   const previewUrlRef = useRef<string | null>(null);
 
   const { data: projectsData } = useProjectsList({ page: 1, pageSize: 200 });
@@ -75,6 +100,25 @@ export function ImportFileModal({
   const uploadProjectId = fixedProjectId ?? selectedProjectId;
   const addFile = useAddProjectFile(uploadProjectId ?? "");
 
+  // When the caller doesn't pass a folder list, look it up for the chosen project.
+  const { data: projFiles } = useOrgFiles(
+    uploadProjectId && !folders ? { projectId: uploadProjectId, pageSize: 1 } : undefined
+  );
+  const folderOptions = Array.from(
+    new Set<string>(["/", ...(defaultFolder ? [defaultFolder] : []), ...(folders ?? []), ...(projFiles?.folders?.map((f) => f.folder) ?? [])])
+  ).sort((a, b) => (a === "/" ? -1 : b === "/" ? 1 : a.localeCompare(b)));
+
+  // Reset folder selection each time the modal opens.
+  useEffect(() => {
+    if (open) {
+      setTargetFolder(defaultFolder || "/");
+      setCreatingFolder(false);
+      setNewFolderName("");
+    }
+  }, [open, defaultFolder]);
+
+  const effectiveFolder = creatingFolder ? joinFolder(defaultFolder || "/", newFolderName) : targetFolder;
+
   const handleClose = useCallback(
     (open: boolean) => {
       if (!open) {
@@ -100,16 +144,19 @@ export function ImportFileModal({
 
   const handleUpload = useCallback(() => {
     if (!uploadProjectId || !previewFile) return;
-    addFile.mutate(previewFile, {
-      onSuccess: () => {
-        onSuccess?.();
-        setPreviewFile(null);
-        if (!fixedProjectId) setSelectedProjectId(null);
-        onOpenChange(false);
-      },
-      onError: (err) => toast.error(err.message ?? "Upload failed."),
-    });
-  }, [uploadProjectId, previewFile, addFile, onSuccess, fixedProjectId, onOpenChange]);
+    addFile.mutate(
+      { file: previewFile, folder: effectiveFolder },
+      {
+        onSuccess: () => {
+          onSuccess?.();
+          setPreviewFile(null);
+          if (!fixedProjectId) setSelectedProjectId(null);
+          onOpenChange(false);
+        },
+        onError: (err) => toast.error(err.message ?? "Upload failed."),
+      }
+    );
+  }, [uploadProjectId, previewFile, addFile, effectiveFolder, onSuccess, fixedProjectId, onOpenChange]);
 
   const clearPreview = useCallback(() => {
     setPreviewFile(null);
@@ -143,6 +190,49 @@ export function ImportFileModal({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          )}
+
+          {uploadProjectId && (
+            <div className="space-y-2">
+              <Label>Folder</Label>
+              <Select
+                value={creatingFolder ? NEW_FOLDER : targetFolder}
+                onValueChange={(v) => {
+                  if (v === NEW_FOLDER) {
+                    setCreatingFolder(true);
+                  } else {
+                    setCreatingFolder(false);
+                    setTargetFolder(v);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {folderOptions.map((f) => (
+                    <SelectItem key={f} value={f}>
+                      {folderLabel(f)}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={NEW_FOLDER}>+ New folder…</SelectItem>
+                </SelectContent>
+              </Select>
+              {creatingFolder && (
+                <>
+                  <Input
+                    autoFocus
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    placeholder="Folder name"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Will upload to <span className="font-mono">{effectiveFolder}</span>
+                    {defaultFolder && defaultFolder !== "/" && ` (inside ${folderLabel(defaultFolder)})`}
+                  </p>
+                </>
+              )}
             </div>
           )}
 

@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ViewIcon, Task01Icon, File02Icon, Delete02Icon } from "@hugeicons/core-free-icons";
+import { ViewIcon, Task01Icon, File02Icon, Delete02Icon, PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import type { Project } from "@/services/projects";
 import { useDeleteProject } from "@/services/projects";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { AddProjectModal } from "@/components/projects/add-project-modal";
 import Link from "next/link";
 import {
   AlertDialog,
@@ -25,6 +26,7 @@ export type ProjectRowActionsProps = {
 
 export function ProjectRowActions({ project }: ProjectRowActionsProps) {
   const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
   const deleteMutation = useDeleteProject();
 
   const handleDeleteConfirm = (e: React.MouseEvent) => {
@@ -70,6 +72,10 @@ export function ProjectRowActions({ project }: ProjectRowActionsProps) {
             Files
           </Link>
         </Button>
+        <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+          <HugeiconsIcon icon={PencilEdit02Icon} className="size-4 mr-1.5" strokeWidth={2} />
+          Edit
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -80,6 +86,7 @@ export function ProjectRowActions({ project }: ProjectRowActionsProps) {
           Delete
         </Button>
       </div>
+      <AddProjectModal open={editOpen} onOpenChange={setEditOpen} project={project} />
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent size="default" className="max-w-sm">
           <AlertDialogHeader>

@@ -17,3 +17,4 @@ export { filesRoutes } from "./files";
 export { aiReportsRoutes } from "./ai-reports";
 export { liveRoutes } from "./live";
 export { searchRoutes } from "./search";
+export { githubRoutes, getGithubOverview } from "./github";

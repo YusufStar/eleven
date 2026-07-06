@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { auth } from "./auth/auth";
 import { authPlugin } from "./plugins/auth.plugin";
-import { chatRoutes, paymentsRoutes, stripeWebhookApp, projectsRoutes, profileRoutes, teamRoutes, tasksRoutes, uploadRoutes, settingsRoutes, activitiesRoutes, homeDataRoutes, metricsRoutes, notificationsRoutes, meetingsRoutes, meetSignalRoutes, sprintsRoutes, filesRoutes, aiReportsRoutes, liveRoutes, searchRoutes } from "./routes";
+import { chatRoutes, paymentsRoutes, stripeWebhookApp, projectsRoutes, profileRoutes, teamRoutes, tasksRoutes, uploadRoutes, settingsRoutes, activitiesRoutes, homeDataRoutes, metricsRoutes, notificationsRoutes, meetingsRoutes, meetSignalRoutes, sprintsRoutes, filesRoutes, aiReportsRoutes, liveRoutes, searchRoutes, githubRoutes } from "./routes";
 import { createDummyData } from "./dummy/create-dummy-data";
 import { scheduleAiReports } from "./queue/ai-reports";
 import { scheduleDigests } from "./queue/digest";
@@ -36,6 +36,7 @@ const app = new Elysia()
   .use(aiReportsRoutes)
   .use(liveRoutes)
   .use(searchRoutes)
+  .use(githubRoutes)
   .get("/", () => "Hello World")
   .get("/dummy-create", async ({ set }) => {
     try {
