@@ -37,16 +37,11 @@ import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { OrgMemberMultiSelect } from "@/components/projects/org-member-multi-select";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Delete02Icon, LinkSquare01Icon, MoveIcon, Github01Icon } from "@hugeicons/core-free-icons";
+import { Delete02Icon, LinkSquare01Icon, MoveIcon, Github01Icon, ChevronsUpDown, Tick02Icon } from "@hugeicons/core-free-icons";
 import type { GithubRepoItem } from "@/services/settings/api";
 
 export type AddProjectModalProps = {
@@ -103,6 +98,59 @@ function SortableLinkRow({
         <HugeiconsIcon icon={Delete02Icon} className="size-4 text-destructive" />
       </IconButton>
     </div>
+  );
+}
+
+// Searchable single-select for GitHub repos. A Popover+Command combobox (not a
+// Radix Select) so it behaves correctly inside the Dialog and handles 100+ repos.
+function RepoCombobox({
+  repos,
+  value,
+  onChange,
+}: {
+  repos: GithubRepoItem[];
+  value: GithubRepoItem | null;
+  onChange: (repo: GithubRepoItem | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const filtered = search.trim()
+    ? repos.filter((r) => r.fullName.toLowerCase().includes(search.toLowerCase()))
+    : repos;
+
+  return (
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal">
+          <span className="inline-flex min-w-0 items-center gap-2">
+            <HugeiconsIcon icon={Github01Icon} className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+            <span className="truncate">{value ? value.fullName : "None"}</span>
+          </span>
+          <HugeiconsIcon icon={ChevronsUpDown} className="ml-2 size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+        <Command shouldFilter={false}>
+          <CommandInput value={search} onValueChange={setSearch} placeholder="Search repositories..." />
+          <CommandList className="max-h-56">
+            <CommandEmpty>No repository found.</CommandEmpty>
+            <CommandGroup>
+              <CommandItem value="__none__" onSelect={() => { onChange(null); setOpen(false); }}>
+                <span className="flex-1">None</span>
+                {!value && <HugeiconsIcon icon={Tick02Icon} className="size-4" strokeWidth={2} />}
+              </CommandItem>
+              {filtered.map((r) => (
+                <CommandItem key={r.id} value={r.fullName} onSelect={() => { onChange(r); setOpen(false); }} className="gap-2">
+                  <HugeiconsIcon icon={Github01Icon} className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+                  <span className="flex-1 truncate">{r.fullName}</span>
+                  {value?.id === r.id && <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0" strokeWidth={2} />}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -250,25 +298,7 @@ export function AddProjectModal({ open, onOpenChange, project }: AddProjectModal
                   Connect GitHub in Organization settings to link a repository.
                 </p>
               ) : (
-                <Select
-                  value={selectedRepo?.htmlUrl ?? "__none__"}
-                  onValueChange={(value) => {
-                    if (value === "__none__") setSelectedRepo(null);
-                    else setSelectedRepo(repos.find((r) => r.htmlUrl === value) ?? null);
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="None" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">None</SelectItem>
-                    {repos.map((r) => (
-                      <SelectItem key={r.id} value={r.htmlUrl}>
-                        {r.fullName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <RepoCombobox repos={repos} value={selectedRepo} onChange={setSelectedRepo} />
               )}
             </Field>
             <Field>
